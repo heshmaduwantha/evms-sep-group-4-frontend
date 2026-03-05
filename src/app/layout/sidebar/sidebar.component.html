@@ -1,0 +1,26 @@
+<div class="sidebar">
+    <div class="brand">
+        <i class="pi pi-shield"></i>
+        <span>EVMS</span>
+    </div>
+
+    <div class="menu">
+        <a *ngFor="let item of filteredItems" [routerLink]="item.link" routerLinkActive="active" class="menu-item">
+            <i [class]="item.icon"></i>
+            <span>{{ item.label }}</span>
+        </a>
+    </div>
+
+    @if (authService.currentUser | async; as user) {
+    <div class="profile" (click)="logout()">
+        <div class="avatar">
+            {{ user.email?.charAt(0)?.toUpperCase() }}
+        </div>
+        <div class="user-info">
+            <span class="font-bold">{{ user.email?.split('@')?.[0] }}</span>
+            <span class="user-role">{{ user.role | titlecase }}</span>
+        </div>
+        <i class="pi pi-sign-out ml-auto text-muted"></i>
+    </div>
+    }
+</div>

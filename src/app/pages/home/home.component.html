@@ -1,0 +1,45 @@
+@if (authService.currentUser | async; as user) {
+<div class="welcome-section">
+    <h1 class="text-4xl font-bold mb-2">Welcome back,</h1>
+    <p class="text-xl text-muted">{{ user.email }}</p>
+</div>
+}
+
+<div class="grid">
+    <div class="col-12 md:col-6 lg:col-3 mb-4">
+        <p-card styleClass="stat-card">
+            <div class="text-muted mb-2">Upcoming Events</div>
+            <div class="text-3xl font-bold">12</div>
+            <div class="text-primary mt-2 text-sm"><i class="pi pi-arrow-up"></i> +2 this week</div>
+        </p-card>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3 mb-4">
+        <p-card styleClass="stat-card">
+            <div class="text-muted mb-2">Active Applications</div>
+            <div class="text-3xl font-bold">45</div>
+            <div class="text-primary mt-2 text-sm"><i class="pi pi-info-circle"></i> 5 pending review</div>
+        </p-card>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3 mb-4">
+        <p-card styleClass="stat-card">
+            <div class="text-muted mb-2">Total Volunteers</div>
+            <div class="text-3xl font-bold">1,240</div>
+            <div class="text-primary mt-2 text-sm"><i class="pi pi-user-plus"></i> +120 new</div>
+        </p-card>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3 mb-4">
+        <p-card styleClass="stat-card">
+            <div class="text-muted mb-2">Completion Rate</div>
+            <div class="text-3xl font-bold">94%</div>
+            <div class="text-primary mt-2 text-sm"><i class="pi pi-check-circle"></i> Above target</div>
+        </p-card>
+    </div>
+</div>
+
+<p-card header="Quick Actions" styleClass="mt-4 bg-dark-navy">
+    <div class="flex flex-wrap gap-3">
+        <p-button label="Create Event" icon="pi pi-plus" severity="primary"></p-button>
+        <p-button label="View Reports" icon="pi pi-chart-line" severity="secondary" [outlined]="true"></p-button>
+        <p-button label="Manage Users" icon="pi pi-users" severity="secondary" [outlined]="true"></p-button>
+    </div>
+</p-card>

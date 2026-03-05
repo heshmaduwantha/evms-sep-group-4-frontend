@@ -1,0 +1,47 @@
+<div class="register-wrapper">
+    <p-card header="Register" subheader="Create your account" styleClass="register-card shadow-4">
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-3">
+            <div class="flex flex-column gap-2">
+                <label for="email">Email</label>
+                <input pInputText id="email" formControlName="email" type="email" placeholder="Enter email"
+                    class="w-full" />
+                <small class="p-error" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+                    Valid email is required.
+                </small>
+            </div>
+
+            <div class="flex flex-column gap-2 mt-2">
+                <label for="password">Password</label>
+                <input pInputText id="password" formControlName="password" type="password"
+                    placeholder="Min 6 characters" class="w-full" />
+                <small class="p-error"
+                    *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+                    Password (min 6 chars) is required.
+                </small>
+            </div>
+
+            <div class="flex flex-column gap-2 mt-2">
+                <label>I am a:</label>
+                <div class="flex flex-wrap gap-3">
+                    <div *ngFor="let r of roles" class="flex align-items-center">
+                        <p-radioButton [value]="r.value" formControlName="role" [inputId]="r.value"></p-radioButton>
+                        <label [for]="r.value" class="ml-2">{{ r.label }}</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <p-button label="Register" type="submit" [loading]="loading" [disabled]="registerForm.invalid"
+                    styleClass="w-full"></p-button>
+            </div>
+
+            <p-messages *ngIf="error" [value]="[{severity:'error', summary:'Error', detail:error}]"
+                [closable]="false"></p-messages>
+
+            <div class="text-center mt-3">
+                <span>Already have an account? </span>
+                <a routerLink="/auth/login" class="font-bold cursor-pointer text-primary no-underline">Login</a>
+            </div>
+        </form>
+    </p-card>
+</div>
