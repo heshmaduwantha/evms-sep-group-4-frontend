@@ -5,19 +5,50 @@
     </div>
 
     <div class="menu">
-        <a *ngFor="let item of filteredItems" [routerLink]="item.link" routerLinkActive="active" class="menu-item">
-            <i [class]="item.icon"></i>
-            <span>{{ item.label }}</span>
-        </a>
+        <ng-container *ngFor="let item of filteredItems">
+            <!-- Regular menu item -->
+            <a *ngIf="!item.expandable" 
+               [routerLink]="item.link" 
+               routerLinkActive="active" 
+               class="menu-item">
+                <i [class]="item.icon"></i>
+                <span>{{ item.label }}</span>
+            </a>
+
+            <!-- Expandable menu item with submenu -->
+            <ng-container *ngIf="item.expandable">
+                <button class="menu-item expandable" 
+                        (click)="toggleExpand(item)"
+                        [class.active]="item.expanded">
+                    <span style="display: flex; align-items: center; gap: 12px;">
+                        <i [class]="item.icon"></i>
+                        <span>{{ item.label }}</span>
+                        <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
+                    </span>
+                    <i class="pi pi-angle-right expand-icon" [class.expanded]="item.expanded"></i>
+                </button>
+
+                <!-- Submenu items -->
+                <div class="submenu" [class.expanded]="item.expanded">
+                    <a *ngFor="let child of item.children" 
+                       [routerLink]="child.link" 
+                       routerLinkActive="active" 
+                       class="submenu-item">
+                        <i [class]="child.icon"></i>
+                        <span>{{ child.label }}</span>
+                    </a>
+                </div>
+            </ng-container>
+        </ng-container>
     </div>
 
     @if (authService.currentUser | async; as user) {
     <div class="profile" (click)="logout()">
         <div class="avatar">
-            {{ user.email?.charAt(0)?.toUpperCase() }}
+            {{ user.email.charAt(0).toUpperCase() }}
         </div>
         <div class="user-info">
-            <span class="font-bold">{{ user.email?.split('@')?.[0] }}</span>
+            <span class="font-bold">{{ user.email.split('@')[0] }}</span>
             <span class="user-role">{{ user.role | titlecase }}</span>
         </div>
         <i class="pi pi-sign-out ml-auto text-muted"></i>
