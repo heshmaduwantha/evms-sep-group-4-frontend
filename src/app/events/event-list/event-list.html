@@ -1,0 +1,41 @@
+<h2>Event List</h2>
+
+<table border="1">
+
+<thead>
+<tr>
+  <th>Title</th>
+  <th>Description</th>
+  <th>Date</th>
+  <th>Time</th>
+  <th>Location</th>
+  <th>Volunteers</th>
+  <th>Actions</th>
+</tr>
+</thead>
+
+<tbody>
+
+@for (event of events; track event.id) {
+
+<tr>
+
+  <td>{{ event.title }}</td>
+  <td>{{ event.description }}</td>
+  <td>{{ event.eventDate }}</td>
+  <td>{{ event.eventTime }}</td>
+  <td>{{ event.location }}</td>
+  <td>{{ event.volunteersRequired }}</td>
+
+  <td>
+    <button (click)="editEvent(event.id)">Edit</button>
+    <button (click)="deleteEvent(event.id)">Delete</button>
+  </td>
+
+</tr>
+
+}
+
+</tbody>
+
+</table>

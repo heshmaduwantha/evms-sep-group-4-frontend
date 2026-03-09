@@ -1,0 +1,39 @@
+<h2>Create / Edit Event</h2>
+
+<form (ngSubmit)="submitEvent()">
+
+<label>Title</label>
+<input type="text" [(ngModel)]="eventData.title" name="title">
+
+<br><br>
+
+<label>Description</label>
+<input type="text" [(ngModel)]="eventData.description" name="description">
+
+<br><br>
+
+<label>Date</label>
+<input type="date" [(ngModel)]="eventData.eventDate" name="eventDate">
+
+<br><br>
+
+<label>Time</label>
+<input type="time" [(ngModel)]="eventData.eventTime" name="eventTime">
+
+<br><br>
+
+<label>Location</label>
+<input type="text" [(ngModel)]="eventData.location" name="location">
+
+<br><br>
+
+<label>Volunteers Required</label>
+<input type="number" [(ngModel)]="eventData.volunteersRequired" name="volunteersRequired">
+
+<br><br>
+
+<button type="submit">Save Event</button>
+
+<button type="button" (click)="cancelEvent()">Cancel</button>
+
+</form>
