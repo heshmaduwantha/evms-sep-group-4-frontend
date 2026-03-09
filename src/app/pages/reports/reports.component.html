@@ -1,0 +1,158 @@
+<div class="reports-container">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <span class="breadcrumb-item">EVMS</span>
+    <i class="pi pi-angle-right"></i>
+    <span class="breadcrumb-item">Attendance</span>
+    <i class="pi pi-angle-right"></i>
+    <span class="breadcrumb-item active">Reports</span>
+  </div>
+
+  <!-- Header -->
+  <div class="header-section">
+    <div>
+      <h1 class="page-title">Attendance Reports</h1>
+      <p class="page-subtitle">Analyze and export attendance data</p>
+    </div>
+    <div class="export-buttons">
+      <button class="btn-export pdf" (click)="exportPDF()">
+        <i class="pi pi-file-pdf"></i>
+        Export PDF
+        <i class="pi pi-download"></i>
+      </button>
+      <button class="btn-export csv" (click)="exportCSV()">
+        <i class="pi pi-file-excel"></i>
+        Export CSV
+        <i class="pi pi-download"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <span class="filter-label">
+      <i class="pi pi-filter"></i>
+      Filters:
+    </span>
+
+    <select class="filter-select" [(ngModel)]="filters.status" (change)="onFilterChange()">
+      <option *ngFor="let opt of statusOptions" [value]="opt.value">
+        {{ opt.label }}
+      </option>
+    </select>
+
+    <select class="filter-select" [(ngModel)]="filters.department" (change)="onFilterChange()">
+      <option *ngFor="let opt of departmentOptions" [value]="opt.value">
+        {{ opt.label }}
+      </option>
+    </select>
+
+    <div class="date-picker">
+      <input type="date" [(ngModel)]="filters.date" (change)="onFilterChange()" class="date-input">
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Attendance Records Table -->
+      <div class="records-section">
+        <div class="records-header">
+          <h2 class="section-title">Attendance Records</h2>
+          <span class="record-count">{{ totalRecords }} records</span>
+        </div>
+
+        <div class="records-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Dept</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let record of attendanceRecords">
+                <td class="name-cell">
+                  <div class="avatar">{{ record.name.charAt(0) }}</div>
+                  <span>{{ record.name }}</span>
+                </td>
+                <td>{{ record.role }}</td>
+                <td>{{ record.dept }}</td>
+                <td>
+                  <span class="status-dot" [ngClass]="getStatusClass(record.status)"></span>
+                  {{ getStatusLabel(record.status) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar-section">
+      <!-- Summary Panel -->
+      <div class="summary-card">
+        <h3 class="card-title">Summary</h3>
+
+        <div class="summary-item">
+          <span class="summary-label">Total</span>
+          <span class="summary-value">{{ summary.total }}</span>
+        </div>
+
+        <div class="summary-item present">
+          <span class="summary-label">Present</span>
+          <span class="summary-value">{{ summary.present }}</span>
+        </div>
+
+        <div class="summary-item late">
+          <span class="summary-label">Late</span>
+          <span class="summary-value">{{ summary.late }}</span>
+        </div>
+
+        <div class="summary-item absent">
+          <span class="summary-label">Absent</span>
+          <span class="summary-value">{{ summary.absent }}</span>
+        </div>
+
+        <div class="attendance-rate-section">
+          <span class="rate-label">Attendance Rate</span>
+          <div class="rate-bar">
+            <div class="rate-fill" [style.width.%]="summary.attendanceRate"></div>
+          </div>
+          <span class="rate-value">{{ summary.attendanceRate }}%</span>
+        </div>
+      </div>
+
+      <!-- Department Chart -->
+      <div class="department-card">
+        <h3 class="card-title">By Department</h3>
+
+        <div class="department-list">
+          <div *ngFor="let dept of departmentData" class="department-item">
+            <div class="dept-header">
+              <span class="dept-name">{{ dept.department }}</span>
+              <span class="dept-count">{{ dept.total }}</span>
+            </div>
+            <div class="dept-bars">
+              <div class="bar-segment present" 
+                   [style.width.%]="getDepartmentPercentages(dept).presentPercent"
+                   [title]="dept.present + ' present'">
+              </div>
+              <div class="bar-segment late" 
+                   [style.width.%]="getDepartmentPercentages(dept).latePercent"
+                   [title]="dept.late + ' late'">
+              </div>
+              <div class="bar-segment absent" 
+                   [style.width.%]="getDepartmentPercentages(dept).absentPercent"
+                   [title]="dept.absent + ' absent'">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
