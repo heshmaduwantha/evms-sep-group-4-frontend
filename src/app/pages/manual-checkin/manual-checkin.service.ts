@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ManualCheckinService {
-  private apiUrl = '/api/manual-checkin';
+  private apiUrl = 'http://localhost:3200/manual-checkin';
 
   constructor(private http: HttpClient) {}
 

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class QrScannerService {
-  private apiUrl = '/api/qr-scanner';
+  private apiUrl = 'http://localhost:3200/qr-scanner';
 
   constructor(private http: HttpClient) {}
 
