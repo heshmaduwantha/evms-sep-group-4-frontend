@@ -1,7 +1,8 @@
 /* Container */
 .manual-checkin-container {
-  padding: 2rem;
+  padding: 1.5rem 2rem;
   max-width: 1400px;
+  margin: 0 auto;
 }
 
 .breadcrumb {
@@ -341,6 +342,15 @@
 
 .error-message-box i {
   font-size: 1.2rem;
+}
+
+.qr-code-text {
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #475569;
 }
 
 .form-actions {

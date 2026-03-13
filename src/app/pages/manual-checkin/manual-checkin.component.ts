@@ -16,27 +16,13 @@ export class ManualCheckinComponent implements OnInit {
   searchQuery = '';
   selectedFilter = 'all';
   
-  volunteers: any[] = [
-    { id: 1, name: 'Sarah Johnson', role: 'Team Lead', department: 'Operations', checkedIn: true, time: '08:45 AM' },
-    { id: 2, name: 'Michael Chen', role: 'Volunteer', department: 'Front Desk', checkedIn: true, time: '08:52 AM' },
-    { id: 3, name: 'Emily Rodriguez', role: 'Volunteer', department: 'Safety', checkedIn: false, time: null },
-    { id: 4, name: 'David Thompson', role: 'Coordinator', department: 'Operations', checkedIn: true, time: '09:02 AM' },
-    { id: 5, name: 'Jessica Williams', role: 'Volunteer', department: 'Guest Services', checkedIn: true, time: '09:15 AM' },
-    { id: 6, name: 'Robert Martinez', role: 'Volunteer', department: 'Technical', checkedIn: false, time: null },
-    { id: 7, name: 'Lisa Anderson', role: 'Team Lead', department: 'Operations', checkedIn: true, time: '08:38 AM' },
-    { id: 8, name: 'James Wilson', role: 'Volunteer', department: 'Front Desk', checkedIn: false, time: null },
-    { id: 9, name: 'Maria Garcia', role: 'Volunteer', department: 'Guest Services', checkedIn: true, time: '09:28 AM' },
-    { id: 10, name: 'Christopher Lee', role: 'Volunteer', department: 'Technical', checkedIn: true, time: '09:05 AM' },
-    { id: 11, name: 'Angela Davis', role: 'Volunteer', department: 'Safety', checkedIn: false, time: null },
-    { id: 12, name: 'Kevin Brown', role: 'Volunteer', department: 'Front Desk', checkedIn: true, time: '08:55 AM' },
-  ];
-
+  volunteers: any[] = [];
   selectedVolunteers: Set<string> = new Set();
   
   summary = {
-    total: 12,
-    checkedIn: 8,
-    absent: 4
+    total: 0,
+    checkedIn: 0,
+    absent: 0
   };
 
   showCreateForm = false;
@@ -47,7 +33,7 @@ export class ManualCheckinComponent implements OnInit {
   isSubmitting = false;
   successMessage = '';
   errorMessage = '';
-  deleteConfirmId: number | null = null;
+  deleteConfirmId: string | null = null;
 
   filterOptions = [
     { label: 'All', value: 'all' },
@@ -81,30 +67,25 @@ export class ManualCheckinComponent implements OnInit {
   }
 
   loadVolunteers() {
-    // Using dummy data - would call service in production
-    this.updateSummary();
+    this.manualCheckinService.getVolunteers(this.eventId, this.searchQuery, this.selectedFilter)
+      .subscribe({
+        next: (res) => {
+          this.volunteers = res.volunteers;
+          this.summary = {
+            total: res.total,
+            checkedIn: res.checkedIn,
+            absent: res.total - res.checkedIn
+          };
+        },
+        error: (err) => {
+          console.error('Error loading volunteers:', err);
+          this.errorMessage = 'Failed to load volunteers';
+        }
+      });
   }
 
   onSearch() {
-    // Filter local data
-    let filtered = this.volunteers;
-    
-    if (this.searchQuery) {
-      filtered = filtered.filter(v => 
-        v.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        v.role.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
-    }
-
-    if (this.selectedFilter !== 'all') {
-      if (this.selectedFilter === 'checked-in') {
-        filtered = filtered.filter(v => v.checkedIn);
-      } else if (this.selectedFilter === 'absent') {
-        filtered = filtered.filter(v => !v.checkedIn);
-      }
-    }
-
-    this.volunteers = filtered;
+    this.loadVolunteers();
   }
 
   onFilterChange() {
@@ -112,17 +93,21 @@ export class ManualCheckinComponent implements OnInit {
   }
 
   onToggleCheckin(volunteer: any) {
-    volunteer.checkedIn = !volunteer.checkedIn;
-    if (volunteer.checkedIn) {
-      volunteer.time = new Date().toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: true 
+    const newStatus = !volunteer.checkedIn;
+    this.manualCheckinService.updateCheckin(this.eventId, volunteer.id, { checkedIn: newStatus })
+      .subscribe({
+        next: (res) => {
+          if (res.success) {
+            volunteer.checkedIn = res.volunteer.checkedIn;
+            volunteer.time = res.volunteer.time;
+            this.loadVolunteers(); // Refresh summary
+          }
+        },
+        error: (err) => {
+          console.error('Error updating checkin:', err);
+          this.errorMessage = 'Failed to update check-in status';
+        }
       });
-    } else {
-      volunteer.time = null;
-    }
-    this.updateSummary();
   }
 
   selectAbsent() {
@@ -143,9 +128,11 @@ export class ManualCheckinComponent implements OnInit {
   }
 
   updateSummary() {
-    this.summary.checkedIn = this.volunteers.filter(v => v.checkedIn).length;
-    this.summary.absent = this.volunteers.filter(v => !v.checkedIn).length;
-    this.summary.total = this.volunteers.length;
+    this.manualCheckinService.getSummary(this.eventId).subscribe({
+      next: (res) => {
+        this.summary = res;
+      }
+    });
   }
 
   toggleCreateForm() {
@@ -167,32 +154,27 @@ export class ManualCheckinComponent implements OnInit {
     this.successMessage = '';
     this.errorMessage = '';
 
-    const formData = {
-      id: this.volunteers.length + 1,
-      name: this.createForm.value.name,
-      role: this.createForm.value.role,
-      department: this.createForm.value.department,
-      checkedIn: this.createForm.value.checkedIn || false,
-      time: this.createForm.value.checkedIn ? new Date().toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: true 
-      }) : null
-    };
-
-    // Simulate async operation
-    setTimeout(() => {
-      this.isSubmitting = false;
-      this.volunteers.push(formData);
-      this.successMessage = `${formData.name} has been added successfully!`;
-      this.createForm.reset();
-      this.updateSummary();
-      
-      setTimeout(() => {
-        this.showCreateForm = false;
-        this.successMessage = '';
-      }, 2000);
-    }, 500);
+    this.manualCheckinService.createAttendance(this.eventId, this.createForm.value)
+      .subscribe({
+        next: (res) => {
+          this.isSubmitting = false;
+          if (res.success) {
+            this.successMessage = `${res.volunteer.name} has been added successfully!`;
+            this.createForm.reset();
+            this.loadVolunteers();
+            
+            setTimeout(() => {
+              this.showCreateForm = false;
+              this.successMessage = '';
+            }, 2000);
+          }
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          console.error('Error creating attendance:', err);
+          this.errorMessage = 'Failed to create attendance';
+        }
+      });
   }
 
   getAvatarColor(name: string): string {
@@ -231,36 +213,36 @@ export class ManualCheckinComponent implements OnInit {
     this.successMessage = '';
 
     const updatedData = {
+      eventId: this.eventId,
       name: this.editForm.value.name,
       role: this.editForm.value.role,
       department: this.editForm.value.department,
-      checkedIn: this.editForm.value.checkedIn || false,
-      time: this.editForm.value.checkedIn ? new Date().toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: true 
-      }) : null
+      checkedIn: this.editForm.value.checkedIn || false
     };
 
-    setTimeout(() => {
-      this.isSubmitting = false;
-      const index = this.volunteers.findIndex(v => v.id === this.editingVolunteer.id);
-      if (index !== -1) {
-        this.volunteers[index] = { ...this.volunteers[index], ...updatedData };
-      }
-      this.successMessage = `${updatedData.name} has been updated successfully!`;
-      this.editForm.reset();
-      this.updateSummary();
+    this.manualCheckinService.updateVolunteer(this.editingVolunteer.id, updatedData)
+      .subscribe({
+        next: (res) => {
+          this.isSubmitting = false;
+          this.successMessage = `${updatedData.name} has been updated successfully!`;
+          this.loadVolunteers();
+          this.updateSummary();
 
-      setTimeout(() => {
-        this.showEditForm = false;
-        this.editingVolunteer = null;
-        this.successMessage = '';
-      }, 2000);
-    }, 500);
+          setTimeout(() => {
+            this.showEditForm = false;
+            this.editingVolunteer = null;
+            this.successMessage = '';
+          }, 2000);
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          console.error('Error updating volunteer:', err);
+          this.errorMessage = 'Failed to update volunteer';
+        }
+      });
   }
 
-  openDeleteConfirm(volunteerId: number) {
+  openDeleteConfirm(volunteerId: string) {
     this.deleteConfirmId = volunteerId;
   }
 
@@ -268,14 +250,23 @@ export class ManualCheckinComponent implements OnInit {
     this.deleteConfirmId = null;
   }
 
-  confirmDelete(volunteerId: number) {
-    this.volunteers = this.volunteers.filter(v => v.id !== volunteerId);
-    this.updateSummary();
-    this.successMessage = 'Volunteer record deleted successfully!';
-    this.deleteConfirmId = null;
+  confirmDelete(volunteerId: string) {
+    this.manualCheckinService.deleteVolunteer(volunteerId)
+      .subscribe({
+        next: () => {
+          this.volunteers = this.volunteers.filter(v => v.id !== volunteerId);
+          this.updateSummary();
+          this.successMessage = 'Volunteer record deleted successfully!';
+          this.deleteConfirmId = null;
 
-    setTimeout(() => {
-      this.successMessage = '';
-    }, 2000);
+          setTimeout(() => {
+            this.successMessage = '';
+          }, 2000);
+        },
+        error: (err) => {
+          console.error('Error deleting volunteer:', err);
+          this.errorMessage = 'Failed to delete volunteer';
+        }
+      });
   }
 }

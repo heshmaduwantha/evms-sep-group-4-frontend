@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { UserRole } from '../../auth/auth.models';
+import { AttendanceService } from '../../pages/attendance/attendance.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -162,12 +163,23 @@ export class SidebarComponent implements OnInit {
 
   filteredItems: any[] = [];
 
-  constructor(public authService: AuthService) { }
+  constructor(
+    public authService: AuthService,
+    private attendanceService: AttendanceService
+  ) { }
 
   ngOnInit() {
     this.authService.currentUser.subscribe(user => {
       if (user) {
         this.filteredItems = this.navItems.filter(item => item.roles.includes(user.role));
+        
+        // Update attendance badge if it exists in filtered items
+        const attendanceItem = this.filteredItems.find(item => item.label === 'Attendance');
+        if (attendanceItem) {
+          this.attendanceService.getVolunteerCount().subscribe((count: number) => {
+            attendanceItem.badge = count;
+          });
+        }
       }
     });
   }

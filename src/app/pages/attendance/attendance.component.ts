@@ -14,33 +14,16 @@ export class AttendanceComponent implements OnInit {
   eventId = 'event-1'; // This would come from route params in production
   
   attendanceData: any = {
-    totalVolunteers: 45,
-    checkedIn: 38,
-    lateArrivals: 5,
-    absent: 2,
-    attendanceRate: 84
+    totalVolunteers: 0,
+    checkedIn: 0,
+    lateArrivals: 0,
+    absent: 0,
+    attendanceRate: 0
   };
 
-  volunteerRoster: any[] = [
-    { id: 1, name: 'Sarah Johnson', role: 'Team Lead', status: 'present' },
-    { id: 2, name: 'Michael Chen', role: 'Volunteer', status: 'present' },
-    { id: 3, name: 'Emily Rodriguez', role: 'Volunteer', status: 'late' },
-    { id: 4, name: 'David Thompson', role: 'Coordinator', status: 'present' },
-    { id: 5, name: 'Jessica Williams', role: 'Volunteer', status: 'present' },
-    { id: 6, name: 'Robert Martinez', role: 'Volunteer', status: 'absent' },
-    { id: 7, name: 'Lisa Anderson', role: 'Team Lead', status: 'present' },
-    { id: 8, name: 'James Wilson', role: 'Volunteer', status: 'late' },
-    { id: 9, name: 'Maria Garcia', role: 'Volunteer', status: 'present' },
-    { id: 10, name: 'Christopher Lee', role: 'Volunteer', status: 'present' },
-  ];
+  volunteerRoster: any[] = [];
 
-  recentCheckIns: any[] = [
-    { id: 1, name: 'Sarah Johnson', time: '08:45 AM', status: 'present', method: 'QR Scanner' },
-    { id: 2, name: 'Michael Chen', time: '08:52 AM', status: 'present', method: 'Manual' },
-    { id: 3, name: 'David Thompson', time: '09:02 AM', status: 'present', method: 'QR Scanner' },
-    { id: 4, name: 'Jessica Williams', time: '09:15 AM', status: 'present', method: 'Manual' },
-    { id: 5, name: 'Maria Garcia', time: '09:28 AM', status: 'present', method: 'QR Scanner' },
-  ];
+  recentCheckIns: any[] = [];
 
   showQRScanner = false;
   editingCheckIn: any = null;
@@ -56,10 +39,20 @@ export class AttendanceComponent implements OnInit {
   }
 
   loadAttendanceData() {
-    // Using dummy data - would call service in production
-    // this.attendanceService.getAttendanceOverview(this.eventId).subscribe(data => {
-    //   this.attendanceData = data;
-    // });
+    this.attendanceService.getAttendanceOverview(this.eventId).subscribe({
+      next: (data) => this.attendanceData = data,
+      error: (err) => console.error('Error loading overview:', err)
+    });
+
+    this.attendanceService.getVolunteerRoster(this.eventId).subscribe({
+      next: (data) => this.volunteerRoster = data,
+      error: (err) => console.error('Error loading roster:', err)
+    });
+
+    this.attendanceService.getRecentCheckIns(this.eventId).subscribe({
+      next: (data) => this.recentCheckIns = data,
+      error: (err) => console.error('Error loading recent checkins:', err)
+    });
   }
 
   refreshData() {

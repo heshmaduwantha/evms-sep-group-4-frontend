@@ -22,19 +22,27 @@ export class ManualCheckinService {
     return this.http.get(`${this.apiUrl}/volunteers/${eventId}`, { params });
   }
 
-  updateCheckin(volunteerId: string, data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/checkin/${volunteerId}`, data);
+  updateCheckin(eventId: string, volunteerId: string, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/checkin/${eventId}/${volunteerId}`, data);
   }
 
-  createAttendance(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/create`, data);
+  createAttendance(eventId: string, data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/create/${eventId}`, data);
   }
 
   getSummary(eventId: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/summary/${eventId}`);
   }
 
-  markAbsent(volunteerId: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/mark-absent/${volunteerId}`, {});
+  markAbsent(eventId: string, volunteerId: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/mark-absent/${eventId}/${volunteerId}`, {});
+  }
+
+  updateVolunteer(volunteerId: string, data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/volunteer/${volunteerId}`, data);
+  }
+
+  deleteVolunteer(volunteerId: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/volunteer/${volunteerId}`);
   }
 }

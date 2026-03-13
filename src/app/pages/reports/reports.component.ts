@@ -19,35 +19,17 @@ export class ReportsComponent implements OnInit {
     date: new Date().toISOString().split('T')[0]
   };
 
-  attendanceRecords: any[] = [
-    { id: 1, name: 'Sarah Johnson', role: 'Team Lead', dept: 'Operations', status: 'present' },
-    { id: 2, name: 'Michael Chen', role: 'Volunteer', dept: 'Front Desk', status: 'present' },
-    { id: 3, name: 'Emily Rodriguez', role: 'Volunteer', dept: 'Safety', status: 'late' },
-    { id: 4, name: 'David Thompson', role: 'Coordinator', dept: 'Operations', status: 'present' },
-    { id: 5, name: 'Jessica Williams', role: 'Volunteer', dept: 'Guest Services', status: 'present' },
-    { id: 6, name: 'Robert Martinez', role: 'Volunteer', dept: 'Technical', status: 'absent' },
-    { id: 7, name: 'Lisa Anderson', role: 'Team Lead', dept: 'Operations', status: 'present' },
-    { id: 8, name: 'James Wilson', role: 'Volunteer', dept: 'Front Desk', status: 'late' },
-    { id: 9, name: 'Maria Garcia', role: 'Volunteer', dept: 'Guest Services', status: 'present' },
-    { id: 10, name: 'Christopher Lee', role: 'Volunteer', dept: 'Technical', status: 'present' },
-  ];
-
-  totalRecords = 10;
+  attendanceRecords: any[] = [];
+  totalRecords = 0;
   summary: any = {
-    total: 45,
-    present: 38,
-    late: 5,
-    absent: 2,
-    attendanceRate: 84
+    total: 0,
+    present: 0,
+    late: 0,
+    absent: 0,
+    attendanceRate: 0
   };
   
-  departmentData: any[] = [
-    { department: 'Operations', total: 12, present: 11, late: 1, absent: 0 },
-    { department: 'Front Desk', total: 10, present: 8, late: 1, absent: 1 },
-    { department: 'Safety', total: 8, present: 7, late: 0, absent: 1 },
-    { department: 'Technical', total: 10, present: 9, late: 1, absent: 0 },
-    { department: 'Guest Services', total: 5, present: 3, late: 2, absent: 0 },
-  ];
+  departmentData: any[] = [];
 
   statusOptions = [
     { label: 'All Statuses', value: 'all' },
@@ -72,8 +54,24 @@ export class ReportsComponent implements OnInit {
   }
 
   loadReports() {
-    // Using dummy data - would call service in production
-    // this.reportsService.getAttendanceReports(...).subscribe(...);
+    this.reportsService.getAttendanceReports(this.eventId, this.filters.status, this.filters.department, this.filters.date)
+      .subscribe({
+        next: (res) => {
+          this.attendanceRecords = res.records;
+          this.totalRecords = res.totalRecords;
+        },
+        error: (err) => console.error('Error loading attendance records:', err)
+      });
+
+    this.reportsService.getSummary(this.eventId).subscribe({
+      next: (res) => this.summary = res,
+      error: (err) => console.error('Error loading summary:', err)
+    });
+
+    this.reportsService.getByDepartment(this.eventId).subscribe({
+      next: (res) => this.departmentData = res,
+      error: (err) => console.error('Error loading department data:', err)
+    });
   }
 
   onFilterChange() {
@@ -82,12 +80,90 @@ export class ReportsComponent implements OnInit {
 
   exportPDF() {
     console.log('PDF export triggered');
-    // Would trigger download in production
+    this.reportsService.exportPDF(this.eventId).subscribe({
+      next: (res) => {
+        if (res.success) {
+          const { jspdf } = window as any;
+          if (!jspdf) {
+            console.error('jsPDF not loaded');
+            return;
+          }
+
+          const doc = new jspdf.jsPDF();
+          const reportData = res.data;
+          
+          // Header
+          doc.setFontSize(20);
+          doc.setTextColor(40);
+          doc.text(reportData.reportName, 14, 22);
+          
+          doc.setFontSize(11);
+          doc.setTextColor(100);
+          doc.text(`Generated at: ${new Date(reportData.generatedAt).toLocaleString()}`, 14, 30);
+          
+          // Summary Section
+          doc.setFontSize(14);
+          doc.setTextColor(40);
+          doc.text('Attendance Summary', 14, 45);
+          
+          const summary = reportData.summary;
+          const summaryRows = [
+            ['Total Volunteers', summary.total.toString()],
+            ['Present', summary.present.toString()],
+            ['Late Arrivals', summary.late.toString()],
+            ['Absent', summary.absent.toString()],
+            ['Attendance Rate', `${summary.attendanceRate}%`]
+          ];
+          
+          (doc as any).autoTable({
+            startY: 50,
+            head: [['Metric', 'Value']],
+            body: summaryRows,
+            theme: 'grid',
+            headStyles: { fillColor: [0, 209, 178] }
+          });
+          
+          // Records Table
+          doc.setFontSize(14);
+          doc.text('Detailed Attendance Record', 14, (doc as any).lastAutoTable.finalY + 15);
+          
+          const recordRows = reportData.records.map((r: any) => [
+            r.name, r.role, r.dept, r.status, r.time || '-'
+          ]);
+          
+          (doc as any).autoTable({
+            startY: (doc as any).lastAutoTable.finalY + 20,
+            head: [['Name', 'Role', 'Department', 'Status', 'Check-in Time']],
+            body: recordRows,
+            theme: 'striped',
+            headStyles: { fillColor: [52, 73, 94] }
+          });
+          
+          doc.save(`attendance-report-${this.eventId}.pdf`);
+        }
+      },
+      error: (err) => console.error('Error exporting PDF:', err)
+    });
   }
 
   exportCSV() {
     console.log('CSV export triggered');
-    // Would trigger download in production
+    this.reportsService.exportCSV(this.eventId).subscribe({
+      next: (res) => {
+        if (res.success && res.content) {
+          const blob = new Blob([res.content], { type: 'text/csv' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = res.fileName || `attendance-report-${this.eventId}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        }
+      },
+      error: (err) => console.error('Error exporting CSV:', err)
+    });
   }
 
   getStatusClass(status: string): string {

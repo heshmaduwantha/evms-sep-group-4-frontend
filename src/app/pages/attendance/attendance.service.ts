@@ -22,7 +22,11 @@ export class AttendanceService {
     return this.http.get<any[]>(`${this.apiUrl}/recent-checkins/${eventId}`);
   }
 
-  checkIn(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/check-in`, data);
+  checkIn(eventId: string, data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/check-in/${eventId}`, data);
+  }
+
+  getVolunteerCount(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/volunteer-count`);
   }
 }
