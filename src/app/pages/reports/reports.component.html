@@ -70,6 +70,7 @@
                 <th>Role</th>
                 <th>Dept</th>
                 <th>Status</th>
+                <th>Method</th>
               </tr>
             </thead>
             <tbody>
@@ -83,6 +84,11 @@
                 <td>
                   <span class="status-dot" [ngClass]="getStatusClass(record.status)"></span>
                   {{ getStatusLabel(record.status) }}
+                </td>
+                <td class="method-cell">
+                  <span class="method-badge" [ngClass]="record.method">
+                    {{ record.method.charAt(0).toUpperCase() }}
+                  </span>
                 </td>
               </tr>
             </tbody>
@@ -115,6 +121,18 @@
         <div class="summary-item absent">
           <span class="summary-label">Absent</span>
           <span class="summary-value">{{ summary.absent }}</span>
+        </div>
+
+        <div class="summary-divider"></div>
+
+        <div class="summary-item qr">
+          <span class="summary-label">QR Scans</span>
+          <span class="summary-value">{{ summary.qrCheckedIn }}</span>
+        </div>
+
+        <div class="summary-item manual">
+          <span class="summary-label">Manual</span>
+          <span class="summary-value">{{ summary.manualCheckedIn }}</span>
         </div>
 
         <div class="attendance-rate-section">

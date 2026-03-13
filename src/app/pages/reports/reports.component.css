@@ -416,6 +416,50 @@
 }
 
 /* Responsive */
+/* Method Badges */
+.method-cell {
+  text-align: center;
+}
+
+.method-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.method-badge.qr {
+  background: rgba(0, 209, 178, 0.1);
+  color: var(--primary-color);
+  border: 1px solid rgba(0, 209, 178, 0.2);
+}
+
+.method-badge.manual {
+  background: rgba(52, 152, 219, 0.1);
+  color: #3498db;
+  border: 1px solid rgba(52, 152, 219, 0.2);
+}
+
+.summary-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 1rem 0;
+  opacity: 0.5;
+}
+
+.summary-item.qr .summary-value {
+  color: var(--primary-color);
+}
+
+.summary-item.manual .summary-value {
+  color: #3498db;
+}
+
 @media (max-width: 1024px) {
   .content-wrapper {
     grid-template-columns: 1fr;

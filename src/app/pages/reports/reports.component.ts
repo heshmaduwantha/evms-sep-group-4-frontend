@@ -26,7 +26,9 @@ export class ReportsComponent implements OnInit {
     present: 0,
     late: 0,
     absent: 0,
-    attendanceRate: 0
+    attendanceRate: 0,
+    qrCheckedIn: 0,
+    manualCheckedIn: 0
   };
   
   departmentData: any[] = [];
@@ -112,6 +114,8 @@ export class ReportsComponent implements OnInit {
             ['Present', summary.present.toString()],
             ['Late Arrivals', summary.late.toString()],
             ['Absent', summary.absent.toString()],
+            ['QR Check-ins', summary.qrCheckedIn.toString()],
+            ['Manual Check-ins', summary.manualCheckedIn.toString()],
             ['Attendance Rate', `${summary.attendanceRate}%`]
           ];
           
@@ -128,12 +132,12 @@ export class ReportsComponent implements OnInit {
           doc.text('Detailed Attendance Record', 14, (doc as any).lastAutoTable.finalY + 15);
           
           const recordRows = reportData.records.map((r: any) => [
-            r.name, r.role, r.dept, r.status, r.time || '-'
+            r.name, r.role, r.dept, r.status, r.time || '-', r.method.toUpperCase()
           ]);
           
           (doc as any).autoTable({
             startY: (doc as any).lastAutoTable.finalY + 20,
-            head: [['Name', 'Role', 'Department', 'Status', 'Check-in Time']],
+            head: [['Name', 'Role', 'Department', 'Status', 'Time', 'Method']],
             body: recordRows,
             theme: 'striped',
             headStyles: { fillColor: [52, 73, 94] }

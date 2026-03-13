@@ -30,12 +30,14 @@
         <div class="frame-corner bottom-left"></div>
         <div class="frame-corner bottom-right"></div>
 
-        <!-- Camera Stream / Placeholder -->
+        <canvas #canvasElement style="display: none;"></canvas>
+
+        <!-- Camera Content -->
         <div class="camera-content">
           <!-- Live Camera Feed -->
           <video 
             #videoElement 
-            class="camera-video"
+            class="scanner-video"
             [style.display]="isCameraActive ? 'block' : 'none'"
             autoplay
             playsinline
@@ -46,7 +48,6 @@
           <div class="qr-placeholder" *ngIf="!isCameraActive">
             <div class="qr-icon">
               <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <!-- QR Symbol -->
                 <rect x="10" y="10" width="20" height="20" fill="currentColor" opacity="0.8"/>
                 <rect x="30" y="10" width="8" height="8" fill="currentColor" opacity="0.6"/>
                 <rect x="42" y="10" width="8" height="8" fill="currentColor" opacity="0.6"/>
@@ -88,10 +89,6 @@
           [disabled]="!isCameraActive">
           <i class="pi pi-times"></i>
           Stop Camera
-        </button>
-        <button class="btn-control simulate" (click)="simulateScan()">
-          <i class="pi pi-play"></i>
-          Simulate Scan
         </button>
       </div>
     </div>

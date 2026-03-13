@@ -12,6 +12,7 @@ import { QrScannerService } from './qr-scanner.service';
 })
 export class QrScannerComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
+  @ViewChild('canvasElement') canvasElement!: ElementRef<HTMLCanvasElement>;
   
   eventId = 'event-1';
   
@@ -21,14 +22,12 @@ export class QrScannerComponent implements OnInit, AfterViewInit, OnDestroy {
   lastScanResult: any = null;
   cameraError = '';
   private stream: MediaStream | null = null;
+  private isScanning = false;
+  private lastScannedCode: string | null = null;
+  private lastScanTime = 0;
+  private scanThrottleTime = 3000; // 3 seconds between same code scans
   
-  recentScans: any[] = [
-    { id: 1, volunteerName: 'Sarah Johnson', qrCode: 'QR-2024-001', timestamp: '08:45 AM', status: 'success' },
-    { id: 2, volunteerName: 'Michael Chen', qrCode: 'QR-2024-002', timestamp: '08:52 AM', status: 'success' },
-    { id: 3, volunteerName: 'David Thompson', qrCode: 'QR-2024-003', timestamp: '09:02 AM', status: 'success' },
-    { id: 4, volunteerName: 'Jessica Williams', qrCode: 'QR-2024-004', timestamp: '09:15 AM', status: 'success' },
-    { id: 5, volunteerName: 'Maria Garcia', qrCode: 'QR-2024-005', timestamp: '09:28 AM', status: 'success' },
-  ];
+  recentScans: any[] = [];
 
   // Simulate QR codes for testing
   mockQRCodes = [
@@ -43,6 +42,7 @@ export class QrScannerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.loadSessionStats();
+    this.loadRecentScans();
   }
 
   ngAfterViewInit() {
@@ -54,47 +54,22 @@ export class QrScannerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadSessionStats() {
-    // Using dummy data - would call service in production
-    // this.qrScannerService.getSessionStats(this.eventId).subscribe(data => {
-    //   this.scanCount = data.scanned;
-    //   this.successRate = data.successRate;
-    // });
+    this.qrScannerService.getSessionStats(this.eventId).subscribe(data => {
+      this.scanCount = data.scanned;
+      this.successRate = data.successRate;
+    });
   }
 
   loadRecentScans() {
-    // Using local dummy data
-    // Would call: this.qrScannerService.getRecentScans(this.eventId).subscribe(...);
-  }
-
-  simulateScan() {
-    // Simulate scanning a random QR code
-    const randomQR = this.mockQRCodes[Math.floor(Math.random() * this.mockQRCodes.length)];
-    this.processScan(randomQR);
-  }
-
-  processScan(qrData: any) {
-    this.lastScanResult = { 
-      success: true, 
-      message: `✓ ${qrData.volunteerName} checked in successfully!`,
-      timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
-    };
-    
-    // Add to recent scans
-    this.recentScans.unshift({
-      id: this.recentScans.length + 1,
-      volunteerName: qrData.volunteerName,
-      qrCode: qrData.qrCode,
-      timestamp: this.lastScanResult.timestamp,
-      status: 'success'
+    this.qrScannerService.getRecentScans(this.eventId).subscribe(data => {
+      this.recentScans = data.map((scan, index) => ({
+        id: index + 1,
+        volunteerName: scan.name,
+        qrCode: scan.qrCode,
+        timestamp: scan.time,
+        status: 'success'
+      }));
     });
-
-    // Keep only last 5 scans
-    if (this.recentScans.length > 5) {
-      this.recentScans.pop();
-    }
-
-    this.scanCount++;
-    this.showNotification(this.lastScanResult.message, 'success');
   }
 
   private showNotification(message: string, type: string) {
@@ -105,10 +80,9 @@ export class QrScannerComponent implements OnInit, AfterViewInit, OnDestroy {
   async startCamera() {
     this.cameraError = '';
     try {
-      // Request camera permissions
       const constraints = {
         video: {
-          facingMode: 'environment', // Use rear camera on mobile
+          facingMode: 'environment',
           width: { ideal: 1280 },
           height: { ideal: 720 }
         }
@@ -116,34 +90,83 @@ export class QrScannerComponent implements OnInit, AfterViewInit, OnDestroy {
       
       this.stream = await navigator.mediaDevices.getUserMedia(constraints);
       
-      // Wait for view to be initialized
-      setTimeout(() => {
-        if (this.videoElement && this.stream) {
-          this.videoElement.nativeElement.srcObject = this.stream;
-          this.videoElement.nativeElement.play().catch(err => {
-            console.error('Error playing video:', err);
-            this.cameraError = 'Unable to play video stream';
-          });
-          this.isCameraActive = true;
-        }
-      }, 100);
-      
+      if (this.videoElement && this.stream) {
+        this.videoElement.nativeElement.srcObject = this.stream;
+        this.videoElement.nativeElement.setAttribute('playsinline', 'true'); // required to tell iOS safari we don't want fullscreen
+        this.videoElement.nativeElement.play();
+        this.isCameraActive = true;
+        this.isScanning = true;
+        this.requestScanFrame();
+      }
     } catch (error: any) {
       this.isCameraActive = false;
-      if (error.name === 'NotAllowedError') {
-        this.cameraError = 'Camera permission denied. Please enable camera access in your browser settings.';
-      } else if (error.name === 'NotFoundError') {
-        this.cameraError = 'No camera device found on this device.';
-      } else if (error.name === 'NotReadableError') {
-        this.cameraError = 'Camera is already in use by another application.';
-      } else {
-        this.cameraError = `Camera error: ${error.message}`;
-      }
+      this.cameraError = `Camera error: ${error.message}. Please ensure camera permissions are granted.`;
       console.error('Camera error:', error);
     }
   }
 
+  private requestScanFrame() {
+    if (!this.isCameraActive || !this.isScanning) return;
+    requestAnimationFrame(() => this.scanFrame());
+  }
+
+  private scanFrame() {
+    if (!this.isCameraActive || !this.isScanning) return;
+
+    const video = this.videoElement.nativeElement;
+    const canvas = this.canvasElement.nativeElement;
+    const context = canvas.getContext('2d');
+
+    if (video.readyState === video.HAVE_ENOUGH_DATA && context) {
+      canvas.height = video.videoHeight;
+      canvas.width = video.videoWidth;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      
+      const jsQR = (window as any).jsQR;
+      if (jsQR) {
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: 'dontInvert',
+        });
+
+        if (code && code.data) {
+          const now = Date.now();
+          // Throttle scans of the same code
+          if (code.data !== this.lastScannedCode || (now - this.lastScanTime) > this.scanThrottleTime) {
+            console.log('Valid QR code found:', code.data);
+            this.lastScannedCode = code.data;
+            this.lastScanTime = now;
+            this.handleBarcodeScan(code.data);
+          }
+        }
+      } else {
+        console.error('jsQR library not found on window');
+      }
+    }
+    this.requestScanFrame();
+  }
+
+  private handleBarcodeScan(qrCode: string) {
+    this.qrScannerService.processScan(qrCode, this.eventId).subscribe({
+      next: (res) => {
+        this.lastScanResult = res;
+        if (res.success) {
+          this.showNotification(res.message, 'success');
+          this.loadSessionStats();
+          this.loadRecentScans();
+        } else {
+          this.showNotification(res.message, 'error');
+        }
+      },
+      error: (err) => {
+        console.error('Scan processing error:', err);
+        this.showNotification('Failed to process scan', 'error');
+      }
+    });
+  }
+
   stopCamera() {
+    this.isScanning = false;
     if (this.stream) {
       this.stream.getTracks().forEach(track => track.stop());
       this.stream = null;
