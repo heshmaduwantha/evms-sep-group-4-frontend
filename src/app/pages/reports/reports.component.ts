@@ -65,12 +65,12 @@ export class ReportsComponent implements OnInit {
         error: (err) => console.error('Error loading attendance records:', err)
       });
 
-    this.reportsService.getSummary(this.eventId).subscribe({
+    this.reportsService.getSummary(this.eventId, this.filters.date).subscribe({
       next: (res) => this.summary = res,
       error: (err) => console.error('Error loading summary:', err)
     });
 
-    this.reportsService.getByDepartment(this.eventId).subscribe({
+    this.reportsService.getByDepartment(this.eventId, this.filters.date).subscribe({
       next: (res) => this.departmentData = res,
       error: (err) => console.error('Error loading department data:', err)
     });
@@ -94,7 +94,6 @@ export class ReportsComponent implements OnInit {
           const doc = new jspdf.jsPDF();
           const reportData = res.data;
           
-          // Header
           doc.setFontSize(20);
           doc.setTextColor(40);
           doc.text(reportData.reportName, 14, 22);
@@ -103,7 +102,6 @@ export class ReportsComponent implements OnInit {
           doc.setTextColor(100);
           doc.text(`Generated at: ${new Date(reportData.generatedAt).toLocaleString()}`, 14, 30);
           
-          // Summary Section
           doc.setFontSize(14);
           doc.setTextColor(40);
           doc.text('Attendance Summary', 14, 45);
@@ -127,7 +125,6 @@ export class ReportsComponent implements OnInit {
             headStyles: { fillColor: [0, 209, 178] }
           });
           
-          // Records Table
           doc.setFontSize(14);
           doc.text('Detailed Attendance Record', 14, (doc as any).lastAutoTable.finalY + 15);
           

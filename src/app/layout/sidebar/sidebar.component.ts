@@ -153,7 +153,7 @@ export class SidebarComponent implements OnInit {
       badge: 44,
       children: [
         { label: 'Overview', icon: 'pi pi-eye', link: '/attendance', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
-        { label: 'QR Scanner', icon: 'pi pi-qrcode', link: '/qr-scanner', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
+        { label: 'Kiosk Check-in', icon: 'pi pi-key', link: '/pin-checkin', roles: [UserRole.VOLUNTEER, UserRole.ORGANIZER, UserRole.ADMIN] },
         { label: 'Manual Check-in', icon: 'pi pi-user-plus', link: '/manual-checkin', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
         { label: 'Reports', icon: 'pi pi-chart-bar', link: '/reports', roles: [UserRole.ORGANIZER, UserRole.ADMIN] }
       ]

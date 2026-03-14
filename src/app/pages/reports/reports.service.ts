@@ -24,12 +24,12 @@ export class ReportsService {
     return this.http.get(`${this.apiUrl}/attendance`, { params });
   }
 
-  getSummary(eventId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/summary`, { params: { eventId } });
+  getSummary(eventId: string, date?: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/summary`, { params: { eventId, date: date || '' } });
   }
 
-  getByDepartment(eventId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/by-department`, { params: { eventId } });
+  getByDepartment(eventId: string, date?: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/by-department`, { params: { eventId, date: date || '' } });
   }
 
   exportPDF(eventId: string): Observable<any> {

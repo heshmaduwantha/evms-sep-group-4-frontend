@@ -146,7 +146,7 @@
           <th>Name</th>
           <th>Role</th>
           <th>Department</th>
-          <th>QR Code</th>
+          <th>PIN</th>
           <th>Check-in Time</th>
           <th>Status</th>
           <th class="actions-col">Actions</th>
@@ -170,7 +170,7 @@
           </td>
           <td>{{ volunteer.role }}</td>
           <td>{{ volunteer.department }}</td>
-          <td><code class="qr-code-text">{{ volunteer.qrCode }}</code></td>
+          <td><code class="qr-code-text">{{ volunteer.pin }}</code></td>
           <td class="time-cell">
             {{ volunteer.time || '-' }}
           </td>
