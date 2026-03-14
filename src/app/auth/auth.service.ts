@@ -10,7 +10,7 @@ import { User, AuthResponse } from './auth.models';
 export class AuthService {
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
-  private apiUrl = 'http://localhost:3100/auth';
+  private apiUrl = 'http://localhost:3200/auth';
 
   constructor(private http: HttpClient) {
     const savedUser = localStorage.getItem('currentUser');
@@ -45,7 +45,7 @@ export class AuthService {
   }
 
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>('http://localhost:3100/users');
+    return this.http.get<User[]>('http://localhost:3200/users');
   }
 
   getToken(): string | null {

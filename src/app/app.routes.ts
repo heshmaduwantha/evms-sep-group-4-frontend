@@ -2,6 +2,9 @@ import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { HomeComponent } from './pages/home/home.component';
 import { SettingsComponent } from './pages/settings/settings.component';
+import { AttendanceComponent } from './pages/attendance/attendance.component';
+import { ReportsComponent } from './pages/reports/reports.component';
+import { ManualCheckinComponent } from './pages/manual-checkin/manual-checkin.component';
 import { AuthGuard } from './auth/auth.guard';
 import { EventListComponent } from './pages/events/event-list.component';
 import { EventManagementComponent } from './pages/events/event-management.component';
@@ -21,6 +24,9 @@ export const routes: Routes = [
             { path: 'events/create', component: EventFormComponent },
             { path: 'events/edit/:id', component: EventFormComponent },
             { path: 'events/:id', component: EventDetailsComponent },
+            { path: 'attendance', component: AttendanceComponent },
+            { path: 'reports', component: ReportsComponent },
+            { path: 'manual-checkin', component: ManualCheckinComponent },
             { path: '', redirectTo: 'home', pathMatch: 'full' }
         ]
     },

@@ -9,7 +9,7 @@ export class JwtInterceptor implements HttpInterceptor {
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         const token = this.authService.getToken();
-        const isApiUrl = request.url.startsWith('http://localhost:3100');
+        const isApiUrl = request.url.startsWith('http://localhost:3200');
         if (token && isApiUrl) {
             request = request.clone({
                 setHeaders: {

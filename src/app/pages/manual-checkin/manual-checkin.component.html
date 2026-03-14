@@ -1,0 +1,305 @@
+<div class="manual-checkin-container">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <span class="breadcrumb-item">EVMS</span>
+    <i class="pi pi-angle-right"></i>
+    <span class="breadcrumb-item">Attendance</span>
+    <i class="pi pi-angle-right"></i>
+    <span class="breadcrumb-item active">Manual Check-in</span>
+  </div>
+
+  <!-- Header -->
+  <div class="header-section">
+    <div>
+      <h1 class="page-title">Manual Check-in</h1>
+      <p class="page-subtitle">Search and manually mark volunteer attendance</p>
+    </div>
+    <div class="header-actions">
+      <div class="summary-badge">
+        <span class="checked-in">{{ summary.checkedIn }} / {{ summary.total }} checked in</span>
+      </div>
+      <button class="btn-add-attendance" (click)="toggleCreateForm()">
+        <i class="pi pi-plus"></i>
+        Add Attendance
+      </button>
+    </div>
+  </div>
+
+  <!-- Create Form Section -->
+  <div class="create-form-section" *ngIf="showCreateForm">
+    <div class="form-card">
+      <div class="form-header">
+        <h3>Add New Volunteer Record</h3>
+        <button class="btn-close" (click)="toggleCreateForm()">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="createForm" (ngSubmit)="onSubmitForm()" class="attendance-form">
+        <div class="form-group">
+          <label for="name">Volunteer Name *</label>
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            placeholder="Enter full name"
+            class="form-input"
+          >
+          <span class="error-message" *ngIf="createForm.get('name')?.invalid && createForm.get('name')?.touched">
+            Name is required (minimum 2 characters)
+          </span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="role">Role *</label>
+            <select id="role" formControlName="role" class="form-select">
+              <option value="">Select Role</option>
+              <option *ngFor="let role of roleOptions" [value]="role">
+                {{ role }}
+              </option>
+            </select>
+            <span class="error-message" *ngIf="createForm.get('role')?.invalid && createForm.get('role')?.touched">
+              Role is required
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="department">Department *</label>
+            <select id="department" formControlName="department" class="form-select">
+              <option value="">Select Department</option>
+              <option *ngFor="let dept of departmentOptions" [value]="dept">
+                {{ dept }}
+              </option>
+            </select>
+            <span class="error-message" *ngIf="createForm.get('department')?.invalid && createForm.get('department')?.touched">
+              Department is required
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input
+              type="checkbox"
+              formControlName="checkedIn"
+              class="form-checkbox"
+            >
+            <span>Mark as checked in</span>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="toggleCreateForm()">
+            Cancel
+          </button>
+          <button type="submit" class="btn-submit" [disabled]="isSubmitting || createForm.invalid">
+            <span *ngIf="!isSubmitting">Add Volunteer</span>
+            <span *ngIf="isSubmitting">Adding...</span>
+          </button>
+        </div>
+
+        <div class="message-section">
+          <div class="success-message" *ngIf="successMessage">
+            <i class="pi pi-check-circle"></i>
+            {{ successMessage }}
+          </div>
+          <div class="error-message-box" *ngIf="errorMessage">
+            <i class="pi pi-exclamation-circle"></i>
+            {{ errorMessage }}
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="search-section">
+    <input 
+      type="text" 
+      class="search-input" 
+      placeholder="Search by name or role..."
+      [(ngModel)]="searchQuery"
+      (keyup)="onSearch()"
+    >
+
+    <select class="filter-select" [(ngModel)]="selectedFilter" (change)="onFilterChange()">
+      <option *ngFor="let opt of filterOptions" [value]="opt.value">
+        {{ opt.label }}
+      </option>
+    </select>
+
+    <button class="btn-select-absent" (click)="selectAbsent()">
+      <i class="pi pi-filter"></i>
+      Select Absent
+    </button>
+  </div>
+
+  <!-- Volunteers Table -->
+  <div class="table-section">
+    <table class="volunteers-table">
+      <thead>
+        <tr>
+          <th class="checkbox-col">
+            <input type="checkbox" class="row-checkbox">
+          </th>
+          <th>Name</th>
+          <th>Role</th>
+           <th>Department</th>
+           <th>Check-in Time</th>
+          <th>Status</th>
+          <th class="actions-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let volunteer of volunteers" [class.checked-in]="volunteer.checkedIn">
+          <td class="checkbox-col">
+            <input 
+              type="checkbox" 
+              class="row-checkbox"
+              [checked]="isSelected(volunteer.id)"
+              (change)="toggleSelection(volunteer.id)"
+            >
+          </td>
+          <td class="name-cell" (click)="openEditForm(volunteer)" style="cursor: pointer;">
+            <div class="avatar" [style.backgroundColor]="getAvatarColor(volunteer.name)">
+              {{ volunteer.name.charAt(0) }}
+            </div>
+            <span>{{ volunteer.name }}</span>
+          </td>
+          <td>{{ volunteer.role }}</td>
+           <td>{{ volunteer.department }}</td>
+           <td class="time-cell">
+            {{ volunteer.time || '-' }}
+          </td>
+          <td class="status-cell">
+            <label class="toggle-switch">
+              <input 
+                type="checkbox" 
+                [checked]="volunteer.checkedIn"
+                (change)="onToggleCheckin(volunteer)"
+              >
+              <span class="slider"></span>
+            </label>
+          </td>
+          <td class="actions-cell">
+            <button class="btn-action edit" (click)="openEditForm(volunteer)" title="Edit">
+              <i class="pi pi-pencil"></i>
+            </button>
+            <button class="btn-action delete" (click)="openDeleteConfirm(volunteer.id)" title="Delete">
+              <i class="pi pi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Edit Form Modal -->
+  <div class="modal-overlay" *ngIf="showEditForm" (click)="closeEditForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Edit Volunteer</h3>
+        <button class="btn-close" (click)="closeEditForm()">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="editForm" (ngSubmit)="onSubmitEditForm()" class="modal-form">
+        <div class="form-group">
+          <label for="edit-name">Name *</label>
+          <input
+            id="edit-name"
+            type="text"
+            formControlName="name"
+            placeholder="Enter full name"
+            class="form-input"
+          >
+          <span class="error-message" *ngIf="editForm.get('name')?.invalid && editForm.get('name')?.touched">
+            Name is required (minimum 2 characters)
+          </span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-role">Role *</label>
+            <select id="edit-role" formControlName="role" class="form-select">
+              <option value="">Select Role</option>
+              <option *ngFor="let role of roleOptions" [value]="role">
+                {{ role }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-department">Department *</label>
+            <select id="edit-department" formControlName="department" class="form-select">
+              <option value="">Select Department</option>
+              <option *ngFor="let dept of departmentOptions" [value]="dept">
+                {{ dept }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input
+              type="checkbox"
+              formControlName="checkedIn"
+              class="form-checkbox"
+            >
+            <span>Mark as checked in</span>
+          </label>
+        </div>
+
+        <div class="message-section">
+          <div class="success-message" *ngIf="successMessage">
+            <i class="pi pi-check-circle"></i>
+            {{ successMessage }}
+          </div>
+          <div class="error-message-box" *ngIf="errorMessage">
+            <i class="pi pi-exclamation-circle"></i>
+            {{ errorMessage }}
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="closeEditForm()">
+            Cancel
+          </button>
+          <button type="submit" class="btn-submit" [disabled]="isSubmitting || editForm.invalid">
+            <span *ngIf="!isSubmitting">Update Volunteer</span>
+            <span *ngIf="isSubmitting">Updating...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" *ngIf="deleteConfirmId !== null" (click)="closeDeleteConfirm()">
+    <div class="modal-content modal-small" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Confirm Delete</h3>
+        <button class="btn-close" (click)="closeDeleteConfirm()">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p>Are you sure you want to delete this volunteer record? This action cannot be undone.</p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="closeDeleteConfirm()">
+          Cancel
+        </button>
+        <button type="button" class="btn-danger" (click)="confirmDelete(deleteConfirmId!)">
+          <i class="pi pi-trash"></i>
+          Delete Record
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
