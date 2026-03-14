@@ -13,49 +13,57 @@ import { UserRole } from '../../auth/auth.models';
     .sidebar {
       width: 250px;
       height: 100vh;
-      background: var(--bg-darker);
-      border-right: 1px solid var(--border-color);
+      background: #0b0e14;
+      border-right: 1px solid rgba(255,255,255,0.05);
       display: flex;
       flex-direction: column;
       position: fixed;
       left: 0;
       top: 0;
+      z-index: 100;
     }
     .brand {
-      padding: 2rem 1.5rem;
+      padding: 2.5rem 1.5rem;
       font-size: 1.5rem;
       font-weight: bold;
       color: var(--primary-color);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
     .menu {
       flex: 1;
-      padding: 0 1rem;
+      padding: 0 0.75rem;
     }
     .menu-item {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 0.85rem 1rem;
-      color: var(--text-muted);
+      padding: 1rem 1.25rem;
+      color: #94a3b8;
       text-decoration: none;
       border-radius: 8px;
       margin-bottom: 0.5rem;
       transition: all 0.2s;
+      font-weight: 500;
+      font-size: 0.95rem;
     }
-    .menu-item:hover, .menu-item.active {
-      background: rgba(0, 209, 178, 0.1);
+    .menu-item:hover {
+      background: rgba(255,255,255,0.03);
+      color: white;
+    }
+    .menu-item.active {
+      background: rgba(0, 209, 178, 0.15);
       color: var(--primary-color);
     }
     .profile {
       padding: 1.5rem;
-      border-top: 1px solid var(--border-color);
+      border-top: 1px solid rgba(255,255,255,0.05);
       display: flex;
       align-items: center;
       gap: 12px;
       cursor: pointer;
+      color: #94a3b8;
     }
     .avatar {
       width: 35px;
@@ -66,7 +74,7 @@ import { UserRole } from '../../auth/auth.models';
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      color: var(--bg-dark);
+      color: #0b0e14;
     }
     .user-info {
       display: flex;
@@ -75,19 +83,21 @@ import { UserRole } from '../../auth/auth.models';
     }
     .user-role {
       font-size: 0.75rem;
-      color: var(--text-muted);
+      color: #64748b;
     }
+
   `
 })
 export class SidebarComponent implements OnInit {
   navItems = [
     { label: 'Dashboard', icon: 'pi pi-th-large', link: '/home', roles: [UserRole.VOLUNTEER, UserRole.ORGANIZER, UserRole.ADMIN] },
-    { label: 'Events', icon: 'pi pi-calendar', link: '/events', roles: [UserRole.VOLUNTEER, UserRole.ORGANIZER, UserRole.ADMIN] },
+    { label: 'Events Hub', icon: 'pi pi-calendar', link: '/events', roles: [UserRole.VOLUNTEER, UserRole.ORGANIZER, UserRole.ADMIN] },
+    { label: 'Event Management', icon: 'pi pi-list', link: '/events/manage', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
     { label: 'Applications', icon: 'pi pi-file', link: '/applications', roles: [UserRole.VOLUNTEER, UserRole.ORGANIZER, UserRole.ADMIN] },
     { label: 'Roles', icon: 'pi pi-users', link: '/roles', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
     { label: 'Attendance', icon: 'pi pi-check-square', link: '/attendance', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
     { label: 'Reports', icon: 'pi pi-chart-bar', link: '/reports', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
-    { label: 'Settings', icon: 'pi pi-cog', link: '/settings', roles: [UserRole.ORGANIZER, UserRole.ADMIN] }
+    { label: 'Settings', icon: 'pi pi-cog', link: '/settings', roles: [UserRole.ORGANIZER, UserRole.VOLUNTEER, UserRole.ADMIN] }
   ];
 
   filteredItems: any[] = [];

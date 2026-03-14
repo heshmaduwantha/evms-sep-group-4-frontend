@@ -3,6 +3,10 @@ import { MainLayoutComponent } from './layout/main-layout/main-layout.component'
 import { HomeComponent } from './pages/home/home.component';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { AuthGuard } from './auth/auth.guard';
+import { EventListComponent } from './pages/events/event-list.component';
+import { EventManagementComponent } from './pages/events/event-management.component';
+import { EventFormComponent } from './pages/events/event-form.component';
+import { EventDetailsComponent } from './pages/events/event-details.component';
 
 export const routes: Routes = [
     {
@@ -12,6 +16,11 @@ export const routes: Routes = [
         children: [
             { path: 'home', component: HomeComponent },
             { path: 'settings', component: SettingsComponent },
+            { path: 'events', component: EventListComponent },
+            { path: 'events/manage', component: EventManagementComponent },
+            { path: 'events/create', component: EventFormComponent },
+            { path: 'events/edit/:id', component: EventFormComponent },
+            { path: 'events/:id', component: EventDetailsComponent },
             { path: '', redirectTo: 'home', pathMatch: 'full' }
         ]
     },

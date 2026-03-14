@@ -18,11 +18,11 @@ import { FooterComponent } from '../footer/footer.component';
       margin-left: 250px; /* Sidebar width */
       display: flex;
       flex-direction: column;
-      background: var(--bg-dark);
+      background: var(--bg-light);
+      padding: 2rem;
     }
     .main-content {
       flex: 1;
-      padding: 2rem;
     }
   `
 })
