@@ -88,24 +88,6 @@
     <!-- Sidebar -->
     <div class="sidebar-section">
       <!-- QR Check-in -->
-      <div class="qr-card">
-        <h3 class="card-title">QR Check-in</h3>
-        <p class="card-description">Scan volunteer QR codes for instant attendance logging</p>
-        
-        <div class="qr-scanner-placeholder">
-          <div class="qr-frame">
-            <div class="qr-corner top-left"></div>
-            <div class="qr-corner top-right"></div>
-            <div class="qr-corner bottom-left"></div>
-            <div class="qr-corner bottom-right"></div>
-            <p class="camera-status">Camera inactive</p>
-          </div>
-        </div>
-
-        <button class="btn-full-scanner" (click)="openFullScanner()">
-          Open Full Scanner
-        </button>
-      </div>
 
       <!-- Recent Check-ins -->
       <div class="recent-card">
@@ -175,7 +157,6 @@
         <div class="form-group">
           <label class="form-label">Check-in Method</label>
           <select class="form-input" [(ngModel)]="editingCheckIn.method">
-            <option value="QR Scanner">QR Scanner</option>
             <option value="Manual">Manual</option>
           </select>
         </div>

@@ -27,7 +27,6 @@ export class ReportsComponent implements OnInit {
     late: 0,
     absent: 0,
     attendanceRate: 0,
-    qrCheckedIn: 0,
     manualCheckedIn: 0
   };
   
@@ -112,8 +111,7 @@ export class ReportsComponent implements OnInit {
             ['Present', summary.present.toString()],
             ['Late Arrivals', summary.late.toString()],
             ['Absent', summary.absent.toString()],
-            ['QR Check-ins', summary.qrCheckedIn.toString()],
-            ['Manual Check-ins', summary.manualCheckedIn.toString()],
+             ['Manual Check-ins', summary.manualCheckedIn.toString()],
             ['Attendance Rate', `${summary.attendanceRate}%`]
           ];
           

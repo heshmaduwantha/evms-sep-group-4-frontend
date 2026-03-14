@@ -25,7 +25,6 @@ export class AttendanceComponent implements OnInit {
 
   recentCheckIns: any[] = [];
 
-  showQRScanner = false;
   editingCheckIn: any = null;
   showEditModal = false;
   deleteConfirmId: number | null = null;
@@ -59,13 +58,6 @@ export class AttendanceComponent implements OnInit {
     this.loadAttendanceData();
   }
 
-  toggleQRScanner() {
-    this.showQRScanner = !this.showQRScanner;
-  }
-
-  openFullScanner() {
-    this.showQRScanner = true;
-  }
 
   getStatusClass(status: string): string {
     switch (status) {
