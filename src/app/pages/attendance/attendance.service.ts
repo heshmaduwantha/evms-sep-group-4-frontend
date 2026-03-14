@@ -6,9 +6,9 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AttendanceService {
-  private apiUrl = 'http://localhost:3200/attendance';
+  private apiUrl = 'http://localhost:3100/attendance';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAttendanceOverview(eventId: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/overview/${eventId}`);
@@ -28,5 +28,13 @@ export class AttendanceService {
 
   getVolunteerCount(): Observable<number> {
     return this.http.get<number>(`${this.apiUrl}/volunteer-count`);
+  }
+
+  updateCheckIn(id: string, data: any): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${id}`, data);
+  }
+
+  deleteCheckIn(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }

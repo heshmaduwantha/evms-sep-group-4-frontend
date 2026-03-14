@@ -6,9 +6,9 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ReportsService {
-  private apiUrl = 'http://localhost:3200/reports';
+  private apiUrl = 'http://localhost:3100/reports';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAttendanceReports(
     eventId: string,

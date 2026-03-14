@@ -34,6 +34,12 @@
       <i class="pi pi-filter"></i>
       Filters:
     </span>
+    <select class="filter-select" [(ngModel)]="eventId" (change)="onEventChange()">
+      <option value="" disabled>Select Event</option>
+      <option *ngFor="let event of events" [value]="event.id">
+        {{ event.name }}
+      </option>
+    </select>
 
     <select class="filter-select" [(ngModel)]="filters.status" (change)="onFilterChange()">
       <option *ngFor="let opt of statusOptions" [value]="opt.value">
@@ -151,17 +157,14 @@
               <span class="dept-count">{{ dept.total }}</span>
             </div>
             <div class="dept-bars">
-              <div class="bar-segment present" 
-                   [style.width.%]="getDepartmentPercentages(dept).presentPercent"
-                   [title]="dept.present + ' present'">
+              <div class="bar-segment present" [style.width.%]="getDepartmentPercentages(dept).presentPercent"
+                [title]="dept.present + ' present'">
               </div>
-              <div class="bar-segment late" 
-                   [style.width.%]="getDepartmentPercentages(dept).latePercent"
-                   [title]="dept.late + ' late'">
+              <div class="bar-segment late" [style.width.%]="getDepartmentPercentages(dept).latePercent"
+                [title]="dept.late + ' late'">
               </div>
-              <div class="bar-segment absent" 
-                   [style.width.%]="getDepartmentPercentages(dept).absentPercent"
-                   [title]="dept.absent + ' absent'">
+              <div class="bar-segment absent" [style.width.%]="getDepartmentPercentages(dept).absentPercent"
+                [title]="dept.absent + ' absent'">
               </div>
             </div>
           </div>

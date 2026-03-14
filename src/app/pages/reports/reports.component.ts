@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReportsService } from './reports.service';
+import { EventService } from '../events/event.service';
+import { Event } from '../events/event.models';
 
 @Component({
   selector: 'app-reports',
@@ -11,8 +13,9 @@ import { ReportsService } from './reports.service';
   styleUrls: ['./reports.component.css']
 })
 export class ReportsComponent implements OnInit {
-  eventId = 'event-1';
-  
+  eventId = '';
+  events: Event[] = [];
+
   filters = {
     status: 'all',
     department: 'all',
@@ -29,7 +32,7 @@ export class ReportsComponent implements OnInit {
     attendanceRate: 0,
     manualCheckedIn: 0
   };
-  
+
   departmentData: any[] = [];
 
   statusOptions = [
@@ -41,16 +44,36 @@ export class ReportsComponent implements OnInit {
 
   departmentOptions = [
     { label: 'All Departments', value: 'all' },
-    { label: 'Operations', value: 'operations' },
-    { label: 'Front Desk', value: 'front_desk' },
-    { label: 'Safety', value: 'safety' },
-    { label: 'Technical', value: 'technical' },
-    { label: 'Guest Services', value: 'guest_services' }
+    { label: 'Operations', value: 'Operations' },
+    { label: 'Front Desk', value: 'Front Desk' },
+    { label: 'Safety', value: 'Safety' },
+    { label: 'Technical', value: 'Technical' },
+    { label: 'Guest Services', value: 'Guest Services' }
   ];
 
-  constructor(private reportsService: ReportsService) {}
+  constructor(
+    private reportsService: ReportsService,
+    private eventService: EventService
+  ) { }
 
   ngOnInit() {
+    this.loadEvents();
+  }
+
+  loadEvents() {
+    this.eventService.getEvents().subscribe({
+      next: (events) => {
+        this.events = events;
+        if (this.events.length > 0) {
+          this.eventId = this.events[0].id;
+          this.loadReports();
+        }
+      },
+      error: (err) => console.error('Error loading events:', err)
+    });
+  }
+
+  onEventChange() {
     this.loadReports();
   }
 
@@ -92,29 +115,29 @@ export class ReportsComponent implements OnInit {
 
           const doc = new jspdf.jsPDF();
           const reportData = res.data;
-          
+
           doc.setFontSize(20);
           doc.setTextColor(40);
           doc.text(reportData.reportName, 14, 22);
-          
+
           doc.setFontSize(11);
           doc.setTextColor(100);
           doc.text(`Generated at: ${new Date(reportData.generatedAt).toLocaleString()}`, 14, 30);
-          
+
           doc.setFontSize(14);
           doc.setTextColor(40);
           doc.text('Attendance Summary', 14, 45);
-          
+
           const summary = reportData.summary;
           const summaryRows = [
             ['Total Volunteers', summary.total.toString()],
             ['Present', summary.present.toString()],
             ['Late Arrivals', summary.late.toString()],
             ['Absent', summary.absent.toString()],
-             ['Manual Check-ins', summary.manualCheckedIn.toString()],
+            ['Manual Check-ins', summary.manualCheckedIn.toString()],
             ['Attendance Rate', `${summary.attendanceRate}%`]
           ];
-          
+
           (doc as any).autoTable({
             startY: 50,
             head: [['Metric', 'Value']],
@@ -122,14 +145,14 @@ export class ReportsComponent implements OnInit {
             theme: 'grid',
             headStyles: { fillColor: [0, 209, 178] }
           });
-          
+
           doc.setFontSize(14);
           doc.text('Detailed Attendance Record', 14, (doc as any).lastAutoTable.finalY + 15);
-          
+
           const recordRows = reportData.records.map((r: any) => [
             r.name, r.role, r.dept, r.status, r.time || '-', r.method.toUpperCase()
           ]);
-          
+
           (doc as any).autoTable({
             startY: (doc as any).lastAutoTable.finalY + 20,
             head: [['Name', 'Role', 'Department', 'Status', 'Time', 'Method']],
@@ -137,7 +160,7 @@ export class ReportsComponent implements OnInit {
             theme: 'striped',
             headStyles: { fillColor: [52, 73, 94] }
           });
-          
+
           doc.save(`attendance-report-${this.eventId}.pdf`);
         }
       },

@@ -37,14 +37,21 @@
 
       <form [formGroup]="createForm" (ngSubmit)="onSubmitForm()" class="attendance-form">
         <div class="form-group">
+          <label for="event">Event *</label>
+          <select id="event" formControlName="eventId" class="form-select">
+            <option value="" disabled>Select Event</option>
+            <option *ngFor="let event of events" [value]="event.id">
+              {{ event.name }}
+            </option>
+          </select>
+          <span class="error-message" *ngIf="createForm.get('eventId')?.invalid && createForm.get('eventId')?.touched">
+            Event is required
+          </span>
+        </div>
+
+        <div class="form-group">
           <label for="name">Volunteer Name *</label>
-          <input
-            id="name"
-            type="text"
-            formControlName="name"
-            placeholder="Enter full name"
-            class="form-input"
-          >
+          <input id="name" type="text" formControlName="name" placeholder="Enter full name" class="form-input">
           <span class="error-message" *ngIf="createForm.get('name')?.invalid && createForm.get('name')?.touched">
             Name is required (minimum 2 characters)
           </span>
@@ -72,7 +79,8 @@
                 {{ dept }}
               </option>
             </select>
-            <span class="error-message" *ngIf="createForm.get('department')?.invalid && createForm.get('department')?.touched">
+            <span class="error-message"
+              *ngIf="createForm.get('department')?.invalid && createForm.get('department')?.touched">
               Department is required
             </span>
           </div>
@@ -80,11 +88,7 @@
 
         <div class="form-group checkbox-group">
           <label>
-            <input
-              type="checkbox"
-              formControlName="checkedIn"
-              class="form-checkbox"
-            >
+            <input type="checkbox" formControlName="checkedIn" class="form-checkbox">
             <span>Mark as checked in</span>
           </label>
         </div>
@@ -115,13 +119,15 @@
 
   <!-- Search and Filters -->
   <div class="search-section">
-    <input 
-      type="text" 
-      class="search-input" 
-      placeholder="Search by name or role..."
-      [(ngModel)]="searchQuery"
-      (keyup)="onSearch()"
-    >
+    <input type="text" class="search-input" placeholder="Search by name or role..." [(ngModel)]="searchQuery"
+      (keyup)="onSearch()">
+
+    <select class="filter-select" [(ngModel)]="eventId" (change)="onEventChange()">
+      <option value="" disabled>Select Event</option>
+      <option *ngFor="let event of events" [value]="event.id">
+        {{ event.name }}
+      </option>
+    </select>
 
     <select class="filter-select" [(ngModel)]="selectedFilter" (change)="onFilterChange()">
       <option *ngFor="let opt of filterOptions" [value]="opt.value">
@@ -145,8 +151,8 @@
           </th>
           <th>Name</th>
           <th>Role</th>
-           <th>Department</th>
-           <th>Check-in Time</th>
+          <th>Department</th>
+          <th>Check-in Time</th>
           <th>Status</th>
           <th class="actions-col">Actions</th>
         </tr>
@@ -154,12 +160,8 @@
       <tbody>
         <tr *ngFor="let volunteer of volunteers" [class.checked-in]="volunteer.checkedIn">
           <td class="checkbox-col">
-            <input 
-              type="checkbox" 
-              class="row-checkbox"
-              [checked]="isSelected(volunteer.id)"
-              (change)="toggleSelection(volunteer.id)"
-            >
+            <input type="checkbox" class="row-checkbox" [checked]="isSelected(volunteer.id)"
+              (change)="toggleSelection(volunteer.id)">
           </td>
           <td class="name-cell" (click)="openEditForm(volunteer)" style="cursor: pointer;">
             <div class="avatar" [style.backgroundColor]="getAvatarColor(volunteer.name)">
@@ -168,17 +170,13 @@
             <span>{{ volunteer.name }}</span>
           </td>
           <td>{{ volunteer.role }}</td>
-           <td>{{ volunteer.department }}</td>
-           <td class="time-cell">
+          <td>{{ volunteer.department }}</td>
+          <td class="time-cell">
             {{ volunteer.time || '-' }}
           </td>
           <td class="status-cell">
             <label class="toggle-switch">
-              <input 
-                type="checkbox" 
-                [checked]="volunteer.checkedIn"
-                (change)="onToggleCheckin(volunteer)"
-              >
+              <input type="checkbox" [checked]="volunteer.checkedIn" (change)="onToggleCheckin(volunteer)">
               <span class="slider"></span>
             </label>
           </td>
@@ -208,13 +206,7 @@
       <form [formGroup]="editForm" (ngSubmit)="onSubmitEditForm()" class="modal-form">
         <div class="form-group">
           <label for="edit-name">Name *</label>
-          <input
-            id="edit-name"
-            type="text"
-            formControlName="name"
-            placeholder="Enter full name"
-            class="form-input"
-          >
+          <input id="edit-name" type="text" formControlName="name" placeholder="Enter full name" class="form-input">
           <span class="error-message" *ngIf="editForm.get('name')?.invalid && editForm.get('name')?.touched">
             Name is required (minimum 2 characters)
           </span>
@@ -244,11 +236,7 @@
 
         <div class="form-group checkbox-group">
           <label>
-            <input
-              type="checkbox"
-              formControlName="checkedIn"
-              class="form-checkbox"
-            >
+            <input type="checkbox" formControlName="checkedIn" class="form-checkbox">
             <span>Mark as checked in</span>
           </label>
         </div>

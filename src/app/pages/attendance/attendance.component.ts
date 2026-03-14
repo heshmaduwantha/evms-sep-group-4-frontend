@@ -12,7 +12,7 @@ import { AttendanceService } from './attendance.service';
 })
 export class AttendanceComponent implements OnInit {
   eventId = 'event-1'; // This would come from route params in production
-  
+
   attendanceData: any = {
     totalVolunteers: 0,
     checkedIn: 0,
@@ -27,11 +27,11 @@ export class AttendanceComponent implements OnInit {
 
   editingCheckIn: any = null;
   showEditModal = false;
-  deleteConfirmId: number | null = null;
+  deleteConfirmId: string | null = null;
   successMessage = '';
   errorMessage = '';
 
-  constructor(private attendanceService: AttendanceService) {}
+  constructor(private attendanceService: AttendanceService) { }
 
   ngOnInit() {
     this.loadAttendanceData();
@@ -97,17 +97,24 @@ export class AttendanceComponent implements OnInit {
   }
 
   saveEditCheckIn() {
-    const index = this.recentCheckIns.findIndex(c => c.id === this.editingCheckIn.id);
-    if (index > -1) {
-      this.recentCheckIns[index] = { ...this.editingCheckIn };
-      this.successMessage = `${this.editingCheckIn.name}'s check-in updated successfully`;
-      setTimeout(() => {
-        this.closeEditModal();
-      }, 1500);
-    }
+    if (!this.editingCheckIn || !this.editingCheckIn.id) return;
+
+    this.attendanceService.updateCheckIn(this.editingCheckIn.id, this.editingCheckIn).subscribe({
+      next: (res) => {
+        this.successMessage = `${this.editingCheckIn.name}'s check-in updated successfully`;
+        this.refreshData();
+        setTimeout(() => {
+          this.closeEditModal();
+        }, 1500);
+      },
+      error: (err) => {
+        console.error('Error updating check-in:', err);
+        this.errorMessage = 'Failed to update check-in';
+      }
+    });
   }
 
-  openDeleteConfirm(id: number) {
+  openDeleteConfirm(id: string) {
     this.deleteConfirmId = id;
   }
 
@@ -116,14 +123,45 @@ export class AttendanceComponent implements OnInit {
     this.errorMessage = '';
   }
 
-  confirmDelete(id: number) {
-    const checkIn = this.recentCheckIns.find(c => c.id === id);
-    this.recentCheckIns = this.recentCheckIns.filter(c => c.id !== id);
-    if (checkIn) {
-      this.errorMessage = `${checkIn.name}'s check-in removed`;
-      setTimeout(() => {
-        this.closeDeleteConfirm();
-        this.errorMessage = '';
-      }, 1500);
-    }
-  }}
+  confirmDelete(id: string) {
+    this.attendanceService.deleteCheckIn(id).subscribe({
+      next: () => {
+        const checkIn = this.recentCheckIns.find(c => c.id === id);
+        this.errorMessage = checkIn ? `${checkIn.name}'s check-in removed` : 'Check-in removed';
+        this.refreshData();
+        setTimeout(() => {
+          this.closeDeleteConfirm();
+        }, 1500);
+      },
+      error: (err) => {
+        console.error('Error deleting check-in:', err);
+        this.errorMessage = 'Failed to delete record';
+      }
+    });
+  }
+
+  checkInVolunteer(volunteerId: string) {
+    console.log('checkInVolunteer called for volunteerId:', volunteerId);
+    const data = {
+      volunteerId: volunteerId,
+      eventId: this.eventId,
+      status: 'present',
+      timestamp: new Date()
+    };
+
+    console.log('Sending checkIn request to backend:', data);
+    this.attendanceService.checkIn(this.eventId, data).subscribe({
+      next: (res) => {
+        console.log('checkIn response:', res);
+        this.successMessage = 'Volunteer checked in successfully';
+        this.refreshData();
+        setTimeout(() => this.successMessage = '', 3000);
+      },
+      error: (err) => {
+        console.error('Error checking in (HTTP Error):', err);
+        this.errorMessage = `Failed to check in volunteer: ${err.status} ${err.statusText || ''}`;
+        setTimeout(() => this.errorMessage = '', 5000);
+      }
+    });
+  }
+}

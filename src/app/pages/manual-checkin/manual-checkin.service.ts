@@ -6,9 +6,9 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ManualCheckinService {
-  private apiUrl = 'http://localhost:3200/manual-checkin';
+  private apiUrl = 'http://localhost:3100/manual-checkin';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getVolunteers(
     eventId: string,

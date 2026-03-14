@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ManualCheckinService } from './manual-checkin.service';
+import { EventService } from '../events/event.service';
+import { Event } from '../events/event.models';
 
 @Component({
   selector: 'app-manual-checkin',
@@ -11,14 +13,15 @@ import { ManualCheckinService } from './manual-checkin.service';
   styleUrls: ['./manual-checkin.component.css']
 })
 export class ManualCheckinComponent implements OnInit {
-  eventId = 'event-1';
-  
+  eventId = '';
+  events: Event[] = [];
+
   searchQuery = '';
   selectedFilter = 'all';
-  
+
   volunteers: any[] = [];
   selectedVolunteers: Set<string> = new Set();
-  
+
   summary = {
     total: 0,
     checkedIn: 0,
@@ -46,15 +49,18 @@ export class ManualCheckinComponent implements OnInit {
 
   constructor(
     private manualCheckinService: ManualCheckinService,
+    private eventService: EventService,
     private formBuilder: FormBuilder
   ) {
     this.createForm = this.formBuilder.group({
+      eventId: ['', Validators.required],
       name: ['', [Validators.required, Validators.minLength(2)]],
       role: ['', Validators.required],
       department: ['', Validators.required],
       checkedIn: [false]
     });
     this.editForm = this.formBuilder.group({
+      eventId: ['', Validators.required],
       name: ['', [Validators.required, Validators.minLength(2)]],
       role: ['', Validators.required],
       department: ['', Validators.required],
@@ -63,6 +69,26 @@ export class ManualCheckinComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loadEvents();
+  }
+
+  loadEvents() {
+    this.eventService.getEvents().subscribe({
+      next: (events) => {
+        this.events = events;
+        if (this.events.length > 0) {
+          this.eventId = this.events[0].id;
+          this.loadVolunteers();
+        }
+      },
+      error: (err) => {
+        console.error('Error loading events:', err);
+        this.errorMessage = 'Failed to load events';
+      }
+    });
+  }
+
+  onEventChange() {
     this.loadVolunteers();
   }
 
@@ -141,11 +167,16 @@ export class ManualCheckinComponent implements OnInit {
       this.createForm.reset();
       this.successMessage = '';
       this.errorMessage = '';
+    } else {
+      // Set default event to current selection
+      this.createForm.patchValue({ eventId: this.eventId });
     }
   }
 
   onSubmitForm() {
+    console.log('onSubmitForm called');
     if (this.createForm.invalid) {
+      console.warn('Form is invalid:', this.createForm.errors, this.createForm.value);
       this.errorMessage = 'Please fill in all required fields';
       return;
     }
@@ -154,25 +185,36 @@ export class ManualCheckinComponent implements OnInit {
     this.successMessage = '';
     this.errorMessage = '';
 
-    this.manualCheckinService.createAttendance(this.eventId, this.createForm.value)
+    const submissionData = { ...this.createForm.value };
+    const targetEventId = submissionData.eventId;
+    delete submissionData.eventId;
+
+    console.log('Sending createAttendance request to backend:', submissionData);
+    this.manualCheckinService.createAttendance(targetEventId, submissionData)
       .subscribe({
         next: (res) => {
+          console.log('createAttendance response:', res);
           this.isSubmitting = false;
           if (res.success) {
             this.successMessage = `${res.volunteer.name} has been added successfully!`;
-            this.createForm.reset();
+            this.createForm.reset({
+              eventId: targetEventId,
+              checkedIn: false
+            });
             this.loadVolunteers();
-            
+
             setTimeout(() => {
               this.showCreateForm = false;
               this.successMessage = '';
             }, 2000);
+          } else {
+            this.errorMessage = 'Backend returned success: false';
           }
         },
         error: (err) => {
           this.isSubmitting = false;
-          console.error('Error creating attendance:', err);
-          this.errorMessage = 'Failed to create attendance';
+          console.error('Error creating attendance (HTTP Error):', err);
+          this.errorMessage = `Failed to create attendance: ${err.status} ${err.statusText || ''}`;
         }
       });
   }
@@ -186,6 +228,7 @@ export class ManualCheckinComponent implements OnInit {
   openEditForm(volunteer: any) {
     this.editingVolunteer = { ...volunteer };
     this.editForm.patchValue({
+      eventId: this.eventId,
       name: volunteer.name,
       role: volunteer.role,
       department: volunteer.department,
@@ -213,7 +256,7 @@ export class ManualCheckinComponent implements OnInit {
     this.successMessage = '';
 
     const updatedData = {
-      eventId: this.eventId,
+      eventId: this.editForm.value.eventId,
       name: this.editForm.value.name,
       role: this.editForm.value.role,
       department: this.editForm.value.department,

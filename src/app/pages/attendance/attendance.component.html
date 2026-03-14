@@ -17,6 +17,16 @@
     </button>
   </div>
 
+  <!-- Messages -->
+  <div *ngIf="successMessage" class="message success-message global-message">
+    <i class="pi pi-check-circle"></i>
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="message error-message global-message">
+    <i class="pi pi-info-circle"></i>
+    {{ errorMessage }}
+  </div>
+
   <div class="content-wrapper">
     <!-- Main Content -->
     <div class="main-content">
@@ -64,6 +74,7 @@
                 <th>Name</th>
                 <th>Role</th>
                 <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -76,6 +87,15 @@
                 <td>
                   <span class="status-badge" [ngClass]="getStatusClass(volunteer.status)">
                     {{ getStatusLabel(volunteer.status) }}
+                  </span>
+                </td>
+                <td>
+                  <button *ngIf="volunteer.status === 'absent'" class="btn-checkin-small"
+                    (click)="checkInVolunteer(volunteer.id)">
+                    Check In
+                  </button>
+                  <span *ngIf="volunteer.status !== 'absent'" class="text-muted">
+                    {{ volunteer.checkedInTime }}
                   </span>
                 </td>
               </tr>
@@ -92,17 +112,8 @@
       <!-- Recent Check-ins -->
       <div class="recent-card">
         <h3 class="card-title">Recent Check-ins</h3>
-        
-        <!-- Success/Error Messages -->
-        <div *ngIf="successMessage" class="message success-message">
-          <i class="pi pi-check-circle"></i>
-          {{ successMessage }}
-        </div>
-        <div *ngIf="errorMessage" class="message error-message">
-          <i class="pi pi-info-circle"></i>
-          {{ errorMessage }}
-        </div>
-        
+
+
         <div class="recent-list">
           <div *ngFor="let checkIn of recentCheckIns" class="recent-item">
             <div class="recent-avatar">{{ checkIn.name.charAt(0) }}</div>
@@ -137,21 +148,12 @@
       <div class="modal-body" *ngIf="editingCheckIn">
         <div class="form-group">
           <label class="form-label">Name</label>
-          <input 
-            type="text" 
-            class="form-input" 
-            [(ngModel)]="editingCheckIn.name"
-            placeholder="Volunteer name"
-          />
+          <input type="text" class="form-input" [(ngModel)]="editingCheckIn.name" placeholder="Volunteer name" />
         </div>
 
         <div class="form-group">
           <label class="form-label">Check-in Time</label>
-          <input 
-            type="time" 
-            class="form-input" 
-            [(ngModel)]="editingCheckIn.time"
-          />
+          <input type="time" class="form-input" [(ngModel)]="editingCheckIn.time" />
         </div>
 
         <div class="form-group">
