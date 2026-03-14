@@ -1,0 +1,94 @@
+<div class="management-container">
+    <p-toast></p-toast>
+    <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+    <div class="header">
+        <div class="breadcrumb">EVMS / Events / Event Management</div>
+        <div class="title-row">
+            <div>
+                <h1>Event Management</h1>
+                <p>Manage and oversee all system events and volunteer allocations.</p>
+            </div>
+            <p-button label="Create New Event" icon="pi pi-plus" severity="success"
+                [routerLink]="['/events/create']"></p-button>
+        </div>
+    </div>
+
+    <div class="stats-grid grid mb-4">
+        <div class="col-12 md:col-3">
+            <div class="stat-card">
+                <div class="label">Total Events</div>
+                <div class="value">{{stats.totalEvents}}</div>
+                <div class="sub-label green">+2 this month</div>
+            </div>
+        </div>
+        <div class="col-12 md:col-3">
+            <div class="stat-card">
+                <div class="label">Upcoming Events</div>
+                <div class="value">{{stats.upcomingEvents}}</div>
+                <div class="sub-label orange">Starts within 30 days</div>
+            </div>
+        </div>
+        <div class="col-12 md:col-3">
+            <div class="stat-card">
+                <div class="label">Active Events</div>
+                <div class="value">{{stats.activeEvents}}</div>
+                <div class="sub-label green">Currently in progress</div>
+            </div>
+        </div>
+        <div class="col-12 md:col-3">
+            <div class="stat-card">
+                <div class="label">Completed Events</div>
+                <div class="value">{{stats.completedEvents}}</div>
+                <div class="sub-label gray">Successfully finished</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-1 p-3">
+        <p-table [value]="events" [loading]="loading" [rows]="10" [paginator]="true" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>EVENT NAME</th>
+                    <th>EVENT DATE</th>
+                    <th>LOCATION</th>
+                    <th>VOLUNTEERS NEEDED</th>
+                    <th>ASSIGNED VOLUNTEERS</th>
+                    <th>STATUS</th>
+                    <th>ACTIONS</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-event>
+                <tr>
+                    <td class="font-bold">{{event.title}}</td>
+                    <td class="text-sm">
+                        <div class="font-bold">{{event.date | date:'MMM dd, yyyy'}}</div>
+                        <div class="text-500">{{event.time}}</div>
+                    </td>
+                    <td>{{event.location}}</td>
+                    <td class="text-center">{{event.volunteersNeeded}}</td>
+                    <td>
+                        <div class="flex align-items-center gap-2">
+                            <p-progressBar [value]="getVolunteerProgress(event)" [showValue]="false"
+                                [style]="{height: '6px', width: '50px'}"></p-progressBar>
+                            <span class="text-xs font-semibold">{{event.volunteers?.length ||
+                                0}}/{{event.volunteersNeeded}}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <p-tag [value]="event.status | uppercase" [severity]="getStatusSeverity(event.status)"></p-tag>
+                    </td>
+                    <td>
+                        <button pButton icon="pi pi-eye" class="p-button-rounded p-button-text p-button-secondary mr-1"
+                            [routerLink]="['/events', event.id]"></button>
+                        <button pButton icon="pi pi-pencil"
+                            class="p-button-rounded p-button-text p-button-secondary mr-1"
+                            [routerLink]="['/events/edit', event.id]"></button>
+                        <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger"
+                            (click)="deleteEvent(event)"></button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
