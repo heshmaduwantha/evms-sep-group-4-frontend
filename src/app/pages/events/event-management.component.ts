@@ -52,13 +52,25 @@ export class EventManagementComponent implements OnInit {
 
     loadData() {
         this.loading = true;
-        this.eventService.getEvents().subscribe(data => {
-            this.events = data;
-            this.loading = false;
+        this.eventService.getEvents().subscribe({
+            next: (data) => {
+                this.events = data || [];
+                this.loading = false;
+            },
+            error: (error) => {
+                console.error('Failed to load events', error);
+                this.events = [];
+                this.loading = false;
+            }
         });
 
-        this.eventService.getStats().subscribe(stats => {
-            this.stats = stats;
+        this.eventService.getStats().subscribe({
+            next: (stats) => {
+                if (stats) this.stats = stats;
+            },
+            error: (error) => {
+                console.error('Failed to load stats', error);
+            }
         });
     }
 
