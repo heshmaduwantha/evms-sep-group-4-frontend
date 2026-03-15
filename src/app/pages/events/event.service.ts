@@ -10,7 +10,6 @@ export class EventService {
     private apiUrl = 'http://localhost:3100/events';
 
     constructor(private http: HttpClient) { }
-
     getEvents(): Observable<Event[]> {
         return this.http.get<Event[]>(this.apiUrl);
     }
