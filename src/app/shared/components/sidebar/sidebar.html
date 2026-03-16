@@ -1,17 +1,57 @@
 <div class="sidebar">
 
-  <h2>EVMS Organizer</h2>
+  <div class="sidebar-header">
 
-  <nav>
-    <ul>
-      <li>
-        <a routerLink="/organizer/events">Events</a>
-      </li>
+  <div class="logo">
 
-      <li>
-        <a routerLink="/organizer/create-event">Create Event</a>
-      </li>
-    </ul>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+         stroke="white" stroke-width="3"
+         stroke-linecap="round" stroke-linejoin="round">
+
+      <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polyline>
+
+    </svg>
+
+  </div>
+
+  <span class="logo-text">EVMS</span>
+
+</div>
+
+  
+
+  <!-- Menu -->
+  <nav class="sidebar-menu">
+
+    <a routerLink="/organizer/dashboard" routerLinkActive="active">
+      🏠 Dashboard
+    </a>
+
+    <a routerLink="/organizer/events" routerLinkActive="active">
+      🗂 Events
+    </a>
+
+    <a routerLink="/organizer/volunteers" routerLinkActive="active">
+      👥 Volunteers
+    </a>
+
+    <a routerLink="/organizer/reports" routerLinkActive="active">
+      📊 Reports
+    </a>
+
+    <a routerLink="/organizer/settings" routerLinkActive="active">
+      ⚙ Settings
+    </a>
+
   </nav>
+
+  <!-- User -->
+  <div class="sidebar-user">
+    <div class="avatar">A</div>
+    <div>
+      <div>Admin</div>
+      <small>a@gmail.com</small>
+    </div>
+  </div>
 
 </div>

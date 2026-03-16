@@ -1,39 +1,75 @@
-<h2>Create / Edit Event</h2>
+<div class="app-content event-form-page">
 
-<form (ngSubmit)="submitEvent()">
+  <div class="form-header">
+    <h2>{{ eventId ? 'Edit Event' : 'Create Event' }}</h2>
+    <p>Fill in the details below to schedule a new event in the system.</p>
+  </div>
 
-<label>Title</label>
-<input type="text" [(ngModel)]="eventData.title" name="title">
+  <form (ngSubmit)="submitEvent()" class="event-form">
 
-<br><br>
+    <div class="form-grid">
 
-<label>Description</label>
-<input type="text" [(ngModel)]="eventData.description" name="description">
+      <div class="form-group full">
+        <label>Event Title</label>
+        <input type="text"
+               [(ngModel)]="eventData.title"
+               name="title"
+               placeholder="e.g. Community Tree Plantation">
+      </div>
 
-<br><br>
+      <div class="form-group full">
+        <label>Event Description</label>
+        <textarea
+          [(ngModel)]="eventData.description"
+          name="description"
+          placeholder="Provide a detailed description of the event..."
+        ></textarea>
+      </div>
 
-<label>Date</label>
-<input type="date" [(ngModel)]="eventData.eventDate" name="eventDate">
+      <div class="form-group">
+        <label>Event Date</label>
+        <input type="date"
+               [(ngModel)]="eventData.eventDate"
+               name="eventDate">
+      </div>
 
-<br><br>
+      <div class="form-group">
+        <label>Event Time</label>
+        <input type="time"
+               [(ngModel)]="eventData.eventTime"
+               name="eventTime">
+      </div>
 
-<label>Time</label>
-<input type="time" [(ngModel)]="eventData.eventTime" name="eventTime">
+      <div class="form-group">
+        <label>Location</label>
+        <input type="text"
+               [(ngModel)]="eventData.location"
+               name="location"
+               placeholder="Street address or venue name">
+      </div>
 
-<br><br>
+      <div class="form-group">
+        <label>Volunteers Needed</label>
+        <input type="number"
+               [(ngModel)]="eventData.volunteersRequired"
+               name="volunteersRequired">
+      </div>
 
-<label>Location</label>
-<input type="text" [(ngModel)]="eventData.location" name="location">
+    </div>
 
-<br><br>
+    <div class="form-actions">
+      <button type="button"
+              class="cancel-btn"
+              (click)="cancelEvent()">
+        Cancel
+      </button>
 
-<label>Volunteers Required</label>
-<input type="number" [(ngModel)]="eventData.volunteersRequired" name="volunteersRequired">
+      <button type="submit"
+              class="submit-btn">
+        {{ eventId ? 'Update Event' : 'Create Event' }}
+      </button>
+    </div>
 
-<br><br>
+  </form>
 
-<button type="submit">Save Event</button>
-
-<button type="button" (click)="cancelEvent()">Cancel</button>
-
-</form>
+</div>

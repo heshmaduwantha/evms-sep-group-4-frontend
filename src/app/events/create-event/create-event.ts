@@ -1,19 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { EventService } from '../services/event.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { EventService } from '../services/event.service';
 
 @Component({
   selector: 'app-create-event',
   standalone: true,
   imports: [FormsModule],
-  templateUrl: './create-event.html'
+  templateUrl: './create-event.html',
+  styleUrls: ['./create-event.css']
 })
+
 export class CreateEventComponent implements OnInit {
   constructor(
   private route: ActivatedRoute,
   private eventService: EventService,
-  private router: Router
+  private router: Router,
+  private cdr: ChangeDetectorRef
 ) {} 
 
   eventId: string | null = null;
@@ -46,6 +49,7 @@ export class CreateEventComponent implements OnInit {
         this.eventData.eventTime = event.eventTime;
         this.eventData.location = event.location;
         this.eventData.volunteersRequired = event.volunteersRequired;
+        this.cdr.detectChanges();
         });
 
   }
@@ -71,9 +75,10 @@ export class CreateEventComponent implements OnInit {
     console.log("Creating new event...");
 
     this.eventService.createEvent(this.eventData)
-      .subscribe((response: any) => {
-        console.log("Event created:", response);
-        alert("Event created successfully");
+    .subscribe((response: any) => {
+      console.log("Event created:", response);
+      alert("Event created successfully");
+      this.router.navigate(['/organizer/events']);
       });
 
   }

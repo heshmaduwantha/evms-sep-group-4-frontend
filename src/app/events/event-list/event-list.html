@@ -1,41 +1,121 @@
-<h2>Event List</h2>
+<div class="app-content event-page">
 
-<table border="1">
+  <div class="page-header">
+    <div>
+      <h2>Event List</h2>
+      <p>Manage and monitor all emergency response events.</p>
+    </div>
 
-<thead>
-<tr>
-  <th>Title</th>
-  <th>Description</th>
-  <th>Date</th>
-  <th>Time</th>
-  <th>Location</th>
-  <th>Volunteers</th>
-  <th>Actions</th>
-</tr>
-</thead>
+    <div style="margin-bottom:15px; display:flex; gap:10px;">
 
-<tbody>
+  <button class="status upcoming" (click)="filterStatus('upcoming')">
+    Upcoming
+  </button>
 
-@for (event of events; track event.id) {
+  <button class="status active" (click)="filterStatus('ongoing')">
+    Ongoing
+  </button>
 
-<tr>
+  <button class="status completed" (click)="filterStatus('completed')">
+    Completed
+  </button>
 
-  <td>{{ event.title }}</td>
-  <td>{{ event.description }}</td>
-  <td>{{ event.eventDate }}</td>
-  <td>{{ event.eventTime }}</td>
-  <td>{{ event.location }}</td>
-  <td>{{ event.volunteersRequired }}</td>
+  <button (click)="filterStatus('all')">
+    All
+  </button>
+
+</div>
+
+    <button class="create-btn" routerLink="/organizer/events/create">
+      Create Event
+    </button>
+  </div>
+
+  <div *ngIf="loading" style="padding:20px;">
+  Loading events...
+  </div>
+
+
+  <div class="table-card">
+
+    <table class="event-table">
+
+      <thead>
+        <tr>
+          <th>Event Name</th>
+          <th>Date</th>
+          <th>Location</th>
+          <th>Volunteers</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+     <tbody>
+
+      <tr *ngIf="events.length === 0">
+        <td colspan="6" style="text-align:center; padding:30px;">
+          No events available
+          </td>
+      </tr>
+
+    <tr *ngFor="let event of events">
 
   <td>
-    <button (click)="editEvent(event.id)">Edit</button>
-    <button (click)="deleteEvent(event.id)">Delete</button>
+    <div class="event-title">
+      {{ event.title }}
+      <span class="event-desc">
+        {{ event.description }}
+      </span>
+    </div>
+  </td>
+
+  <td>{{ event.eventDate | date:'MMM d, y' }}</td>
+
+  <td>{{ event.location }}</td>
+
+  <td>
+    <div class="volunteer-count">
+      {{ event.volunteersRequired }}
+    </div>
+  </td>
+
+  <td>
+
+  <span *ngIf="event.eventDate && event.eventDate > today" class="status upcoming">
+  Upcoming
+</span>
+
+<span *ngIf="event.eventDate && event.eventDate === today" class="status active">
+  Ongoing
+</span>
+
+<span *ngIf="event.eventDate && event.eventDate < today" class="status completed">
+  Completed
+</span>
+
+</td>
+
+  <td class="actions">
+
+    <button class="edit-btn" (click)="editEvent(event.id)">
+      Edit
+    </button>
+
+    <button class="delete-btn" (click)="deleteEvent(event.id)">
+      Delete
+    </button>
+
   </td>
 
 </tr>
 
-}
-
 </tbody>
 
-</table>
+      
+
+    </table>
+
+  </div>
+
+</div>
