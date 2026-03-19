@@ -41,7 +41,7 @@
           <select id="event" formControlName="eventId" class="form-select">
             <option value="" disabled>Select Event</option>
             <option *ngFor="let event of events" [value]="event.id">
-              {{ event.name }}
+              {{ event.title }}
             </option>
           </select>
           <span class="error-message" *ngIf="createForm.get('eventId')?.invalid && createForm.get('eventId')?.touched">
@@ -125,7 +125,7 @@
     <select class="filter-select" [(ngModel)]="eventId" (change)="onEventChange()">
       <option value="" disabled>Select Event</option>
       <option *ngFor="let event of events" [value]="event.id">
-        {{ event.name }}
+        {{ event.title }}
       </option>
     </select>
 
