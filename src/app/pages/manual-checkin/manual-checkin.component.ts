@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { ManualCheckinService } from './manual-checkin.service';
 import { EventService } from '../events/event.service';
 import { Event } from '../events/event.models';
+import { forkJoin, map } from 'rxjs';
 
 @Component({
   selector: 'app-manual-checkin',
@@ -76,10 +77,9 @@ export class ManualCheckinComponent implements OnInit {
     this.eventService.getEvents().subscribe({
       next: (events) => {
         this.events = events;
-        if (this.events.length > 0) {
-          this.eventId = this.events[0].id;
-          this.loadVolunteers();
-        }
+        // Default to 'all' to show all volunteers initially
+        this.eventId = 'all';
+        this.loadVolunteers();
       },
       error: (err) => {
         console.error('Error loading events:', err);
@@ -93,21 +93,63 @@ export class ManualCheckinComponent implements OnInit {
   }
 
   loadVolunteers() {
-    this.manualCheckinService.getVolunteers(this.eventId, this.searchQuery, this.selectedFilter)
-      .subscribe({
-        next: (res) => {
-          this.volunteers = res.volunteers;
+    if (this.eventId === 'all') {
+      const requests = this.events.map(event =>
+        this.manualCheckinService.getVolunteers(event.id, this.searchQuery, this.selectedFilter).pipe(
+          map(res => ({ ...res, eventId: event.id }))
+        )
+      );
+
+      forkJoin(requests).subscribe({
+        next: (results) => {
+          let allVolunteers: any[] = [];
+          
+          results.forEach((res: any) => {
+            // Strictly filter by result eventId to ensure we only get volunteers for THIS event
+            const filtered = (res.volunteers || []).filter((v: any) => v.eventId === res.eventId);
+            allVolunteers = [...allVolunteers, ...filtered];
+          });
+
+          this.volunteers = allVolunteers;
+          
+          // Recalculate summary locally based on aggregated filtered data
+          const total = this.volunteers.length;
+          const checkedIn = this.volunteers.filter(v => v.checkedIn).length;
+          
           this.summary = {
-            total: res.total,
-            checkedIn: res.checkedIn,
-            absent: res.total - res.checkedIn
+            total: total,
+            checkedIn: checkedIn,
+            absent: total - checkedIn
           };
         },
         error: (err) => {
-          console.error('Error loading volunteers:', err);
-          this.errorMessage = 'Failed to load volunteers';
+          console.error('Error loading aggregated volunteers:', err);
+          this.errorMessage = 'Failed to load volunteers from all events';
         }
       });
+    } else {
+      this.manualCheckinService.getVolunteers(this.eventId, this.searchQuery, this.selectedFilter)
+        .subscribe({
+          next: (res) => {
+            // Strict filter: only show volunteers who actually belong to this event
+            this.volunteers = (res.volunteers || []).filter((v: any) => v.eventId === this.eventId);
+            
+            // Recalculate summary locally based on filtered data
+            const total = this.volunteers.length;
+            const checkedIn = this.volunteers.filter(v => v.checkedIn).length;
+            
+            this.summary = {
+              total: total,
+              checkedIn: checkedIn,
+              absent: total - checkedIn
+            };
+          },
+          error: (err) => {
+            console.error('Error loading volunteers:', err);
+            this.errorMessage = 'Failed to load volunteers';
+          }
+        });
+    }
   }
 
   onSearch() {
@@ -120,13 +162,15 @@ export class ManualCheckinComponent implements OnInit {
 
   onToggleCheckin(volunteer: any) {
     const newStatus = !volunteer.checkedIn;
-    this.manualCheckinService.updateCheckin(this.eventId, volunteer.id, { checkedIn: newStatus })
+    const targetEventId = volunteer.eventId || this.eventId;
+    
+    this.manualCheckinService.updateCheckin(targetEventId, volunteer.id, { checkedIn: newStatus })
       .subscribe({
         next: (res) => {
           if (res.success) {
             volunteer.checkedIn = res.volunteer.checkedIn;
             volunteer.time = res.volunteer.time;
-            this.loadVolunteers(); // Refresh summary
+            this.loadVolunteers(); // Refresh summary and view
           }
         },
         error: (err) => {
@@ -220,9 +264,15 @@ export class ManualCheckinComponent implements OnInit {
   }
 
   getAvatarColor(name: string): string {
-    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
-    const hash = name.charCodeAt(0) + name.charCodeAt(name.length - 1);
-    return colors[hash % colors.length];
+    const colors = [
+      '#FF3B30', '#FF9500', '#FFCC00', '#4CD964', '#5AC8FA', '#007AFF', '#5856D6', '#FF2D55',
+      '#AF52DE', '#FF375F', '#BF5AF2', '#64D2FF', '#30D158', '#FF9F0A', '#FF453A'
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
   }
 
   openEditForm(volunteer: any) {
@@ -311,5 +361,16 @@ export class ManualCheckinComponent implements OnInit {
           this.errorMessage = 'Failed to delete volunteer';
         }
       });
+  }
+
+  getSelectedEventName(): string {
+    if (this.eventId === 'all') return 'All Events';
+    const event = this.events.find(e => e.id === this.eventId);
+    return event ? event.title : 'Selected Event';
+  }
+
+  getEventName(eventId: string): string {
+    const event = this.events.find(e => e.id === eventId);
+    return event ? event.title : 'Unknown Event';
   }
 }

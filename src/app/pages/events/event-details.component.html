@@ -1,6 +1,12 @@
 <div class="details-container" *ngIf="event">
     <div class="header">
-        <div class="breadcrumb">EVMS / Events / Event Details</div>
+        <div class="breadcrumb">
+            <a routerLink="/home">EVMS</a>
+            <span class="separator">/</span>
+            <a routerLink="/events">Events</a>
+            <span class="separator">/</span>
+            <span class="active">Event Details</span>
+        </div>
     </div>
 
     <div class="main-grid grid">
@@ -64,14 +70,15 @@
                         <tr>
                             <td>
                                 <div class="flex align-items-center">
-                                    <p-avatar label="{{volunteer.email.substring(0,1) | uppercase}}" shape="circle"
-                                        class="mr-2"></p-avatar>
-                                    <span class="font-bold">{{volunteer.email.split('@')[0]}}</span>
+                                    <p-avatar [label]="(volunteer.name || volunteer.email).substring(0,1) | uppercase"
+                                        shape="circle" class="mr-2"></p-avatar>
+                                    <span class="font-bold">{{volunteer.name || volunteer.email.split('@')[0]}}</span>
                                 </div>
                             </td>
                             <td>{{volunteer.role}}</td>
                             <td>{{volunteer.email}}</td>
-                            <td><p-tag value="Confirmed" severity="success"></p-tag></td>
+                            <td><p-tag [value]="volunteer.status || 'Confirmed'"
+                                    [severity]="volunteer.status === 'active' ? 'success' : 'info'"></p-tag></td>
                         </tr>
                     </ng-template>
                 </p-table>
@@ -111,13 +118,18 @@
             <div class="card location-card p-0 overflow-hidden">
                 <div class="p-4">
                     <h3 class="font-bold text-xs text-500 mb-1 uppercase">Event Location</h3>
+                    <div class="text-sm font-bold">{{event.location}}</div>
                 </div>
-                <div class="map-placeholder"
-                    style="background: #e5e7eb; height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <i class="pi pi-map-marker text-3xl text-red-500 mb-2"></i>
-                    <div class="font-bold text-sm">{{event.location}}</div>
+                <div class="map-container" style="height: 300px; width: 100%;">
+                    <iframe width="100%" height="100%" frameborder="0" style="border:0"
+                        [src]="getMapUrl(event.location)" allowfullscreen>
+                    </iframe>
+                </div>
+                <div class="p-3 text-center border-top-1 border-gray-100">
                     <a [href]="'https://www.google.com/maps/search/?api=1&query=' + event.location" target="_blank"
-                        class="text-xs text-primary mt-2 cursor-pointer no-underline">Open in Google Maps</a>
+                        class="text-xs text-primary font-bold cursor-pointer no-underline">
+                        <i class="pi pi-external-link mr-1"></i> Open in Google Maps
+                    </a>
                 </div>
             </div>
         </div>

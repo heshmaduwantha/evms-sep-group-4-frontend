@@ -1,11 +1,11 @@
 <div class="manual-checkin-container">
   <!-- Breadcrumb -->
   <div class="breadcrumb">
-    <span class="breadcrumb-item">EVMS</span>
-    <i class="pi pi-angle-right"></i>
-    <span class="breadcrumb-item">Attendance</span>
-    <i class="pi pi-angle-right"></i>
-    <span class="breadcrumb-item active">Manual Check-in</span>
+    <a routerLink="/home">EVMS</a>
+    <span class="separator">/</span>
+    <a routerLink="/attendance">Attendance</a>
+    <span class="separator">/</span>
+    <span class="active">Manual Check-in</span>
   </div>
 
   <!-- Header -->
@@ -123,7 +123,7 @@
       (keyup)="onSearch()">
 
     <select class="filter-select" [(ngModel)]="eventId" (change)="onEventChange()">
-      <option value="" disabled>Select Event</option>
+      <option value="all">All Events</option>
       <option *ngFor="let event of events" [value]="event.id">
         {{ event.title }}
       </option>
@@ -143,6 +143,9 @@
 
   <!-- Volunteers Table -->
   <div class="table-section">
+    <div class="table-header-info p-3 border-bottom-1 border-gray-200">
+      <h3 class="m-0 text-lg font-bold">Volunteers for {{ getSelectedEventName() }}</h3>
+    </div>
     <table class="volunteers-table">
       <thead>
         <tr>
@@ -150,6 +153,7 @@
             <input type="checkbox" class="row-checkbox">
           </th>
           <th>Name</th>
+          <th *ngIf="eventId === 'all'">Event</th>
           <th>Role</th>
           <th>Department</th>
           <th>Check-in Time</th>
@@ -168,6 +172,9 @@
               {{ volunteer.name.charAt(0) }}
             </div>
             <span>{{ volunteer.name }}</span>
+          </td>
+          <td *ngIf="eventId === 'all'">
+            <span class="event-tag">{{ getEventName(volunteer.eventId) }}</span>
           </td>
           <td>{{ volunteer.role }}</td>
           <td>{{ volunteer.department }}</td>

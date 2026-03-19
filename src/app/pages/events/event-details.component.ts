@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
@@ -9,6 +10,7 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { EventService } from './event.service';
+import { ManualCheckinService } from '../manual-checkin/manual-checkin.service';
 import { Event, EventStatus } from './event.models';
 
 @Component({
@@ -36,9 +38,17 @@ export class EventDetailsComponent implements OnInit {
         private route: ActivatedRoute,
         private router: Router,
         private eventService: EventService,
+        private manualCheckinService: ManualCheckinService,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private sanitizer: DomSanitizer
     ) { }
+
+    getMapUrl(location: string): SafeResourceUrl {
+        const encodedLocation = encodeURIComponent(location);
+        const url = `https://maps.google.com/maps?q=${encodedLocation}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
+        return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    }
 
     ngOnInit() {
         const id = this.route.snapshot.paramMap.get('id');
@@ -52,7 +62,35 @@ export class EventDetailsComponent implements OnInit {
         this.eventService.getEventById(id).subscribe({
             next: (data) => {
                 this.event = data;
-                this.loading = false;
+                // Also fetch volunteers from manual check-in to ensure all are shown
+                this.manualCheckinService.getVolunteers(id).subscribe({
+                    next: (res) => {
+                        if (res && res.volunteers) {
+                            // Merge manual check-in volunteers with assigned volunteers if they belong to THIS event
+                            const assignedEmails = new Set((this.event?.volunteers || []).map(v => v.email));
+                            
+                            // Important: Filter strictly by current event ID
+                            const additionalVolunteers = res.volunteers
+                                .filter((v: any) => !assignedEmails.has(v.email) && v.eventId === id)
+                                .map((v: any) => ({
+                                    id: v.id,
+                                    email: v.email,
+                                    name: v.name,
+                                    role: v.role,
+                                    status: v.checkedIn ? 'active' : 'confirmed'
+                                }));
+                            
+                            if (this.event) {
+                                this.event.volunteers = [...(this.event.volunteers || []), ...additionalVolunteers];
+                            }
+                        }
+                        this.loading = false;
+                    },
+                    error: (err) => {
+                        console.error('Error loading manual volunteers:', err);
+                        this.loading = false;
+                    }
+                });
             },
             error: (err) => {
                 console.error(err);

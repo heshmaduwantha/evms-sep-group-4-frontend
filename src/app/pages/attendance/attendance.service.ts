@@ -30,6 +30,10 @@ export class AttendanceService {
     return this.http.get<number>(`${this.apiUrl}/volunteer-count`);
   }
 
+  getApplications(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/applications`);
+  }
+
   updateCheckIn(id: string, data: any): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${id}`, data);
   }

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AttendanceService } from './attendance.service';
+import { EventService } from '../events/event.service';
+import { Event } from '../events/event.models';
 
 @Component({
   selector: 'app-attendance',
@@ -31,10 +33,32 @@ export class AttendanceComponent implements OnInit {
   successMessage = '';
   errorMessage = '';
 
-  constructor(private attendanceService: AttendanceService) { }
+  events: Event[] = [];
+  eventCounts: { title: string, count: number }[] = [];
+
+  constructor(
+    private attendanceService: AttendanceService,
+    private eventService: EventService
+  ) { }
 
   ngOnInit() {
-    this.loadAttendanceData();
+    this.loadEvents();
+  }
+
+  loadEvents() {
+    this.eventService.getEvents().subscribe({
+      next: (events) => {
+        this.events = events;
+        if (this.events.length > 0) {
+          this.eventId = this.events[0].id; // Default for overview
+          this.loadAttendanceData();
+        }
+      },
+      error: (err) => {
+        console.error('Error loading events:', err);
+        this.errorMessage = 'Failed to load events';
+      }
+    });
   }
 
   loadAttendanceData() {
@@ -43,9 +67,22 @@ export class AttendanceComponent implements OnInit {
       error: (err) => console.error('Error loading overview:', err)
     });
 
-    this.attendanceService.getVolunteerRoster(this.eventId).subscribe({
-      next: (data) => this.volunteerRoster = data,
-      error: (err) => console.error('Error loading roster:', err)
+    // Load global roster or aggregate rosters
+    this.volunteerRoster = [];
+    this.eventCounts = [];
+    
+    this.events.forEach(event => {
+      this.attendanceService.getVolunteerRoster(event.id).subscribe({
+        next: (data) => {
+          // Fix: Filter strictly by event.id to ensure each volunteer belongs to this event
+          const filteredData = data.filter((v: any) => v.eventId === event.id);
+          
+          this.eventCounts.push({ title: event.title, count: filteredData.length });
+          const enrichedData = filteredData.map(v => ({ ...v, eventName: event.title }));
+          this.volunteerRoster = [...this.volunteerRoster, ...enrichedData];
+        },
+        error: (err) => console.error(`Error loading roster for ${event.title}:`, err)
+      });
     });
 
     this.attendanceService.getRecentCheckIns(this.eventId).subscribe({
@@ -163,5 +200,17 @@ export class AttendanceComponent implements OnInit {
         setTimeout(() => this.errorMessage = '', 5000);
       }
     });
+  }
+
+  getAvatarColor(name: string): string {
+    const colors = [
+      '#FF3B30', '#FF9500', '#FFCC00', '#4CD964', '#5AC8FA', '#007AFF', '#5856D6', '#FF2D55',
+      '#AF52DE', '#FF375F', '#BF5AF2', '#64D2FF', '#30D158', '#FF9F0A', '#FF453A'
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
   }
 }

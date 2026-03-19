@@ -1,12 +1,12 @@
 <div class="reports-container">
   <!-- Breadcrumb -->
-  <div class="breadcrumb">
-    <span class="breadcrumb-item">EVMS</span>
-    <i class="pi pi-angle-right"></i>
-    <span class="breadcrumb-item">Attendance</span>
-    <i class="pi pi-angle-right"></i>
-    <span class="breadcrumb-item active">Reports</span>
-  </div>
+    <div class="breadcrumb">
+      <a routerLink="/home">EVMS</a>
+      <span class="separator">/</span>
+      <a routerLink="/attendance">Attendance</a>
+      <span class="separator">/</span>
+      <span class="active">Reports</span>
+    </div>
 
   <!-- Header -->
   <div class="header-section">
@@ -35,7 +35,7 @@
       Filters:
     </span>
     <select class="filter-select" [(ngModel)]="eventId" (change)="onEventChange()">
-      <option value="" disabled>Select Event</option>
+      <option value="all">All Events</option>
       <option *ngFor="let event of events" [value]="event.id">
         {{ event.title }}
       </option>
@@ -72,6 +72,7 @@
           <table>
             <thead>
               <tr>
+                <th *ngIf="eventId === 'all'">Event</th>
                 <th>Name</th>
                 <th>Role</th>
                 <th>Dept</th>
@@ -81,9 +82,10 @@
             </thead>
             <tbody>
               <tr *ngFor="let record of attendanceRecords">
+                <td *ngIf="eventId === 'all'" class="font-bold text-sm">{{ getEventName(record.eventId) }}</td>
                 <td class="name-cell">
-                  <div class="avatar">{{ record.name.charAt(0) }}</div>
-                  <span>{{ record.name }}</span>
+                  <div class="avatar" *ngIf="record.name" [style.backgroundColor]="getAvatarColor(record.name)">{{ record.name.charAt(0) }}</div>
+                  <span>{{ record.name || 'Unknown' }}</span>
                 </td>
                 <td>{{ record.role }}</td>
                 <td>{{ record.dept }}</td>
@@ -93,7 +95,7 @@
                 </td>
                 <td class="method-cell">
                   <span class="method-badge" [ngClass]="record.method">
-                    {{ record.method.charAt(0).toUpperCase() }}
+                    {{ (record.method || 'Manual').charAt(0).toUpperCase() }}
                   </span>
                 </td>
               </tr>

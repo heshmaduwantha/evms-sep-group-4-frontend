@@ -19,7 +19,7 @@ export class ReportsComponent implements OnInit {
   filters = {
     status: 'all',
     department: 'all',
-    date: new Date().toISOString().split('T')[0]
+    date: ''
   };
 
   attendanceRecords: any[] = [];
@@ -64,10 +64,9 @@ export class ReportsComponent implements OnInit {
     this.eventService.getEvents().subscribe({
       next: (events) => {
         this.events = events;
-        if (this.events.length > 0) {
-          this.eventId = this.events[0].id;
-          this.loadReports();
-        }
+        // Default to 'all' instead of the first event
+        this.eventId = 'all';
+        this.loadReports();
       },
       error: (err) => console.error('Error loading events:', err)
     });
@@ -78,7 +77,9 @@ export class ReportsComponent implements OnInit {
   }
 
   loadReports() {
-    this.reportsService.getAttendanceReports(this.eventId, this.filters.status, this.filters.department, this.filters.date)
+    const targetEventId = this.eventId === 'all' ? '' : this.eventId;
+
+    this.reportsService.getAttendanceReports(targetEventId, this.filters.status, this.filters.department, this.filters.date)
       .subscribe({
         next: (res) => {
           this.attendanceRecords = res.records;
@@ -87,15 +88,22 @@ export class ReportsComponent implements OnInit {
         error: (err) => console.error('Error loading attendance records:', err)
       });
 
-    this.reportsService.getSummary(this.eventId, this.filters.date).subscribe({
+    this.reportsService.getSummary(targetEventId, this.filters.date).subscribe({
       next: (res) => this.summary = res,
       error: (err) => console.error('Error loading summary:', err)
     });
 
-    this.reportsService.getByDepartment(this.eventId, this.filters.date).subscribe({
+    this.reportsService.getByDepartment(targetEventId, this.filters.date).subscribe({
       next: (res) => this.departmentData = res,
       error: (err) => console.error('Error loading department data:', err)
     });
+  }
+
+  getEventName(eventId: string): string {
+    if (!eventId || eventId === 'None') return 'All Events';
+    if (!this.events || this.events.length === 0) return 'Event ' + eventId;
+    const event = this.events.find(e => e.id === eventId);
+    return event ? event.title : 'Event ' + eventId;
   }
 
   onFilterChange() {
@@ -104,7 +112,10 @@ export class ReportsComponent implements OnInit {
 
   exportPDF() {
     console.log('PDF export triggered');
-    this.reportsService.exportPDF(this.eventId).subscribe({
+    const title = this.getEventName(this.eventId);
+    const friendlyTitle = this.eventId === 'all' ? 'All Events' : title;
+    
+    this.reportsService.exportPDF(this.eventId, friendlyTitle).subscribe({
       next: (res) => {
         if (res.success) {
           const { jspdf } = window as any;
@@ -170,7 +181,10 @@ export class ReportsComponent implements OnInit {
 
   exportCSV() {
     console.log('CSV export triggered');
-    this.reportsService.exportCSV(this.eventId).subscribe({
+    const title = this.getEventName(this.eventId);
+    const friendlyTitle = this.eventId === 'all' ? 'All Events' : title;
+
+    this.reportsService.exportCSV(this.eventId, friendlyTitle).subscribe({
       next: (res) => {
         if (res.success && res.content) {
           const blob = new Blob([res.content], { type: 'text/csv' });
@@ -224,5 +238,18 @@ export class ReportsComponent implements OnInit {
       latePercent: Math.round(latePercent),
       absentPercent: Math.round(absentPercent)
     };
+  }
+
+  getAvatarColor(name: string): string {
+    if (!name) return '#64748b';
+    const colors = [
+      '#FF3B30', '#FF9500', '#FFCC00', '#4CD964', '#5AC8FA', '#007AFF', '#5856D6', '#FF2D55',
+      '#AF52DE', '#FF375F', '#BF5AF2', '#64D2FF', '#30D158', '#FF9F0A', '#FF453A'
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
   }
 }

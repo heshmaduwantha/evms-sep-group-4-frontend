@@ -1,5 +1,5 @@
 <div class="sidebar">
-    <div class="brand">
+    <div class="brand" routerLink="/home" style="cursor: pointer;">
         <i class="pi pi-shield"></i>
         <span>EVMS</span>
     </div>
@@ -40,6 +40,14 @@
                 </div>
             </ng-container>
         </ng-container>
+    </div>
+
+    <div class="menu-divider"></div>
+    <div class="menu" style="flex: none; padding-bottom: 1rem;">
+        <a [routerLink]="['/settings']" routerLinkActive="active" class="menu-item">
+            <i class="pi pi-cog"></i>
+            <span>Settings</span>
+        </a>
     </div>
 
     @if (authService.currentUser | async; as user) {

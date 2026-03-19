@@ -181,12 +181,11 @@
 }
 
 .form-card {
-  background: linear-gradient(135deg, var(--bg-darker) 0%, rgba(15, 20, 25, 0.8) 100%);
+  background: var(--bg-white);
   border: 1px solid var(--border-color);
-
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .form-header {
@@ -201,7 +200,7 @@
 .form-header h3 {
   margin: 0;
   font-size: 1.2rem;
-  color: var(--text-default);
+  color: var(--text-main);
   font-weight: 600;
 }
 
@@ -246,10 +245,10 @@
 .form-select {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: var(--bg-dark);
+  background: var(--bg-white);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  color: var(--text-default);
+  color: var(--text-main);
   font-size: 0.95rem;
   transition: all 0.2s;
   font-family: inherit;
@@ -684,14 +683,14 @@ input:focus + .slider {
 }
 
 .modal-content {
-  background: linear-gradient(135deg, var(--bg-darker) 0%, rgba(15, 20, 25, 0.8) 100%);
+  background: var(--bg-white);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   max-width: 500px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
   animation: slideIn 0.3s ease-out;
 }
 
@@ -722,13 +721,13 @@ input:focus + .slider {
 .modal-header h3 {
   margin: 0;
   font-size: 1.2rem;
-  color: var(--text-default);
+  color: var(--text-main);
   font-weight: 600;
 }
 
 .modal-body {
   padding: 1.5rem;
-  color: var(--text-default);
+  color: var(--text-main);
 }
 
 .modal-body p {

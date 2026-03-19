@@ -32,11 +32,15 @@ export class ReportsService {
     return this.http.get<any[]>(`${this.apiUrl}/by-department`, { params: { eventId, date: date || '' } });
   }
 
-  exportPDF(eventId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/export/pdf`, { params: { eventId } });
+  exportPDF(eventId: string, eventTitle?: string): Observable<any> {
+    const params: any = { eventId };
+    if (eventTitle) params.eventTitle = eventTitle;
+    return this.http.get(`${this.apiUrl}/export/pdf`, { params });
   }
 
-  exportCSV(eventId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/export/csv`, { params: { eventId } });
+  exportCSV(eventId: string, eventTitle?: string): Observable<any> {
+    const params: any = { eventId };
+    if (eventTitle) params.eventTitle = eventTitle;
+    return this.http.get(`${this.apiUrl}/export/csv`, { params });
   }
 }

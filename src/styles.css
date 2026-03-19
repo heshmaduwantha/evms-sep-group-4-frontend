@@ -3,6 +3,12 @@
 @import "primeicons/primeicons.css";
 @import "primeflex/primeflex.css";
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+html {
+    scroll-behavior: smooth;
+}
+
 :root {
     --primary-color: #00d1b2;
     --primary-hover: #00b99f;
@@ -42,4 +48,35 @@ body {
 
 .font-bold {
     font-weight: 700;
+}
+
+/* Global Breadcrumb Styles */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.breadcrumb a {
+    color: #334155 !important;
+    text-decoration: none !important;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.breadcrumb a:hover {
+    color: var(--primary-color) !important;
+}
+
+.breadcrumb .active {
+    color: var(--primary-color) !important;
+    font-weight: 700;
+}
+
+.breadcrumb .separator {
+    color: #94a3b8;
+    margin: 0 0.2rem;
 }

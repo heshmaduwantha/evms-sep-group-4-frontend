@@ -1,12 +1,12 @@
 <div class="attendance-container">
   <!-- Breadcrumb -->
-  <div class="breadcrumb">
-    <span class="breadcrumb-item">EVMS</span>
-    <i class="pi pi-angle-right"></i>
-    <span class="breadcrumb-item">Attendance</span>
-    <i class="pi pi-angle-right"></i>
-    <span class="breadcrumb-item active">Overview</span>
-  </div>
+    <div class="breadcrumb">
+      <a routerLink="/home">EVMS</a>
+      <span class="separator">/</span>
+      <a routerLink="/attendance">Attendance</a>
+      <span class="separator">/</span>
+      <span class="active">Overview</span>
+    </div>
 
   <!-- Header -->
   <div class="header-section">
@@ -59,6 +59,22 @@
 
       <!-- Volunteer Roster -->
       <div class="roster-section">
+        <!-- Event Summary Section -->
+        <div class="event-summary-section mb-4" *ngIf="eventCounts.length > 0">
+          <h3 class="text-sm font-bold text-500 uppercase mb-3">Volunteers by Event</h3>
+          <div class="event-cards-scroll">
+            <div class="event-count-card" *ngFor="let ec of eventCounts">
+              <div class="ec-icon">
+                <i class="pi pi-users"></i>
+              </div>
+              <div class="ec-info">
+                <div class="ec-title">{{ ec.title }}</div>
+                <div class="ec-count">{{ ec.count }} Volunteers</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="roster-header">
           <h2 class="section-title">Volunteer Roster</h2>
           <button class="btn-filter">
@@ -73,6 +89,7 @@
               <tr>
                 <th>Name</th>
                 <th>Role</th>
+                <th>Assigned Event</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -80,10 +97,13 @@
             <tbody>
               <tr *ngFor="let volunteer of volunteerRoster">
                 <td class="name-cell">
-                  <div class="avatar">{{ volunteer.name.charAt(0) }}</div>
+                  <div class="avatar" [style.backgroundColor]="getAvatarColor(volunteer.name)">{{ volunteer.name.charAt(0) }}</div>
                   <span>{{ volunteer.name }}</span>
                 </td>
                 <td>{{ volunteer.role }}</td>
+                <td>
+                  <span class="event-tag">{{ volunteer.eventName }}</span>
+                </td>
                 <td>
                   <span class="status-badge" [ngClass]="getStatusClass(volunteer.status)">
                     {{ getStatusLabel(volunteer.status) }}
@@ -116,7 +136,7 @@
 
         <div class="recent-list">
           <div *ngFor="let checkIn of recentCheckIns" class="recent-item">
-            <div class="recent-avatar">{{ checkIn.name.charAt(0) }}</div>
+            <div class="recent-avatar" [style.backgroundColor]="getAvatarColor(checkIn.name)">{{ checkIn.name.charAt(0) }}</div>
             <div class="recent-info">
               <div class="recent-name">{{ checkIn.name }}</div>
               <div class="recent-time">{{ checkIn.time }} · {{ checkIn.method }}</div>
