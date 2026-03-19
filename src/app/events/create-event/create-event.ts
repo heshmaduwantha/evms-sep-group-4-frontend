@@ -13,11 +13,11 @@ import { EventService } from '../services/event.service';
 
 export class CreateEventComponent implements OnInit {
   constructor(
-  private route: ActivatedRoute,
-  private eventService: EventService,
-  private router: Router,
-  private cdr: ChangeDetectorRef
-) {} 
+    private route: ActivatedRoute,
+    private eventService: EventService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   eventId: string | null = null;
 
@@ -32,29 +32,29 @@ export class CreateEventComponent implements OnInit {
 
   ngOnInit() {
 
-  const id = this.route.snapshot.paramMap.get('id');
+    const id = this.route.snapshot.paramMap.get('id');
 
-  if (id) {
-    this.eventId = id;
-        console.log("Edit mode for event:", this.eventId);
+    if (id) {
+      this.eventId = id;
+      console.log("Edit mode for event:", this.eventId);
 
-    this.eventService.getEventById(this.eventId)
-      .subscribe((event: any) => {
-        
-        console.log("Event loaded:", event);
-        
-        this.eventData.title = event.title;
-        this.eventData.description = event.description;
-        this.eventData.eventDate = event.eventDate;
-        this.eventData.eventTime = event.eventTime;
-        this.eventData.location = event.location;
-        this.eventData.volunteersRequired = event.volunteersRequired;
-        this.cdr.detectChanges();
+      this.eventService.getEventById(this.eventId)
+        .subscribe((event: any) => {
+
+          console.log("Event loaded:", event);
+
+          this.eventData.title = event.title;
+          this.eventData.description = event.description;
+          this.eventData.eventDate = event.eventDate;
+          this.eventData.eventTime = event.eventTime;
+          this.eventData.location = event.location;
+          this.eventData.volunteersRequired = event.volunteersRequired;
+          this.cdr.detectChanges();
         });
 
-  }
+    }
 
-}
+  }
 
   submitEvent() {
     console.log("Event ID:", this.eventId);
@@ -63,29 +63,29 @@ export class CreateEventComponent implements OnInit {
       console.log("Updating event...");
 
       this.eventService.updateEvent(this.eventId, this.eventData)
-      .subscribe((response: any) => {
-        console.log("Event updated:", response);
-        alert("Event updated successfully");
-        this.router.navigate(['/organizer/events']);
+        .subscribe((response: any) => {
+          console.log("Event updated:", response);
+          alert("Event updated successfully");
+          this.router.navigate(['/organizer/events']);
         });
 
 
-        } else {
+    } else {
 
-    console.log("Creating new event...");
+      console.log("Creating new event...");
 
-    this.eventService.createEvent(this.eventData)
-    .subscribe((response: any) => {
-      console.log("Event created:", response);
-      alert("Event created successfully");
-      this.router.navigate(['/organizer/events']);
-      });
+      this.eventService.createEvent(this.eventData)
+        .subscribe((response: any) => {
+          console.log("Event created:", response);
+          alert("Event created successfully");
+          this.router.navigate(['/organizer/events']);
+        });
+
+    }
 
   }
-
-}
- cancelEvent() {
-  this.router.navigate(['/organizer/events']);
-}
+  cancelEvent() {
+    this.router.navigate(['/organizer/events']);
+  }
 
 }

@@ -8,4 +8,4 @@ import { SidebarComponent } from '../../shared/components/sidebar/sidebar';
   imports: [RouterOutlet, SidebarComponent],
   templateUrl: './organizer-dashboard.html'
 })
-export class OrganizerDashboardComponent {}
+export class OrganizerDashboardComponent { }

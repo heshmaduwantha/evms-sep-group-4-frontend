@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './event-list.html',
-  styleUrls: ['./event-list.css']   
+  styleUrls: ['./event-list.css']
 })
 export class EventListComponent implements OnInit {
 
@@ -16,12 +16,14 @@ export class EventListComponent implements OnInit {
   loading = true;
   allEvents: any[] = [];
   today: string = new Date().toISOString().split('T')[0];
+  selectedStatus: string = 'all';
+
 
   constructor(
     private router: Router,
     private eventService: EventService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadEvents();
@@ -31,20 +33,21 @@ export class EventListComponent implements OnInit {
 
     this.loading = true;
 
-  console.log("Loading events...");
-  this.eventService.getEvents().subscribe((data:any) => {
+    console.log("Loading events...");
+    this.eventService.getEvents().subscribe((data: any) => {
 
-    console.log("Events from backend:", data);
-    this.allEvents = data;
+      console.log("Events from backend:", data);
+      console.log("Statuses:", data.map((e: any) => e.status));
+      this.allEvents = data;
 
-    this.events = data;
-    this.loading = false;
-    console.log("events length:", this.events.length);
-    this.cdr.detectChanges();   
+      this.events = data;
+      this.loading = false;
+      console.log("events length:", this.events.length);
+      this.cdr.detectChanges();
 
-  });
+    });
 
-}
+  }
 
   editEvent(id: string) {
     this.router.navigate(['/organizer/create-event', id]);
@@ -62,35 +65,58 @@ export class EventListComponent implements OnInit {
     });
 
   }
-filterStatus(status: string) {
 
-  if (status === 'all') {
-    this.events = this.allEvents;
-    return;
+  cancelEvent(id: string) {
+
+    if (!confirm('Are you sure you want to cancel this event?')) {
+      return;
+    }
+
+    this.eventService.cancelEvent(id).subscribe(() => {
+      this.loadEvents(); // refresh list
+    });
+
   }
 
-  const today = this.today;
 
-  this.events = this.allEvents.filter(event => {
+  filterStatus(status: string) {
 
-    if (!event.eventDate) return false;
+    this.selectedStatus = status;
 
-    if (status === 'upcoming') {
-      return event.eventDate > today;
+    if (status === 'all') {
+      this.events = this.allEvents;
+      return;
     }
 
-    if (status === 'ongoing') {
-      return event.eventDate === today;
-    }
+    const today = this.today;
 
-    if (status === 'completed') {
-      return event.eventDate < today;
-    }
+    this.events = this.allEvents.filter(event => {
 
-    return true;
+      if (!event.eventDate) return false;
 
-  });
+      // CANCELLED stays priority
+      if (event.status === 'CANCELLED') {
+        return status === 'cancelled';
+      }
+
+      if (status === 'upcoming') {
+        return event.eventDate > today;
+      }
+
+      if (status === 'ongoing') {
+        return event.eventDate === today;
+      }
+
+      if (status === 'completed') {
+        return event.eventDate < today;
+      }
+
+      return false;
+
+    });
+
+  }
 
 }
 
-}
+
