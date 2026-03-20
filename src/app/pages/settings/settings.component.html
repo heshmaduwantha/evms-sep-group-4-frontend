@@ -1,4 +1,9 @@
 <div class="settings-container">
+    <div class="breadcrumb mb-4">
+        <a routerLink="/home">Dashboard</a>
+        <span class="separator">/</span>
+        <span class="active">Settings</span>
+    </div>
     <p-card header="User Management" subheader="Review and manage all registered users" styleClass="bg-dark-navy">
         <div *ngIf="error" class="p-4 bg-red-900 border-round mb-3">
             {{ error }}

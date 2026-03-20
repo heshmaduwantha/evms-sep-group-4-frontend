@@ -11,6 +11,9 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { EventService } from './event.service';
 import { ManualCheckinService } from '../manual-checkin/manual-checkin.service';
+import { ApplicationService } from '../applications/application.service';
+import { AuthService } from '../../auth/auth.service';
+import { UserRole } from '../../auth/auth.models';
 import { Event, EventStatus } from './event.models';
 
 @Component({
@@ -33,12 +36,16 @@ import { Event, EventStatus } from './event.models';
 export class EventDetailsComponent implements OnInit {
     event: Event | null = null;
     loading: boolean = true;
+    hasApplied: boolean = false;
+    currentApplicationId: string | null = null;
 
     constructor(
         private route: ActivatedRoute,
         private router: Router,
         private eventService: EventService,
         private manualCheckinService: ManualCheckinService,
+        private applicationService: ApplicationService,
+        private authService: AuthService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
         private sanitizer: DomSanitizer
@@ -62,6 +69,7 @@ export class EventDetailsComponent implements OnInit {
         this.eventService.getEventById(id).subscribe({
             next: (data) => {
                 this.event = data;
+                this.checkApplicationStatus(id);
                 // Also fetch volunteers from manual check-in to ensure all are shown
                 this.manualCheckinService.getVolunteers(id).subscribe({
                     next: (res) => {
@@ -95,6 +103,17 @@ export class EventDetailsComponent implements OnInit {
             error: (err) => {
                 console.error(err);
                 this.loading = false;
+            }
+        });
+    }
+
+    checkApplicationStatus(eventId: string) {
+        this.applicationService.getMyApplications().subscribe({
+            next: (apps) => {
+                const app = apps.find(a => a.event.id === eventId);
+                // Allow re-application if status is rejected
+                this.hasApplied = app ? app.status !== 'rejected' : false;
+                this.currentApplicationId = app ? app.id : null;
             }
         });
     }
@@ -133,29 +152,70 @@ export class EventDetailsComponent implements OnInit {
     }
 
     deleteEvent() {
-        if (!this.event?.id) return;
+        // ... previous implementation ...
+    }
 
+    openApplyModal() {
+        if (!this.event?.id) return;
+        
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete this event? This action cannot be undone.',
-            header: 'Delete Event Confirmation',
-            icon: 'pi pi-exclamation-triangle',
-            acceptLabel: 'Yes, Delete',
-            rejectLabel: 'Cancel',
-            acceptButtonStyleClass: 'p-button-danger',
+            message: 'Are you sure you want to apply for this event?',
+            header: 'Apply Confirmation',
+            icon: 'pi pi-info-circle',
             accept: () => {
                 this.loading = true;
-                this.eventService.deleteEvent(this.event!.id).subscribe({
+                this.applicationService.applyForEvent({ eventId: this.event!.id }).subscribe({
                     next: () => {
-                        this.messageService.add({ severity: 'success', summary: 'Deleted', detail: 'Event deleted successfully' });
-                        setTimeout(() => this.router.navigate(['/events']), 1500);
-                    },
-                    error: (err) => {
-                        console.error(err);
                         this.loading = false;
-                        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete event' });
+                        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Application submitted successfully' });
+                        this.loadEvent(this.event!.id);
+                    },
+                    error: (err: any) => {
+                        this.loading = false;
+                        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'Failed to submit application' });
                     }
                 });
             }
         });
+    }
+
+    withdrawApplication() {
+        if (!this.currentApplicationId) return;
+
+        this.confirmationService.confirm({
+            message: 'Are you sure you want to withdraw your application?',
+            header: 'Withdraw Confirmation',
+            icon: 'pi pi-exclamation-triangle',
+            accept: () => {
+                this.loading = true;
+                this.applicationService.deleteApplication(this.currentApplicationId!).subscribe({
+                    next: () => {
+                        this.loading = false;
+                        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Application withdrawn' });
+                        this.loadEvent(this.event!.id);
+                    },
+                    error: (err: any) => {
+                        this.loading = false;
+                        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'Failed to withdraw' });
+                    }
+                });
+            }
+        });
+    }
+
+    isVolunteer(): boolean {
+        let isVol = false;
+        this.authService.currentUser.subscribe(user => {
+            isVol = user?.role === UserRole.VOLUNTEER;
+        });
+        return isVol;
+    }
+
+    isOrganizer(): boolean {
+        let isOrg = false;
+        this.authService.currentUser.subscribe(user => {
+            isOrg = user?.role === UserRole.ORGANIZER || user?.role === UserRole.ADMIN;
+        });
+        return isOrg;
     }
 }

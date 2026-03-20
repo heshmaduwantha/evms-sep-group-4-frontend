@@ -1,177 +1,151 @@
 <div class="reports-container">
-  <!-- Breadcrumb -->
-    <div class="breadcrumb">
-      <a routerLink="/home">EVMS</a>
-      <span class="separator">/</span>
-      <a routerLink="/attendance">Attendance</a>
-      <span class="separator">/</span>
-      <span class="active">Reports</span>
+    <div class="breadcrumb mb-4">
+        <a routerLink="/home">Dashboard</a>
+        <span class="separator">/</span>
+        <span class="active">Attendance Reports</span>
     </div>
 
-  <!-- Header -->
-  <div class="header-section">
-    <div>
-      <h1 class="page-title">Attendance Reports</h1>
-      <p class="page-subtitle">Analyze and export attendance data</p>
-    </div>
-    <div class="export-buttons">
-      <button class="btn-export pdf" (click)="exportPDF()">
-        <i class="pi pi-file-pdf"></i>
-        Export PDF
-        <i class="pi pi-download"></i>
-      </button>
-      <button class="btn-export csv" (click)="exportCSV()">
-        <i class="pi pi-file-excel"></i>
-        Export CSV
-        <i class="pi pi-download"></i>
-      </button>
-    </div>
-  </div>
-
-  <!-- Filters -->
-  <div class="filters-section">
-    <span class="filter-label">
-      <i class="pi pi-filter"></i>
-      Filters:
-    </span>
-    <select class="filter-select" [(ngModel)]="eventId" (change)="onEventChange()">
-      <option value="all">All Events</option>
-      <option *ngFor="let event of events" [value]="event.id">
-        {{ event.title }}
-      </option>
-    </select>
-
-    <select class="filter-select" [(ngModel)]="filters.status" (change)="onFilterChange()">
-      <option *ngFor="let opt of statusOptions" [value]="opt.value">
-        {{ opt.label }}
-      </option>
-    </select>
-
-    <select class="filter-select" [(ngModel)]="filters.department" (change)="onFilterChange()">
-      <option *ngFor="let opt of departmentOptions" [value]="opt.value">
-        {{ opt.label }}
-      </option>
-    </select>
-
-    <div class="date-picker">
-      <input type="date" [(ngModel)]="filters.date" (change)="onFilterChange()" class="date-input">
-    </div>
-  </div>
-
-  <div class="content-wrapper">
-    <!-- Main Content -->
-    <div class="main-content">
-      <!-- Attendance Records Table -->
-      <div class="records-section">
-        <div class="records-header">
-          <h2 class="section-title">Attendance Records</h2>
-          <span class="record-count">{{ totalRecords }} records</span>
+    <!-- Header Section -->
+    <div class="header-section mb-5">
+        <div class="title-wrap">
+            <h1 class="page-title">Attendance Reports</h1>
+            <p class="page-subtitle text-500">Deeper insights into your event participation and volunteer metrics.</p>
         </div>
-
-        <div class="records-table">
-          <table>
-            <thead>
-              <tr>
-                <th *ngIf="eventId === 'all'">Event</th>
-                <th>Name</th>
-                <th>Role</th>
-                <th>Dept</th>
-                <th>Status</th>
-                <th>Method</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let record of attendanceRecords">
-                <td *ngIf="eventId === 'all'" class="font-bold text-sm">{{ getEventName(record.eventId) }}</td>
-                <td class="name-cell">
-                  <div class="avatar" *ngIf="record.name" [style.backgroundColor]="getAvatarColor(record.name)">{{ record.name.charAt(0) }}</div>
-                  <span>{{ record.name || 'Unknown' }}</span>
-                </td>
-                <td>{{ record.role }}</td>
-                <td>{{ record.dept }}</td>
-                <td>
-                  <span class="status-dot" [ngClass]="getStatusClass(record.status)"></span>
-                  {{ getStatusLabel(record.status) }}
-                </td>
-                <td class="method-cell">
-                  <span class="method-badge" [ngClass]="record.method">
-                    {{ (record.method || 'Manual').charAt(0).toUpperCase() }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="export-actions flex gap-3">
+            <button pButton label="Export PDF" icon="pi pi-file-pdf" class="p-button-rounded p-button-outlined p-button-secondary" (click)="exportPDF()"></button>
+            <button pButton label="Export CSV" icon="pi pi-file-excel" class="p-button-rounded p-button-outlined p-button-secondary" (click)="exportCSV()"></button>
         </div>
-      </div>
     </div>
 
-    <!-- Sidebar -->
-    <div class="sidebar-section">
-      <!-- Summary Panel -->
-      <div class="summary-card">
-        <h3 class="card-title">Summary</h3>
-
-        <div class="summary-item">
-          <span class="summary-label">Total</span>
-          <span class="summary-value">{{ summary.total }}</span>
-        </div>
-
-        <div class="summary-item present">
-          <span class="summary-label">Present</span>
-          <span class="summary-value">{{ summary.present }}</span>
-        </div>
-
-        <div class="summary-item late">
-          <span class="summary-label">Late</span>
-          <span class="summary-value">{{ summary.late }}</span>
-        </div>
-
-        <div class="summary-item absent">
-          <span class="summary-label">Absent</span>
-          <span class="summary-value">{{ summary.absent }}</span>
-        </div>
-
-        <div class="summary-divider"></div>
-
-
-        <div class="summary-item manual">
-          <span class="summary-label">Manual</span>
-          <span class="summary-value">{{ summary.manualCheckedIn }}</span>
-        </div>
-
-        <div class="attendance-rate-section">
-          <span class="rate-label">Attendance Rate</span>
-          <div class="rate-bar">
-            <div class="rate-fill" [style.width.%]="summary.attendanceRate"></div>
-          </div>
-          <span class="rate-value">{{ summary.attendanceRate }}%</span>
-        </div>
-      </div>
-
-      <!-- Department Chart -->
-      <div class="department-card">
-        <h3 class="card-title">By Department</h3>
-
-        <div class="department-list">
-          <div *ngFor="let dept of departmentData" class="department-item">
-            <div class="dept-header">
-              <span class="dept-name">{{ dept.department }}</span>
-              <span class="dept-count">{{ dept.total }}</span>
+    <!-- Filters Bar -->
+    <div class="filters-card mb-5">
+        <div class="flex flex-wrap gap-4 align-items-center">
+            <div class="filter-group">
+                <label class="block text-xs font-bold text-500 mb-2 uppercase tracking-wider">Target Event</label>
+                <p-dropdown [options]="events" [(ngModel)]="eventId" optionLabel="title" optionValue="id" 
+                    placeholder="All Events" [showClear]="true" (onChange)="onEventChange()" styleClass="premium-dropdown"></p-dropdown>
             </div>
-            <div class="dept-bars">
-              <div class="bar-segment present" [style.width.%]="getDepartmentPercentages(dept).presentPercent"
-                [title]="dept.present + ' present'">
-              </div>
-              <div class="bar-segment late" [style.width.%]="getDepartmentPercentages(dept).latePercent"
-                [title]="dept.late + ' late'">
-              </div>
-              <div class="bar-segment absent" [style.width.%]="getDepartmentPercentages(dept).absentPercent"
-                [title]="dept.absent + ' absent'">
-              </div>
+
+            <div class="filter-group">
+                <label class="block text-xs font-bold text-500 mb-2 uppercase tracking-wider">Attendance Status</label>
+                <p-dropdown [options]="statusOptions" [(ngModel)]="filters.status" 
+                    (onChange)="onFilterChange()" styleClass="premium-dropdown"></p-dropdown>
             </div>
-          </div>
+
+            <div class="filter-group">
+                <label class="block text-xs font-bold text-500 mb-2 uppercase tracking-wider">Department</label>
+                <p-dropdown [options]="departmentOptions" [(ngModel)]="filters.department" 
+                    (onChange)="onFilterChange()" styleClass="premium-dropdown"></p-dropdown>
+            </div>
+
+            <div class="filter-group">
+                <label class="block text-xs font-bold text-500 mb-2 uppercase tracking-wider">Date Range</label>
+                <p-calendar [(ngModel)]="filters.date" (onSelect)="onFilterChange()" 
+                    placeholder="Select Date" [showIcon]="true" styleClass="premium-calendar"></p-calendar>
+            </div>
+
+            <div class="filter-group align-self-end pb-1">
+                <button pButton icon="pi pi-refresh" class="p-button-rounded p-button-text p-button-secondary" (click)="loadReports()" pTooltip="Reload Data"></button>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+
+    <div class="main-grid grid">
+        <!-- Main Stats & Table -->
+        <div class="col-12 xl:col-8">
+            <div class="table-card glass-panel">
+                <div class="flex justify-content-between align-items-center mb-4 p-2">
+                    <h3 class="m-0 font-bold">Participation Records</h3>
+                    <span class="text-sm font-semibold text-500">{{ totalRecords }} matches found</span>
+                </div>
+                
+                <p-table [value]="attendanceRecords" [paginator]="true" [rows]="10" styleClass="p-datatable-sm no-border">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th *ngIf="eventId === 'all'">Event</th>
+                            <th>Volunteer</th>
+                            <th>Role & Dept</th>
+                            <th>Status</th>
+                            <th>Check-in</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-record>
+                        <tr>
+                            <td *ngIf="eventId === 'all'">
+                                <span class="font-semibold text-sm">{{ getEventName(record.eventId) }}</span>
+                            </td>
+                            <td>
+                                <div class="flex align-items-center gap-2">
+                                    <div class="small-avatar" [style.backgroundColor]="getAvatarColor(record.name)">{{ record.name?.charAt(0) }}</div>
+                                    <span class="font-bold text-900">{{ record.name || 'Anonymous' }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-sm font-semibold text-700">{{ record.role }}</div>
+                                <div class="text-xs text-500">{{ record.dept }}</div>
+                            </td>
+                            <td>
+                                <div class="flex align-items-center gap-2">
+                                    <span class="status-dot" [ngClass]="getStatusClass(record.status)"></span>
+                                    <span class="text-sm font-medium">{{ getStatusLabel(record.status) }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="text-xs font-mono text-500">{{ record.time || '--:--' }}</span>
+                                <span class="ml-2 method-pill" [ngClass]="record.method">{{ record.method }}</span>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+
+        <!-- Sidebar Summary -->
+        <div class="col-12 xl:col-4">
+            <div class="summary-vitals glass-panel mb-4">
+                <h3 class="font-bold mb-4">Participation Summary</h3>
+                <div class="vital-grid grid">
+                    <div class="col-6 mb-3">
+                        <div class="vital-card present">
+                            <span class="label">Present</span>
+                            <span class="value">{{ summary.present }}</span>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="vital-card late">
+                            <span class="label">Late</span>
+                            <span class="value">{{ summary.late }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rate-container mt-4">
+                    <div class="flex justify-content-between mb-2">
+                        <span class="font-bold text-sm">Attendance Rate</span>
+                        <span class="font-bold text-primary">{{ summary.attendanceRate }}%</span>
+                    </div>
+                    <div class="rate-bar-bg">
+                        <div class="rate-bar-fill" [style.width.%]="summary.attendanceRate"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dept-vitals glass-panel">
+                <h3 class="font-bold mb-4">Department Breakdown</h3>
+                <div class="dept-list">
+                    <div *ngFor="let dept of departmentData" class="dept-metric mb-3">
+                        <div class="flex justify-content-between mb-2">
+                            <span class="text-sm font-bold">{{ dept.department }}</span>
+                            <span class="text-sm text-500">{{ dept.total }} total</span>
+                        </div>
+                        <div class="dept-multi-bar">
+                            <div class="segment present" [style.width.%]="getDepartmentPercentages(dept).presentPercent"></div>
+                            <div class="segment late" [style.width.%]="getDepartmentPercentages(dept).latePercent"></div>
+                            <div class="segment absent" [style.width.%]="getDepartmentPercentages(dept).absentPercent"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

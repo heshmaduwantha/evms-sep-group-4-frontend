@@ -4,11 +4,19 @@ import { FormsModule } from '@angular/forms';
 import { ReportsService } from './reports.service';
 import { EventService } from '../events/event.service';
 import { Event } from '../events/event.models';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
+import { DropdownModule } from 'primeng/dropdown';
+import { CalendarModule } from 'primeng/calendar';
+import { ButtonModule } from 'primeng/button';
+import { TooltipModule } from 'primeng/tooltip';
+import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DropdownModule, CalendarModule, ButtonModule, TooltipModule, TableModule],
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.css']
 })
@@ -118,13 +126,7 @@ export class ReportsComponent implements OnInit {
     this.reportsService.exportPDF(this.eventId, friendlyTitle).subscribe({
       next: (res) => {
         if (res.success) {
-          const { jspdf } = window as any;
-          if (!jspdf) {
-            console.error('jsPDF not loaded');
-            return;
-          }
-
-          const doc = new jspdf.jsPDF();
+          const doc = new jsPDF();
           const reportData = res.data;
 
           doc.setFontSize(20);
@@ -149,7 +151,7 @@ export class ReportsComponent implements OnInit {
             ['Attendance Rate', `${summary.attendanceRate}%`]
           ];
 
-          (doc as any).autoTable({
+          autoTable(doc, {
             startY: 50,
             head: [['Metric', 'Value']],
             body: summaryRows,
@@ -164,7 +166,7 @@ export class ReportsComponent implements OnInit {
             r.name, r.role, r.dept, r.status, r.time || '-', r.method.toUpperCase()
           ]);
 
-          (doc as any).autoTable({
+          autoTable(doc, {
             startY: (doc as any).lastAutoTable.finalY + 20,
             head: [['Name', 'Role', 'Department', 'Status', 'Time', 'Method']],
             body: recordRows,

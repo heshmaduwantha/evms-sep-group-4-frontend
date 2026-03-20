@@ -30,6 +30,7 @@ export class HomeComponent implements OnInit {
   nearestEvent: any = null;
   recentEvents: any[] = [];
   recentApplications: any[] = [];
+  recentCheckIns: any[] = [];
   alerts: any[] = [];
 
   constructor(
@@ -71,6 +72,15 @@ export class HomeComponent implements OnInit {
           color: this.getAvatarColor(app.name)
         }));
         this.stats.pendingApplications.value = apps.length;
+      }
+    });
+
+    this.attendanceService.getRecentCheckIns('all').subscribe({
+      next: (checkins) => {
+        this.recentCheckIns = checkins.map(c => ({
+          ...c,
+          color: this.getAvatarColor(c.name)
+        }));
       }
     });
   }

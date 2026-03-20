@@ -188,6 +188,41 @@
                     <button pButton label="Bulk Review" class="p-button-outlined p-button-sm w-full mt-2" icon="pi pi-list"></button>
                 </div>
             </div>
+
+            <!-- Recent Check-ins Section -->
+            <div class="section-card mt-4 border-round-xl shadow-1">
+                <div class="section-header flex justify-content-between align-items-center mb-4">
+                    <div class="flex align-items-center gap-2">
+                        <h2 class="m-0 text-xl font-bold text-900 border-none">Recent Check-ins</h2>
+                        <i class="pi pi-check-circle text-green-500 font-bold" style="font-size: 1.1rem;"></i>
+                    </div>
+                    <a routerLink="/attendance" class="view-all text-sm font-semibold text-primary no-underline hover:underline">
+                        View all <i class="pi pi-chevron-right text-xs"></i>
+                    </a>
+                </div>
+
+                <div class="checkins-list overflow-auto pr-2" style="max-height: 380px;">
+                    <div class="checkin-item mb-4 flex align-items-center justify-content-between animation-duration-200" *ngFor="let checkin of recentCheckIns">
+                        <div class="flex align-items-center gap-3">
+                            <p-avatar [label]="checkin.name.charAt(0)" shape="circle" size="large" [style]="{'background-color': checkin.color, 'color': '#ffffff', 'font-weight': 'bold'}"></p-avatar>
+                            <div class="flex flex-column">
+                                <span class="text-sm font-bold text-900">{{ checkin.name }}</span>
+                                <div class="flex align-items-center gap-2 mt-1">
+                                    <span class="text-xs text-500">{{ checkin.time }}</span>
+                                    <span class="dot" [ngClass]="checkin.method === 'online' ? 'bg-green-500' : 'bg-blue-500'" style="width: 5px; height: 5px; border-radius: 50%;"></span>
+                                    <span class="text-xs text-500 font-bold uppercase tracking-wider" style="font-size: 0.6rem;">{{ checkin.method }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p-tag [value]="checkin.status === 'present' ? 'Present' : 'Late'" [severity]="checkin.status === 'present' ? 'success' : 'warning'" [rounded]="true" styleClass="text-xs px-2"></p-tag>
+                    </div>
+                    
+                    <div *ngIf="recentCheckIns.length === 0" class="flex flex-column align-items-center justify-content-center p-5 text-400 border-2 border-dashed border-round-xl surface-50">
+                        <i class="pi pi-clock mb-2 text-2xl opacity-50"></i>
+                        <span class="text-sm">No activity records yet</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

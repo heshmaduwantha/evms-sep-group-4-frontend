@@ -155,8 +155,9 @@ export class SidebarComponent implements OnInit {
   navItems = [
     { label: 'Dashboard', icon: 'pi pi-th-large', link: '/home', roles: [UserRole.VOLUNTEER, UserRole.ORGANIZER, UserRole.ADMIN] },
     { label: 'Events Hub', icon: 'pi pi-calendar', link: '/events', roles: [UserRole.VOLUNTEER, UserRole.ORGANIZER, UserRole.ADMIN] },
-    { label: 'Event Management', icon: 'pi pi-list', link: '/events/manage', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
-    { label: 'Applications', icon: 'pi pi-file', link: '/applications', roles: [UserRole.VOLUNTEER, UserRole.ORGANIZER, UserRole.ADMIN] },
+    { label: 'Event Management', icon: 'pi pi-list', link: '/events/manage', roles: [UserRole.ADMIN] },
+    { label: 'Applications', icon: 'pi pi-file', link: '/applications', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
+    { label: 'My Applications', icon: 'pi pi-file', link: '/my-applications', roles: [UserRole.VOLUNTEER] },
     { label: 'Roles', icon: 'pi pi-users', link: '/roles', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
     {
       label: 'Attendance',
@@ -169,7 +170,7 @@ export class SidebarComponent implements OnInit {
       children: [
         { label: 'Overview', icon: 'pi pi-eye', link: '/attendance', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
         { label: 'Manual Check-in', icon: 'pi pi-user-plus', link: '/manual-checkin', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
-        { label: 'Reports', icon: 'pi pi-chart-bar', link: '/reports', roles: [UserRole.ORGANIZER, UserRole.ADMIN ] }
+        { label: 'Attendance Reports', icon: 'pi pi-chart-bar', link: '/reports', roles: [UserRole.ORGANIZER, UserRole.ADMIN ] }
       ]
     },
     { label: 'Settings', icon: 'pi pi-cog', link: '/settings', roles: [UserRole.ORGANIZER, UserRole.VOLUNTEER, UserRole.ADMIN], isBottom: true }

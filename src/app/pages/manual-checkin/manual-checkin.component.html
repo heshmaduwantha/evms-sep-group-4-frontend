@@ -1,7 +1,7 @@
 <div class="manual-checkin-container">
   <!-- Breadcrumb -->
   <div class="breadcrumb">
-    <a routerLink="/home">EVMS</a>
+    <a routerLink="/home">Dashboard</a>
     <span class="separator">/</span>
     <a routerLink="/attendance">Attendance</a>
     <span class="separator">/</span>
@@ -167,11 +167,12 @@
             <input type="checkbox" class="row-checkbox" [checked]="isSelected(volunteer.id)"
               (change)="toggleSelection(volunteer.id)">
           </td>
-          <td class="name-cell" (click)="openEditForm(volunteer)" style="cursor: pointer;">
+          <td class="name-cell" (click)="volunteer.checkInMethod !== 'online' && openEditForm(volunteer)" [style.cursor]="volunteer.checkInMethod === 'online' ? 'default' : 'pointer'">
             <div class="avatar" [style.backgroundColor]="getAvatarColor(volunteer.name)">
               {{ volunteer.name.charAt(0) }}
             </div>
             <span>{{ volunteer.name }}</span>
+            <span *ngIf="volunteer.checkInMethod === 'online'" class="online-badge ml-2">Online</span>
           </td>
           <td *ngIf="eventId === 'all'">
             <span class="event-tag">{{ getEventName(volunteer.eventId) }}</span>
@@ -182,18 +183,19 @@
             {{ volunteer.time || '-' }}
           </td>
           <td class="status-cell">
-            <label class="toggle-switch">
-              <input type="checkbox" [checked]="volunteer.checkedIn" (change)="onToggleCheckin(volunteer)">
+            <label class="toggle-switch" [class.disabled]="volunteer.checkInMethod === 'online'">
+              <input type="checkbox" [checked]="volunteer.checkedIn" (change)="onToggleCheckin(volunteer)" [disabled]="volunteer.checkInMethod === 'online'">
               <span class="slider"></span>
             </label>
           </td>
           <td class="actions-cell">
-            <button class="btn-action edit" (click)="openEditForm(volunteer)" title="Edit">
+            <button *ngIf="volunteer.checkInMethod !== 'online'" class="btn-action edit" (click)="openEditForm(volunteer)" title="Edit">
               <i class="pi pi-pencil"></i>
             </button>
-            <button class="btn-action delete" (click)="openDeleteConfirm(volunteer.id)" title="Delete">
+            <button *ngIf="volunteer.checkInMethod !== 'online'" class="btn-action delete" (click)="openDeleteConfirm(volunteer.id)" title="Delete">
               <i class="pi pi-trash"></i>
             </button>
+            <span *ngIf="volunteer.checkInMethod === 'online'" class="text-xs text-500">Portal Entry</span>
           </td>
         </tr>
       </tbody>

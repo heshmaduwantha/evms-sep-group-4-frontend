@@ -1,11 +1,11 @@
 <div class="details-container" *ngIf="event">
     <div class="header">
         <div class="breadcrumb">
-            <a routerLink="/home">EVMS</a>
+            <a routerLink="/home">Dashboard</a>
             <span class="separator">/</span>
-            <a routerLink="/events">Events</a>
+            <a routerLink="/events">Events Hub</a>
             <span class="separator">/</span>
-            <span class="active">Event Details</span>
+            <span class="active">Details</span>
         </div>
     </div>
 
@@ -20,7 +20,7 @@
                     </div>
                     <div class="organizer-info text-right">
                         <div class="text-xs text-500 font-semibold mb-1">ORGANIZER</div>
-                        <div class="font-bold">{{event.organizer?.email || 'System Admin'}}</div>
+                        <div class="font-bold">{{event.organizer.email || 'System Admin'}}</div>
                     </div>
                 </div>
 
@@ -54,7 +54,7 @@
             <div class="card assigned-volunteers p-4">
                 <div class="flex justify-content-between align-items-center mb-4">
                     <h3 class="font-bold m-0">Assigned Volunteers</h3>
-                    <p-tag [value]="(event.volunteers?.length || 0) + ' Active Participants'" severity="info"></p-tag>
+                    <p-tag [value]="(event.volunteers.length || 0) + ' Active Participants'" severity="info"></p-tag>
                 </div>
 
                 <p-table [value]="event.volunteers || []" [rows]="5" [paginator]="true" styleClass="p-datatable-sm">
@@ -83,7 +83,7 @@
                     </ng-template>
                 </p-table>
                 <div class="text-center mt-3">
-                    <a class="text-primary font-bold cursor-pointer">View All {{event.volunteers?.length || 0}}
+                    <a class="text-primary font-bold cursor-pointer">View All {{event.volunteers.length || 0}}
                         Volunteers</a>
                 </div>
             </div>
@@ -94,19 +94,27 @@
             <p-confirmDialog></p-confirmDialog>
             <div class="card actions-card p-4 mb-4">
                 <h3 class="font-bold text-xs text-500 mb-3 uppercase">Event Actions</h3>
-                <div class="mb-3">
+                <div class="mb-3" *ngIf="isOrganizer()">
                     <p-button label="Edit Event" icon="pi pi-pencil" severity="success" styleClass="w-full"
                         [routerLink]="['/events/edit', event.id]"></p-button>
                 </div>
-                <div class="mb-3">
+                <div class="mb-3" *ngIf="isOrganizer()">
                     <p-button [label]="event.status === 'active' ? 'Unpublish Event' : 'Publish Event'"
                         [icon]="event.status === 'active' ? 'pi pi-eye-slash' : 'pi pi-globe'" severity="secondary"
                         [outlined]="true" styleClass="w-full" (onClick)="togglePublishStatus()">
                     </p-button>
                 </div>
-                <div>
+                <div *ngIf="isOrganizer()">
                     <p-button label="Delete Event" icon="pi pi-trash" severity="danger" [outlined]="true"
                         styleClass="w-full" (onClick)="deleteEvent()"></p-button>
+                </div>
+
+                <!-- Volunteer Actions -->
+                <div *ngIf="isVolunteer()">
+                    <p-button label="Apply for event" icon="pi pi-send" severity="success" 
+                        styleClass="w-full" (onClick)="openApplyModal()" *ngIf="!hasApplied"></p-button>
+                    <p-button label="Withdraw Application" icon="pi pi-times" severity="danger" [outlined]="true"
+                        styleClass="w-full mt-3" (onClick)="withdrawApplication()" *ngIf="hasApplied"></p-button>
                 </div>
 
                 <div class="mt-4 text-center">

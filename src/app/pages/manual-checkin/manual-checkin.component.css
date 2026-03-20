@@ -769,3 +769,24 @@ input:focus + .slider {
   box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
 }
 
+.online-badge {
+  background: #00d1b2;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-left: 8px;
+  display: inline-block;
+}
+
+.toggle-switch.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.toggle-switch.disabled .slider {
+  cursor: not-allowed;
+}
+

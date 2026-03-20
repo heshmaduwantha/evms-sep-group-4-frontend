@@ -49,10 +49,9 @@ export class AttendanceComponent implements OnInit {
     this.eventService.getEvents().subscribe({
       next: (events) => {
         this.events = events;
-        if (this.events.length > 0) {
-          this.eventId = this.events[0].id; // Default for overview
-          this.loadAttendanceData();
-        }
+        // Use 'all' for the overall attendance overview
+        this.eventId = 'all';
+        this.loadAttendanceData();
       },
       error: (err) => {
         console.error('Error loading events:', err);
@@ -62,29 +61,38 @@ export class AttendanceComponent implements OnInit {
   }
 
   loadAttendanceData() {
+    // 1. Load Stats Card Data
     this.attendanceService.getAttendanceOverview(this.eventId).subscribe({
       next: (data) => this.attendanceData = data,
       error: (err) => console.error('Error loading overview:', err)
     });
 
-    // Load global roster or aggregate rosters
-    this.volunteerRoster = [];
+    // 2. Load Roster and Event Counts
     this.eventCounts = [];
-    
-    this.events.forEach(event => {
-      this.attendanceService.getVolunteerRoster(event.id).subscribe({
-        next: (data) => {
-          // Fix: Filter strictly by event.id to ensure each volunteer belongs to this event
-          const filteredData = data.filter((v: any) => v.eventId === event.id);
-          
-          this.eventCounts.push({ title: event.title, count: filteredData.length });
-          const enrichedData = filteredData.map(v => ({ ...v, eventName: event.title }));
-          this.volunteerRoster = [...this.volunteerRoster, ...enrichedData];
-        },
-        error: (err) => console.error(`Error loading roster for ${event.title}:`, err)
-      });
+    this.attendanceService.getVolunteerRoster(this.eventId).subscribe({
+      next: (data) => {
+        this.volunteerRoster = data.map(v => ({ 
+          ...v, 
+          eventName: v.eventId ? this.getEventName(v.eventId) : 'All Events' 
+        }));
+        
+        // Calculate event counts from the aggregate roster
+        const countsMap = new Map<string, number>();
+        this.events.forEach(e => countsMap.set(e.title, 0));
+        
+        this.volunteerRoster.forEach(v => {
+          if (v.eventId) {
+            const eName = this.getEventName(v.eventId);
+            countsMap.set(eName, (countsMap.get(eName) || 0) + 1);
+          }
+        });
+
+        this.eventCounts = Array.from(countsMap.entries()).map(([title, count]) => ({ title, count }));
+      },
+      error: (err) => console.error('Error loading roster:', err)
     });
 
+    // 3. Load Recent Check-ins
     this.attendanceService.getRecentCheckIns(this.eventId).subscribe({
       next: (data) => this.recentCheckIns = data,
       error: (err) => console.error('Error loading recent checkins:', err)
@@ -212,5 +220,10 @@ export class AttendanceComponent implements OnInit {
         hash = name.charCodeAt(i) + ((hash << 5) - hash);
     }
     return colors[Math.abs(hash) % colors.length];
+  }
+
+  getEventName(eventId: string): string {
+    const event = this.events.find(e => e.id === eventId);
+    return event ? event.title : 'Unknown Event';
   }
 }

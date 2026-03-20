@@ -93,63 +93,38 @@ export class ManualCheckinComponent implements OnInit {
   }
 
   loadVolunteers() {
-    if (this.eventId === 'all') {
-      const requests = this.events.map(event =>
-        this.manualCheckinService.getVolunteers(event.id, this.searchQuery, this.selectedFilter).pipe(
-          map(res => ({ ...res, eventId: event.id }))
-        )
-      );
-
-      forkJoin(requests).subscribe({
-        next: (results) => {
-          let allVolunteers: any[] = [];
-          
-          results.forEach((res: any) => {
-            // Strictly filter by result eventId to ensure we only get volunteers for THIS event
-            const filtered = (res.volunteers || []).filter((v: any) => v.eventId === res.eventId);
-            allVolunteers = [...allVolunteers, ...filtered];
-          });
-
-          this.volunteers = allVolunteers;
-          
-          // Recalculate summary locally based on aggregated filtered data
-          const total = this.volunteers.length;
-          const checkedIn = this.volunteers.filter(v => v.checkedIn).length;
-          
-          this.summary = {
-            total: total,
-            checkedIn: checkedIn,
-            absent: total - checkedIn
-          };
-        },
-        error: (err) => {
-          console.error('Error loading aggregated volunteers:', err);
-          this.errorMessage = 'Failed to load volunteers from all events';
-        }
-      });
-    } else {
-      this.manualCheckinService.getVolunteers(this.eventId, this.searchQuery, this.selectedFilter)
-        .subscribe({
-          next: (res) => {
-            // Strict filter: only show volunteers who actually belong to this event
+    this.manualCheckinService.getVolunteers(this.eventId, this.searchQuery, this.selectedFilter)
+      .subscribe({
+        next: (res) => {
+          // If eventId is specific, verify results. If 'all', trust backend consolidation.
+          if (this.eventId !== 'all') {
             this.volunteers = (res.volunteers || []).filter((v: any) => v.eventId === this.eventId);
-            
-            // Recalculate summary locally based on filtered data
+          } else {
+            this.volunteers = res.volunteers || [];
+          }
+          
+          // Use summary from response directly if available, else calculate locally
+          if (res.total !== undefined && res.checkedIn !== undefined) {
+            this.summary = {
+              total: res.total,
+              checkedIn: res.checkedIn,
+              absent: res.total - res.checkedIn
+            };
+          } else {
             const total = this.volunteers.length;
             const checkedIn = this.volunteers.filter(v => v.checkedIn).length;
-            
             this.summary = {
               total: total,
               checkedIn: checkedIn,
               absent: total - checkedIn
             };
-          },
-          error: (err) => {
-            console.error('Error loading volunteers:', err);
-            this.errorMessage = 'Failed to load volunteers';
           }
-        });
-    }
+        },
+        error: (err) => {
+          console.error('Error loading volunteers:', err);
+          this.errorMessage = 'Failed to load volunteers';
+        }
+      });
   }
 
   onSearch() {
@@ -163,6 +138,10 @@ export class ManualCheckinComponent implements OnInit {
   onToggleCheckin(volunteer: any) {
     const newStatus = !volunteer.checkedIn;
     const targetEventId = volunteer.eventId || this.eventId;
+    
+    if (volunteer.checkInMethod === 'online') {
+      return; // Can't edit portal check-ins
+    }
     
     this.manualCheckinService.updateCheckin(targetEventId, volunteer.id, { checkedIn: newStatus })
       .subscribe({

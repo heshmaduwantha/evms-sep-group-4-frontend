@@ -10,6 +10,8 @@ import { EventListComponent } from './pages/events/event-list.component';
 import { EventManagementComponent } from './pages/events/event-management.component';
 import { EventFormComponent } from './pages/events/event-form.component';
 import { EventDetailsComponent } from './pages/events/event-details.component';
+import { ApplicationManagementComponent } from './pages/applications/application-management.component';
+import { MyApplicationsComponent } from './pages/applications/my-applications.component';
 
 export const routes: Routes = [
     {
@@ -27,6 +29,8 @@ export const routes: Routes = [
             { path: 'attendance', component: AttendanceComponent },
             { path: 'reports', component: ReportsComponent },
             { path: 'manual-checkin', component: ManualCheckinComponent },
+            { path: 'applications', component: ApplicationManagementComponent },
+            { path: 'my-applications', component: MyApplicationsComponent },
             { path: '', redirectTo: 'home', pathMatch: 'full' }
         ]
     },

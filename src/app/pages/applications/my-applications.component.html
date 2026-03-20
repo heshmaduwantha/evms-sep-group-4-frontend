@@ -1,0 +1,197 @@
+<div class="page-container glass-effect">
+    <p-toast></p-toast>
+    <p-confirmDialog></p-confirmDialog>
+
+    <div class="header-section fade-in">
+        <div class="title-group">
+            <h1 class="gradient-text">Volunteer Hub</h1>
+            <div class="subtitle">Elevate your impact through meaningful participation</div>
+        </div>
+        <div class="premium-nav">
+            <button class="nav-btn active">Portfolio</button>
+            <button class="nav-btn">Performance</button>
+        </div>
+    </div>
+
+    <!-- Main Grid Layout -->
+    <div class="main-grid">
+        <!-- Sidebar Summary -->
+        <div class="summary-section sticky-top">
+            <div class="premium-card stats-mini">
+                <div class="stat-item">
+                    <span class="val">{{ applications.length }}</span>
+                    <span class="lab">Total Applications</span>
+                </div>
+                <div class="stat-item accent">
+                    <span class="val">{{ availableEvents.length }}</span>
+                    <span class="lab">Open Opportunities</span>
+                </div>
+            </div>
+            
+            <div class="premium-card info-card mt-4">
+                <h4>Quick Tips</h4>
+                <p>Keep your profile updated with your latest skills to increase approval chances.</p>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-section">
+            <!-- Section: active Applications -->
+            <div class="section-container">
+                <div class="section-hdr">
+                    <h2 class="premium-title">My Track Record</h2>
+                    <span class="count-badge">{{ applications.length }}</span>
+                </div>
+                
+                <div class="applications-stack" *ngIf="!loading && applications.length > 0">
+                    <div class="glass-card-item" *ngFor="let app of applications" [class.expanded]="expandedId === app.id">
+                        <div class="item-header" (click)="toggleExpand(app.id)">
+                            <div class="event-branding">
+                                <div class="event-icon"><i class="pi pi-bolt"></i></div>
+                                <div class="event-title-meta">
+                                    <h3>{{ app.event.title }}</h3>
+                                    <div class="sub-meta">
+                                        <span class="location"><i class="pi pi-map-marker"></i> {{ app.event.location }}</span>
+                                        <span class="date"><i class="pi pi-calendar"></i> {{ app.appliedDate | date:'MMM d' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="status-zone">
+                                <p-tag [value]="app.status | uppercase" [severity]="getStatusSeverity(app.status)" styleClass="premium-tag"></p-tag>
+                                <div class="action-wrap">
+                                    <button pButton label="Re-apply" icon="pi pi-refresh" class="p-button-rounded p-button-sm reapply-btn" 
+                                        *ngIf="app.status === 'rejected'" 
+                                        (click)="$event.stopPropagation(); openApplyModal(app.event)"></button>
+                                    <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text edit-btn" 
+                                        *ngIf="app.status === 'pending' || app.status === 'waitlisted'" 
+                                        (click)="$event.stopPropagation(); openEditModal(app)" pTooltip="Edit Details"></button>
+                                    <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger delete-btn" 
+                                        *ngIf="app.status === 'pending' || app.status === 'waitlisted'" 
+                                        (click)="deleteApplication($event, app)" pTooltip="Withdraw Application"></button>
+                                    <i class="pi" [class.pi-angle-down]="expandedId !== app.id" [class.pi-angle-up]="expandedId === app.id"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="item-body" *ngIf="expandedId === app.id">
+                            <div class="timeline-stepper">
+                                <div class="stepper-item" [class.active]="true">
+                                    <div class="step-num"><i class="pi pi-check" *ngIf="true"></i></div>
+                                    <div class="step-label">Applied</div>
+                                </div>
+                                <div class="step-link" [class.active]="app.status !== 'pending'"></div>
+                                <div class="stepper-item" [class.active]="app.status !== 'pending'">
+                                    <div class="step-num"><i class="pi pi-check" *ngIf="app.status !== 'pending'"></i></div>
+                                    <div class="step-label">Waiting</div>
+                                </div>
+                                <div class="step-link" [class.active]="app.status === 'approved' || app.status === 'rejected'"></div>
+                                <div class="stepper-item" [class.final]="true" [class.approved]="app.status === 'approved'" [class.rejected]="app.status === 'rejected'">
+                                    <div class="step-num">
+                                        <i class="pi pi-check" *ngIf="app.status === 'approved'"></i>
+                                        <i class="pi pi-times" *ngIf="app.status === 'rejected'"></i>
+                                        <i class="pi pi-clock" *ngIf="app.status === 'pending' || app.status === 'waitlisted'"></i>
+                                    </div>
+                                    <div class="step-label">{{ app.status === 'pending' ? 'Decision' : (app.status | titlecase) }}</div>
+                                </div>
+                            </div>
+
+                            <div class="item-details mt-1">
+                                <div class="details-grid">
+                                    <div class="detail-cell">
+                                        <label>Motivation</label>
+                                        <p>{{ app.motivation || 'No motivation provided' }}</p>
+                                    </div>
+                                    <div class="detail-cell">
+                                        <label>Skills & Skills</label>
+                                        <p>{{ app.skills || 'No skills listed' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="premium-empty" *ngIf="!loading && applications.length === 0">
+                    <div class="empty-icon-wrap"><i class="pi pi-history"></i></div>
+                    <h3>Start Your Journey</h3>
+                    <p>Applications you submit will appear here. Find an event below to begin.</p>
+                </div>
+            </div>
+
+            <!-- Section: available Events -->
+            <div class="section-container mt-8">
+                <div class="section-hdr">
+                    <h2 class="premium-title">Open Opportunities</h2>
+                    <span class="count-badge accent">{{ availableEvents.length }}</span>
+                </div>
+                <div class="event-grid-premium" *ngIf="!loading && availableEvents.length > 0">
+                    <div class="event-modern-card" *ngFor="let event of availableEvents">
+                        <h4 class="event-name">{{ event.title }}</h4>
+                        <div class="info-row"><i class="pi pi-map-pin"></i> {{ event.location }}</div>
+                        <div class="info-row"><i class="pi pi-calendar"></i> {{ event.date | date:'MMM d, y' }}</div>
+                        <button pButton label="Fast Apply" icon="pi pi-arrow-right" iconPos="right" 
+                            class="apply-fast-btn" (click)="openApplyModal(event)"></button>
+                    </div>
+                </div>
+
+                <div class="premium-empty" *ngIf="!loading && availableEvents.length === 0">
+                    <div class="empty-icon-wrap"><i class="pi pi-calendar-times"></i></div>
+                    <h3>All Caught Up</h3>
+                    <p>There are no new events to apply for at this moment. Check back soon!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Apply/Edit Application Modal -->
+    <p-dialog [(visible)]="applyModalVisible" [header]="isEditing ? 'Refine Application' : 'Event Application'" 
+        [modal]="true" [style]="{width: '600px'}" styleClass="premium-dialog" [draggable]="false" [resizable]="false">
+        
+        <div class="dialog-content p-fluid">
+            <div class="event-summary mb-4" *ngIf="selectedEvent">
+                <label class="text-xs uppercase font-bold text-500">Applying For</label>
+                <h3 class="m-0 text-primary">{{ selectedEvent.title }}</h3>
+            </div>
+
+            <div class="grid">
+                <div class="col-12 md:col-6 field">
+                    <label for="location">Where are you from?</label>
+                    <input pInputText id="location" [(ngModel)]="form.location" placeholder="City, Country" class="premium-input"/>
+                </div>
+                <div class="col-12 md:col-6 field">
+                    <label for="gender">Gender</label>
+                    <p-dropdown [options]="genderOptions" [(ngModel)]="form.gender" placeholder="Select Gender" styleClass="premium-dropdown"></p-dropdown>
+                </div>
+            </div>
+
+            <div class="field mt-3">
+                <label for="motivation">Why are you interested in this event?</label>
+                <textarea pInputTextarea id="motivation" rows="3" [(ngModel)]="form.motivation" placeholder="Share your motivation..." class="premium-input"></textarea>
+            </div>
+
+            <div class="field mt-3">
+                <label for="experienceDetails">Tell us more about your background</label>
+                <textarea pInputTextarea id="experienceDetails" rows="3" [(ngModel)]="form.experienceDetails" placeholder="Relevant achievements, roles, etc." class="premium-input"></textarea>
+            </div>
+
+            <div class="field mt-3">
+                <label for="skills">Key Skills & Experience</label>
+                <input pInputText id="skills" [(ngModel)]="form.skills" placeholder="Yoga, Teaching, Logistics, etc." class="premium-input"/>
+            </div>
+        </div>
+
+        <ng-template pTemplate="footer">
+            <div class="modal-footer">
+                <p-button label="Cancel" icon="pi pi-times" [text]="true" severity="secondary" (onClick)="applyModalVisible = false"></p-button>
+                <p-button [label]="isEditing ? 'Save Changes' : 'Confirm Application'" 
+                    [icon]="isEditing ? 'pi pi-save' : 'pi pi-send'" 
+                    styleClass="apply-submit-btn" 
+                    (onClick)="submitApplication()" [loading]="loading"></p-button>
+            </div>
+        </ng-template>
+    </p-dialog>
+
+    <div class="loading-overlay" *ngIf="loading">
+        <div class="loader"></div>
+    </div>
+</div>

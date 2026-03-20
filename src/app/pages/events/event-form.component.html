@@ -1,7 +1,13 @@
 <div class="form-container">
     <p-toast></p-toast>
     <div class="header mb-4">
-        <div class="breadcrumb">EVMS / Events / {{isEditMode ? 'Edit' : 'Create'}} Event</div>
+        <div class="breadcrumb">
+            <a routerLink="/home">Dashboard</a>
+            <span class="separator">/</span>
+            <a routerLink="/events">Events Hub</a>
+            <span class="separator">/</span>
+            <span class="active">{{isEditMode ? 'Edit' : 'Create'}}</span>
+        </div>
         <h1 class="text-2xl font-bold mt-2">{{isEditMode ? 'Edit' : 'Create'}} Event</h1>
         <p class="text-500">Fill in the details below to {{isEditMode ? 'update the' : 'schedule a new'}} event in the
             system.</p>

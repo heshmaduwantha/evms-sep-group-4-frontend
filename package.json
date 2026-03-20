@@ -21,6 +21,8 @@
     "@angular/router": "^17.3.0",
     "@fontsource/inter": "^5.2.8",
     "chart.js": "^4.5.1",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
     "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",
     "primeng": "^17.18.12",
