@@ -1,180 +1,159 @@
-.event-form-page{
-padding:24px;
+.event-form-page {
+    padding: 24px;
 }
 
-.form-header h2{
-margin:0;
-font-size:22px;
+.form-header h2 {
+    margin: 0;
+    font-size: 22px;
 }
 
-.form-header p{
-margin-top:6px;
-color:#64748b;
+.form-header p {
+    margin-top: 6px;
+    color: #64748b;
 }
 
-.event-form{
-background:white;
-margin-top:20px;
-padding:28px;
-border-radius:12px;
-box-shadow:0 6px 20px rgba(0,0,0,0.05);
+.event-form {
+    background: white;
+    margin-top: 20px;
+    padding: 28px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
 }
 
-.form-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:20px;
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
 }
 
-.form-group{
-display:flex;
-flex-direction:column;
+.form-group {
+    display: flex;
+    flex-direction: column;
 }
 
-.form-group.full{
-grid-column:1 / -1;
+.form-group.full {
+    grid-column: 1 / -1;
 }
 
-.form-group label{
-font-size:14px;
-margin-bottom:6px;
-font-weight:500;
+.form-group label {
+    font-size: 14px;
+    margin-bottom: 6px;
+    font-weight: 500;
 }
 
 .form-group input,
-.form-group textarea{
-padding:12px;
-border:1px solid #e2e8f0;
-border-radius:8px;
-font-size:14px;
-font-family:inherit;
-background:#ffffff;
+.form-group textarea {
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #ffffff;
 }
 
-.form-group textarea{
-min-height:100px;
-resize:vertical;
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
 }
 
-.form-actions{
-margin-top:24px;
-display:flex;
-justify-content:flex-end;
-gap:12px;
+.form-actions {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
 }
 
-.submit-btn{
-background:#14b8a6;
-color:white;
-border:none;
-padding:10px 20px;
-border-radius:8px;
-font-weight:500;
-cursor:pointer;
-transition:all 0.2s ease;
+.submit-btn {
+    background: #14b8a6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.submit-btn:hover{
-background:#0f9f94;
-transform:translateY(-1px);
+.submit-btn:hover {
+    background: #0f9f94;
+    transform: translateY(-1px);
 }
 
-.cancel-btn{
-background:#f1f5f9;
-color:#475569;
-border:none;
-padding:10px 20px;
-border-radius:8px;
-cursor:pointer;
+.cancel-btn {
+    background: #f1f5f9;
+    color: #475569;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
 .form-group input:focus,
-.form-group textarea:focus{
-outline:none;
-border-color:#14b8a6;
-box-shadow:0 0 0 2px rgba(20,184,166,0.15);
+.form-group textarea:focus {
+    outline: none;
+    border-color: #14b8a6;
+    box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.15);
 }
 
 .submit-btn,
-.cancel-btn{
-font-weight:500;
-transition:0.2s;
+.cancel-btn {
+    font-weight: 500;
+    transition: 0.2s;
 }
 
-.submit-btn:hover{
-transform:translateY(-1px);
-}
-
-.submit-btn,
-.cancel-btn{
-font-weight:500;
-transition:0.2s;
-}
-
-.submit-btn:hover{
-transform:translateY(-1px);
-}
-
-.form-header{
-margin-bottom:16px;
-}
-
-.form-header h2{
-font-size:24px;
-font-weight:600;
-}
-
-.form-header p{
-font-size:14px;
-color:#64748b;
-}
-
-.form-grid{
-margin-top:20px;
-}
-
-.form-group label{
-font-size:13px;
-font-weight:500;
-color:#334155;
-}
-
-
-@media (max-width:768px){
-
-.form-grid{
-grid-template-columns:1fr;
-}
-
-.form-actions{
-flex-direction:column;
-align-items:stretch;
+.submit-btn:hover {
+    transform: translateY(-1px);
 }
 
 .submit-btn,
-.cancel-btn{
-width:100%;
+.cancel-btn {
+    font-weight: 500;
+    transition: 0.2s;
 }
 
+.submit-btn:hover {
+    transform: translateY(-1px);
+}
+
+.form-header {
+    margin-bottom: 16px;
+}
+
+.form-header h2 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.form-header p {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.form-grid {
+    margin-top: 20px;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #334155;
 }
 
 
+@media (max-width:768px) {
 
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
 
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
 
+    .submit-btn,
+    .cancel-btn {
+        width: 100%;
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}

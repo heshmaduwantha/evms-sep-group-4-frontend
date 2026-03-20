@@ -9,20 +9,23 @@ export class EventService {
 
   private apiUrl = 'http://localhost:3000/events';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   createEvent(eventData: any): Observable<any> {
     return this.http.post(this.apiUrl, eventData);
   }
 
   updateEvent(id: string, eventData: any) {
-  return this.http.put(`http://localhost:3000/events/${id}`, eventData);
+    return this.http.put(`http://localhost:3000/events/${id}`, eventData);
   }
 
   deleteEvent(id: string) {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
+  cancelEvent(id: string) {
+    return this.http.patch(`http://localhost:3000/events/${id}/cancel`, {});
+  }
   getEvents(): Observable<any> {
     return this.http.get(this.apiUrl);
   }

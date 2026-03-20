@@ -1,38 +1,54 @@
 <div class="app-content event-page">
 
   <div class="page-header">
-    <div>
+
+    <div class="header-left">
       <h2>Event List</h2>
       <p>Manage and monitor all emergency response events.</p>
     </div>
 
-    <div style="margin-bottom:15px; display:flex; gap:10px;">
+    <div class="header-right">
 
-  <button class="status upcoming" (click)="filterStatus('upcoming')">
-    Upcoming
-  </button>
+      <div class="filters">
 
-  <button class="status active" (click)="filterStatus('ongoing')">
-    Ongoing
-  </button>
+        <button class="filter-btn upcoming" [class.active]="selectedStatus==='upcoming'"
+          (click)="filterStatus('upcoming')">
+          Upcoming
+        </button>
 
-  <button class="status completed" (click)="filterStatus('completed')">
-    Completed
-  </button>
+        <button class="filter-btn ongoing" [class.active]="selectedStatus==='ongoing'"
+          (click)="filterStatus('ongoing')">
+          Ongoing
+        </button>
 
-  <button (click)="filterStatus('all')">
-    All
-  </button>
+        <button class="filter-btn completed" [class.active]="selectedStatus==='completed'"
+          (click)="filterStatus('completed')">
+          Completed
+        </button>
 
-</div>
+        <button class="filter-btn cancelled" [class.active]="selectedStatus==='cancelled'"
+          (click)="filterStatus('cancelled')">
+          Cancelled
+        </button>
 
-    <button class="create-btn" routerLink="/organizer/events/create">
-      Create Event
-    </button>
+        <button class="filter-btn all" [class.active]="selectedStatus==='all'" (click)="filterStatus('all')">
+          All
+        </button>
+
+      </div>
+
+      <button class="create-btn" routerLink="/organizer/events/create">
+        Create Event
+      </button>
+
+
+
+    </div>
+
   </div>
 
   <div *ngIf="loading" style="padding:20px;">
-  Loading events...
+    Loading events...
   </div>
 
 
@@ -51,68 +67,76 @@
         </tr>
       </thead>
 
-     <tbody>
+      <tbody>
 
-      <tr *ngIf="events.length === 0">
-        <td colspan="6" style="text-align:center; padding:30px;">
-          No events available
+        <tr *ngIf="events.length === 0">
+          <td colspan="6" style="text-align:center; padding:30px;">
+            No events available
           </td>
-      </tr>
+        </tr>
 
-    <tr *ngFor="let event of events">
+        <tr *ngFor="let event of events">
 
-  <td>
-    <div class="event-title">
-      {{ event.title }}
-      <span class="event-desc">
-        {{ event.description }}
-      </span>
-    </div>
-  </td>
+          <td>
+            <div class="event-title">
+              {{ event.title }}
+              <span class="event-desc">
+                {{ event.description }}
+              </span>
+            </div>
+          </td>
 
-  <td>{{ event.eventDate | date:'MMM d, y' }}</td>
+          <td>{{ event.eventDate | date:'MMM d, y' }}</td>
 
-  <td>{{ event.location }}</td>
+          <td>{{ event.location }}</td>
 
-  <td>
-    <div class="volunteer-count">
-      {{ event.volunteersRequired }}
-    </div>
-  </td>
+          <td>
+            <div class="volunteer-count">
+              {{ event.volunteersRequired }}
+            </div>
+          </td>
 
-  <td>
+          <td>
 
-  <span *ngIf="event.eventDate && event.eventDate > today" class="status upcoming">
-  Upcoming
-</span>
+            <span class="status cancelled" *ngIf="event.status === 'CANCELLED'">
+              Cancelled
+            </span>
 
-<span *ngIf="event.eventDate && event.eventDate === today" class="status active">
-  Ongoing
-</span>
+            <span class="status upcoming" *ngIf="event.status !== 'CANCELLED' && event.eventDate > today">
+              Upcoming
+            </span>
 
-<span *ngIf="event.eventDate && event.eventDate < today" class="status completed">
-  Completed
-</span>
+            <span class="status active" *ngIf="event.status !== 'CANCELLED' && event.eventDate === today">
+              Ongoing
+            </span>
 
-</td>
+            <span class="status completed" *ngIf="event.status !== 'CANCELLED' && event.eventDate < today">
+              Completed
+            </span>
 
-  <td class="actions">
+          </td>
 
-    <button class="edit-btn" (click)="editEvent(event.id)">
-      Edit
-    </button>
+          <td class="actions">
 
-    <button class="delete-btn" (click)="deleteEvent(event.id)">
-      Delete
-    </button>
+            <button class="edit-btn" (click)="editEvent(event.id)" [disabled]="event.status === 'CANCELLED'">
+              Edit
+            </button>
 
-  </td>
+            <button class="cancel-btn" *ngIf="event.status !== 'CANCELLED'" (click)="cancelEvent(event.id)">
+              Cancel
+            </button>
 
-</tr>
+            <button class="delete-btn" (click)="deleteEvent(event.id)">
+              Delete
+            </button>
 
-</tbody>
+          </td>
 
-      
+
+
+        </tr>
+
+      </tbody>
 
     </table>
 

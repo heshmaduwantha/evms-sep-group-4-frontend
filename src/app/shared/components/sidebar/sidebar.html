@@ -1,57 +1,97 @@
 <div class="sidebar">
 
+  <!-- HEADER -->
   <div class="sidebar-header">
-
-  <div class="logo">
-
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-         stroke="white" stroke-width="3"
-         stroke-linecap="round" stroke-linejoin="round">
-
-      <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polyline>
-
-    </svg>
-
+    <div class="logo">
+      <i class="pi pi-calendar"></i>
+    </div>
+    <div>
+      <div class="title">EVMS</div>
+      <div class="subtitle">Organizer Portal</div>
+    </div>
   </div>
 
-  <span class="logo-text">EVMS</span>
+  <!-- MAIN MENU -->
+  <div class="section-title">Main Menu</div>
 
-</div>
+  <nav class="menu">
 
-  
-
-  <!-- Menu -->
-  <nav class="sidebar-menu">
-
-    <a routerLink="/organizer/dashboard" routerLinkActive="active">
-      🏠 Dashboard
+    <a routerLink="/organizer/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      class="menu-item">
+      <span>
+        <i class="pi pi-th-large"></i>
+        Dashboard
+      </span>
     </a>
 
-    <a routerLink="/organizer/events" routerLinkActive="active">
-      🗂 Events
+    <a routerLink="/organizer/events" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      class="menu-item">
+      <span>
+        <i class="pi pi-calendar"></i>
+        Events
+      </span>
+      <span class="badge">3</span>
     </a>
 
-    <a routerLink="/organizer/volunteers" routerLinkActive="active">
-      👥 Volunteers
+    <a routerLink="/organizer/applications" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      class="menu-item">
+      <span>
+        <i class="pi pi-file"></i>
+        Applications
+      </span>
+      <span class="badge">12</span>
     </a>
 
-    <a routerLink="/organizer/reports" routerLinkActive="active">
-      📊 Reports
+    <a routerLink="/organizer/roles" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      class="menu-item">
+      <span>
+        <i class="pi pi-users"></i>
+        Roles
+      </span>
     </a>
 
-    <a routerLink="/organizer/settings" routerLinkActive="active">
-      ⚙ Settings
+    <a routerLink="/organizer/attendance" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      class="menu-item">
+      <span>
+        <i class="pi pi-check-square"></i>
+        Attendance
+      </span>
+    </a>
+
+    <a routerLink="/organizer/reports" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      class="menu-item">
+      <span>
+        <i class="pi pi-chart-bar"></i>
+        Reports
+      </span>
     </a>
 
   </nav>
+  <div class="divider"></div>
 
-  <!-- User -->
+  <!-- SYSTEM -->
+  <div class="section-title">System</div>
+
+  <nav class="menu">
+    <a routerLink="/organizer/settings" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      class="menu-item">
+      <span>
+        <i class="pi pi-cog"></i>
+        Settings
+      </span>
+    </a>
+  </nav>
+
+  <div class="divider"></div>
+
+  <!-- USER -->
   <div class="sidebar-user">
-    <div class="avatar">A</div>
-    <div>
-      <div>Admin</div>
-      <small>a@gmail.com</small>
+    <div class="avatar">EO</div>
+    <div class="user-info">
+
+      <div class="role">Event Organizer</div>
     </div>
+    <i class="pi pi-angle-right arrow"></i>
   </div>
 
 </div>

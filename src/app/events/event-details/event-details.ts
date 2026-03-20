@@ -17,7 +17,7 @@ export class EventDetails implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private eventService: EventService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
 

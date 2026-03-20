@@ -1,0 +1,90 @@
+.dialog-box {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+/* HEADER */
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 18px;
+  border-bottom: 1px solid #eee;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.close-btn {
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* BODY */
+.dialog-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  font-size: 14px;
+  color: #444;
+}
+
+.warning-icon {
+  font-size: 34px;
+  flex-shrink: 0;
+}
+
+/* ACTIONS */
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 15px 20px;
+  border-top: 1px solid #eee;
+}
+
+/* BUTTONS */
+.cancel-btn {
+  background: #e3ecff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #333;
+}
+
+.delete-btn {
+  background: #e74c3c;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background: #c0392b;
+}
+
+.warning-btn {
+  background: #f39c12;
+  color: white;
+}
+
+.warning-btn:hover {
+  background: #d68910;
+}
+
+.confirm-btn {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
