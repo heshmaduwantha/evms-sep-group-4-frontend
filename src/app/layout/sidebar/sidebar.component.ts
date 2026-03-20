@@ -6,6 +6,8 @@ import { UserRole } from '../../auth/auth.models';
 import { AttendanceService } from '../../pages/attendance/attendance.service';
 import { ApplicationService } from '../../pages/applications/application.service';
 
+import { EventService } from '../../pages/events/services/event.service';
+
 @Component({
   selector: 'app-sidebar',
   standalone: true,
@@ -168,7 +170,7 @@ export class SidebarComponent implements OnInit {
       roles: [UserRole.ORGANIZER, UserRole.ADMIN],
       expandable: true,
       expanded: false,
-      badge: 44,
+      badge: 0,
       children: [
         { label: 'Overview', icon: 'pi pi-eye', link: '/attendance', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
         { label: 'Manual Check-in', icon: 'pi pi-user-plus', link: '/manual-checkin', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
@@ -184,6 +186,7 @@ export class SidebarComponent implements OnInit {
     public authService: AuthService,
     private attendanceService: AttendanceService,
     private applicationService: ApplicationService,
+    private eventService: EventService,
     private router: Router
   ) { }
 
@@ -192,8 +195,8 @@ export class SidebarComponent implements OnInit {
       if (user) {
         this.filteredItems = this.navItems.filter(item => item.roles.includes(user.role) && !item.isBottom);
 
-        // Update attendance badge if it exists in filtered items
-        const attendanceItem = this.filteredItems.find(item => item.label === 'Attendance');
+        // Update attendance badge
+        const attendanceItem = this.navItems.find(item => item.label === 'Attendance');
         if (attendanceItem) {
           this.attendanceService.getVolunteerCount().subscribe((count: number) => {
             attendanceItem.badge = count;
@@ -201,7 +204,7 @@ export class SidebarComponent implements OnInit {
         }
 
         // Update applications badge
-        const appsItem = this.filteredItems.find(item => item.label === 'Applications');
+        const appsItem = this.navItems.find(item => item.label === 'Applications');
         if (appsItem) {
           this.applicationService.getApplications().subscribe((apps: any[]) => {
             appsItem.badge = apps.length;
@@ -209,18 +212,21 @@ export class SidebarComponent implements OnInit {
         }
 
         // Update my applications badge
-        const myAppsItem = this.filteredItems.find(item => item.label === 'My Applications');
+        const myAppsItem = this.navItems.find(item => item.label === 'My Applications');
         if (myAppsItem) {
           this.applicationService.getMyApplications().subscribe((apps: any[]) => {
-      const myAppsItem = this.navItems.find(item => item.label === 'My Applications');
-      if (myAppsItem) myAppsItem.badge = apps.length;
-    });
+            myAppsItem.badge = apps.length;
+          });
+        }
 
-    this.eventService.getEvents().subscribe((events: any[]) => {
-      const eventsItem = this.navItems.find(item => item.label === 'Events Hub');
-      const managerItem = this.navItems.find(item => item.label === 'Event Manager(organizer)');
-      if (eventsItem) eventsItem.badge = events.length;
-      if (managerItem) managerItem.badge = events.length;
+        // Update events badges
+        this.eventService.getEvents().subscribe((events: any[]) => {
+          const eventsItem = this.navItems.find(item => item.label === 'Events Hub');
+          const managerItem = this.navItems.find(item => item.label === 'Event Manager(organizer)');
+          if (eventsItem) eventsItem.badge = events.length;
+          if (managerItem) managerItem.badge = events.length;
+        });
+      }
     });
   }
 
