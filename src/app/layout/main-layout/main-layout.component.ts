@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { FooterComponent } from '../footer/footer.component';
+import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [RouterOutlet, SidebarComponent, FooterComponent],
+  imports: [RouterOutlet, SidebarComponent, FooterComponent, BreadcrumbComponent],
   templateUrl: './main-layout.component.html',
   styles: `
     .main-wrapper {
