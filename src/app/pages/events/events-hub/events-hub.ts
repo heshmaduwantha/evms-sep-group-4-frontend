@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { EventService } from '../services/event.service';
 import { Event } from '../event.models';
+import { AuthService } from '../../../auth/auth.service';
+import { UserRole } from '../../../auth/auth.models';
 
 @Component({
   selector: 'app-events-hub',
@@ -20,13 +22,20 @@ export class EventsHubComponent implements OnInit {
     activeEvents: 0,
     completedEvents: 0
   };
+  UserRole = UserRole;
+  currentRole: UserRole | null = null;
 
   constructor(
     private eventService: EventService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
+    this.authService.currentUser.subscribe(user => {
+      this.currentRole = user?.role || null;
+      this.cdr.detectChanges();
+    });
     this.loadEvents();
     this.loadStats();
   }

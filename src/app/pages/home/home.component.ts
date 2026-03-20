@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../auth/auth.service';
+import { UserRole } from '../../auth/auth.models';
 import { EventService } from '../events/services/event.service';
 import { ReportsService } from '../reports/reports.service';
 import { AttendanceService } from '../attendance/attendance.service';
@@ -37,12 +38,19 @@ export class HomeComponent implements OnInit {
     public authService: AuthService,
     private eventService: EventService,
     private reportsService: ReportsService,
-    private attendanceService: AttendanceService
+    private attendanceService: AttendanceService,
+    private router: Router
   ) { }
 
   ngOnInit() {
-    this.loadStats();
-    this.loadRecentEvents();
+    this.authService.currentUser.subscribe(user => {
+      if (user?.role === UserRole.VOLUNTEER) {
+        this.router.navigate(['/events']);
+      } else {
+        this.loadStats();
+        this.loadRecentEvents();
+      }
+    });
   }
 
   loadStats() {
