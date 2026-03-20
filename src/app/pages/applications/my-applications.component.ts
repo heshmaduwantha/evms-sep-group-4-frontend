@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { TagModule } from 'primeng/tag';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
@@ -43,6 +43,7 @@ export class MyApplicationsComponent implements OnInit {
     availableEvents: Event[] = [];
     loading: boolean = true;
     expandedId: string | null = null;
+    pendingEventId: string | null = null;
 
     // Apply/Edit Modal
     applyModalVisible: boolean = false;
@@ -71,11 +72,17 @@ export class MyApplicationsComponent implements OnInit {
         private applicationService: ApplicationService,
         private eventService: EventService,
         private confirmationService: ConfirmationService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private route: ActivatedRoute
     ) {}
 
     ngOnInit() {
         this.loadData();
+        this.route.queryParams.subscribe(params => {
+            if (params['eventId']) {
+                this.pendingEventId = params['eventId'];
+            }
+        });
     }
 
     loadData() {
@@ -99,6 +106,14 @@ export class MyApplicationsComponent implements OnInit {
                     .map(a => a.event.id));
                 this.availableEvents = events.filter(e => !activeEventIds.has(e.id));
                 this.loading = false;
+
+                if (this.pendingEventId) {
+                    const event = this.availableEvents.find(e => e.id === this.pendingEventId);
+                    if (event) {
+                        this.openApplyModal(event);
+                    }
+                    this.pendingEventId = null;
+                }
             },
             error: () => this.loading = false
         });

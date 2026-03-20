@@ -61,7 +61,9 @@
       </div>
 
       <div class="tile-footer">
-        <button class="review-btn" [routerLink]="currentRole === UserRole.VOLUNTEER ? '/events/' + event.id : '/organizer/events'">
+        <button class="review-btn" 
+                [routerLink]="currentRole === UserRole.VOLUNTEER ? '/my-applications' : '/organizer/events'"
+                [queryParams]="currentRole === UserRole.VOLUNTEER ? { eventId: event.id } : null">
           <i [class]="currentRole === UserRole.VOLUNTEER ? 'pi pi-external-link' : 'pi pi-search-plus'"></i>
           {{ currentRole === UserRole.VOLUNTEER ? 'Apply Now' : 'Review Details' }}
         </button>
