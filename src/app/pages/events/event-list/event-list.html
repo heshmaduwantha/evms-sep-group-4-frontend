@@ -118,11 +118,11 @@
 
           <td class="actions">
 
-            <button class="edit-btn" (click)="editEvent(event.id)" [disabled]="event.status === 'CANCELLED'">
+            <button class="edit-btn" (click)="editEvent(event.id)" [disabled]="event.status === 'cancelled'">
               Edit
             </button>
 
-            <button class="cancel-btn" *ngIf="event.status !== 'CANCELLED'" (click)="cancelEvent(event.id)">
+            <button class="cancel-btn" *ngIf="event.status !== 'cancelled'" (click)="cancelEvent(event.id)">
               Cancel
             </button>
 
