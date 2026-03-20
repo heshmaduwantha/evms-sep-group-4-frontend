@@ -13,6 +13,7 @@
                class="menu-item">
                 <i [class]="item.icon"></i>
                 <span>{{ item.label }}</span>
+                <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
             </a>
 
             <!-- Expandable menu item with submenu -->

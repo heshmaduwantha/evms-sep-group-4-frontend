@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { UserRole } from '../../auth/auth.models';
 import { AttendanceService } from '../../pages/attendance/attendance.service';
+import { ApplicationService } from '../../pages/applications/application.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -181,6 +182,7 @@ export class SidebarComponent implements OnInit {
   constructor(
     public authService: AuthService,
     private attendanceService: AttendanceService,
+    private applicationService: ApplicationService,
     private router: Router
   ) { }
 
@@ -194,6 +196,22 @@ export class SidebarComponent implements OnInit {
         if (attendanceItem) {
           this.attendanceService.getVolunteerCount().subscribe((count: number) => {
             attendanceItem.badge = count;
+          });
+        }
+
+        // Update applications badge
+        const appsItem = this.filteredItems.find(item => item.label === 'Applications');
+        if (appsItem) {
+          this.applicationService.getApplications().subscribe((apps: any[]) => {
+            appsItem.badge = apps.length;
+          });
+        }
+
+        // Update my applications badge
+        const myAppsItem = this.filteredItems.find(item => item.label === 'My Applications');
+        if (myAppsItem) {
+          this.applicationService.getMyApplications().subscribe((apps: any[]) => {
+            myAppsItem.badge = apps.length;
           });
         }
       }
