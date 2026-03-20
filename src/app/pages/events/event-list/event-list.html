@@ -98,19 +98,19 @@
 
           <td>
 
-            <span class="status cancelled" *ngIf="event.status === 'CANCELLED'">
+            <span class="status cancelled" *ngIf="event.status === 'cancelled'">
               Cancelled
             </span>
 
-            <span class="status upcoming" *ngIf="event.status !== 'CANCELLED' && event.date > today">
+            <span class="status upcoming" *ngIf="event.status !== 'cancelled' && event.date > today">
               Upcoming
             </span>
 
-            <span class="status active" *ngIf="event.status !== 'CANCELLED' && event.date === today">
+            <span class="status active" *ngIf="event.status !== 'cancelled' && event.date === today">
               Ongoing
             </span>
 
-            <span class="status completed" *ngIf="event.status !== 'CANCELLED' && event.date < today">
+            <span class="status completed" *ngIf="event.status !== 'cancelled' && event.date < today">
               Completed
             </span>
 

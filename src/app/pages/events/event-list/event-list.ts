@@ -1,12 +1,12 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { EventService } from '../services/event.service';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-event-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './event-list.html',
   styleUrls: ['./event-list.css']
 })
@@ -95,7 +95,7 @@ export class EventListComponent implements OnInit {
       if (!event.date) return false;
 
       // CANCELLED stays priority
-      if (event.status === 'CANCELLED') {
+      if (event.status === 'cancelled') {
         return status === 'cancelled';
       }
 

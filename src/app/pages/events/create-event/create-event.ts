@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../services/event.service';
@@ -7,7 +8,7 @@ import { AuthService } from '../../../auth/auth.service';
 @Component({
   selector: 'app-create-event',
   standalone: true,
-  imports: [FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './create-event.html',
   styleUrls: ['./create-event.css']
 })
@@ -64,13 +65,22 @@ export class CreateEventComponent implements OnInit {
     if (this.eventId) {
       console.log("Updating event...");
 
-      this.eventService.updateEvent(this.eventId, this.eventData)
-        .subscribe((response: any) => {
-          console.log("Event updated:", response);
-          alert("Event updated successfully");
-          this.router.navigate(['/organizer/events']);
+      this.eventService.updateEvent(this.eventId, {
+        ...this.eventData,
+        volunteersNeeded: Number(this.eventData.volunteersNeeded)
+      })
+        .subscribe({
+          next: (response: any) => {
+            console.log("Event updated:", response);
+            alert("Event updated successfully");
+            this.router.navigate(['/organizer/events']);
+          },
+          error: (err: any) => {
+            console.error("Event update failed:", err);
+            const message = err.error?.message || "Unknown error occurred";
+            alert("Event update failed: " + (Array.isArray(message) ? message.join(', ') : message));
+          }
         });
-
 
     } else {
 
@@ -83,16 +93,27 @@ export class CreateEventComponent implements OnInit {
         return;
       }
 
+      // Ensure volunteersNeeded is a number
       const submissionData = {
         ...this.eventData,
+        volunteersNeeded: Number(this.eventData.volunteersNeeded),
         organizerId: currentUser.id
       };
 
+      console.log("Submitting with data:", submissionData);
+
       this.eventService.createEvent(submissionData)
-        .subscribe((response: any) => {
-          console.log("Event created:", response);
-          alert("Event created successfully");
-          this.router.navigate(['/organizer/events']);
+        .subscribe({
+          next: (response: any) => {
+            console.log("Event created:", response);
+            alert("Event created successfully");
+            this.router.navigate(['/organizer/events']);
+          },
+          error: (err: any) => {
+            console.error("Event creation failed:", err);
+            const message = err.error?.message || "Unknown error occurred";
+            alert("Event creation failed: " + (Array.isArray(message) ? message.join(', ') : message));
+          }
         });
 
     }
