@@ -130,7 +130,6 @@
                                     </div>
                                     <div class="event-info">
                                         <span class="event-name">{{ event.title }}</span>
-                                        <span class="event-type">Sports</span>
                                     </div>
                                 </div>
                             </td>
@@ -160,9 +159,9 @@
             <!-- Volunteer Applications Section -->
             <div class="section-card">
                 <div class="section-header">
-                    <div class="flex align-items-center gap-2">
+                    <div class="flex flex-column gap-1">
                         <h2>Volunteer Applications</h2>
-                        <p-tag [value]="recentApplications.length + ' pending'" severity="warning" [rounded]="true"></p-tag>
+                        <span class="pending-badge">{{ recentApplications.length }} pending applications</span>
                     </div>
                     <a routerLink="/reports" class="view-all">View all <i class="pi pi-chevron-right text-xs"></i></a>
                 </div>
