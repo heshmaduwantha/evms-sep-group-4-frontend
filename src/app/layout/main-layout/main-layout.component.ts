@@ -12,18 +12,21 @@ import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
   styles: `
     .main-wrapper {
       display: flex;
-      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
     }
     .content-area {
       flex: 1;
-      margin-left: 250px; /* Sidebar width */
+      margin-left: 250px;
       display: flex;
       flex-direction: column;
+      height: 100vh;
       background: var(--bg-light);
-      padding: 2rem;
     }
     .main-content {
       flex: 1;
+      overflow-y: auto;
+      padding: 0 2rem 2rem 2rem;
     }
   `
 })
