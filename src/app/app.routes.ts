@@ -9,6 +9,7 @@ import { AuthGuard } from './auth/auth.guard';
 import { EventListComponent } from './pages/events/event-list/event-list';
 import { CreateEventComponent } from './pages/events/create-event/create-event';
 import { EventDetails } from './pages/events/event-details/event-details';
+import { EventsHubComponent } from './pages/events/events-hub/events-hub';
 import { ApplicationManagementComponent } from './pages/applications/application-management.component';
 import { MyApplicationsComponent } from './pages/applications/my-applications.component';
 
@@ -20,7 +21,7 @@ export const routes: Routes = [
         children: [
             { path: 'home', component: HomeComponent },
             { path: 'settings', component: SettingsComponent },
-            { path: 'events', component: EventListComponent },
+            { path: 'events', component: EventsHubComponent },
             { path: 'organizer/events', component: EventListComponent },
             { path: 'organizer/create-event', component: CreateEventComponent },
             { path: 'organizer/create-event/:id', component: CreateEventComponent },

@@ -1,0 +1,76 @@
+<div class="app-content events-hub-page">
+
+  <div class="hub-header">
+    <div class="header-content">
+      <h1>Events Hub</h1>
+      <p>Discover and explore all emergency response and community events.</p>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <div class="stat-icon"><i class="pi pi-calendar"></i></div>
+      <div class="stat-info">
+        <span class="label">Total Events</span>
+        <span class="value">{{ stats.totalEvents }}</span>
+      </div>
+    </div>
+    <div class="stat-card upcoming">
+      <div class="stat-icon"><i class="pi pi-clock"></i></div>
+      <div class="stat-info">
+        <span class="label">Upcoming</span>
+        <span class="value">{{ stats.upcomingEvents }}</span>
+      </div>
+    </div>
+    <div class="stat-card active">
+      <div class="stat-icon"><i class="pi pi-bolt"></i></div>
+      <div class="stat-info">
+        <span class="label">Active</span>
+        <span class="value">{{ stats.activeEvents }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">
+    <i class="pi pi-spin pi-spinner"></i>
+    <p>Retrieving events...</p>
+  </div>
+
+  <div class="event-grid" *ngIf="!loading">
+    <div *ngFor="let event of events" class="event-tile">
+      <div class="tile-header">
+        <span class="status-badge" [ngClass]="getEventStatusClass(event.status)">
+          {{ event.status }}
+        </span>
+      </div>
+      
+      <div class="tile-body">
+        <h3 class="event-title">{{ event.title }}</h3>
+        <p class="event-desc">{{ event.description }}</p>
+        
+        <div class="tile-meta">
+          <div class="meta-item">
+            <i class="pi pi-calendar-plus"></i>
+            <span>{{ event.date | date:'MMM d, y' }}</span>
+          </div>
+          <div class="meta-item">
+            <i class="pi pi-map-marker"></i>
+            <span>{{ event.location }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tile-footer">
+        <button class="review-btn" routerLink="/organizer/events">
+          <i class="pi pi-search-plus"></i> Review Details
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="events.length === 0" class="empty-hub">
+      <i class="pi pi-inbox"></i>
+      <p>No events found at the moment.</p>
+    </div>
+  </div>
+
+</div>

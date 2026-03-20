@@ -155,7 +155,7 @@ export class SidebarComponent implements OnInit {
   navItems = [
     { label: 'Dashboard', icon: 'pi pi-th-large', link: '/home', roles: [UserRole.VOLUNTEER, UserRole.ORGANIZER, UserRole.ADMIN] },
     { label: 'Events Hub', icon: 'pi pi-calendar', link: '/events', roles: [UserRole.VOLUNTEER, UserRole.ORGANIZER, UserRole.ADMIN] },
-    { label: 'event-manger(organzier)', icon: 'pi pi-list', link: '/organizer/events', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
+    { label: 'Event Manager(organizer)', icon: 'pi pi-list', link: '/organizer/events', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
     { label: 'Applications', icon: 'pi pi-file', link: '/applications', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
     { label: 'My Applications', icon: 'pi pi-file', link: '/my-applications', roles: [UserRole.VOLUNTEER] },
     { label: 'Roles', icon: 'pi pi-users', link: '/roles', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
