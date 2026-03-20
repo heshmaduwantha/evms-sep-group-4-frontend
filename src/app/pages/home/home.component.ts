@@ -74,7 +74,7 @@ export class HomeComponent implements OnInit {
 
     this.attendanceService.getApplications().subscribe({
       next: (apps) => {
-        this.recentApplications = apps.map(app => ({
+        this.recentApplications = apps.slice(0, 6).map(app => ({
           ...app,
           eventTitle: this.getEventName(app.event),
           color: this.getAvatarColor(app.name)
@@ -85,7 +85,7 @@ export class HomeComponent implements OnInit {
 
     this.attendanceService.getRecentCheckIns('all').subscribe({
       next: (checkins) => {
-        this.recentCheckIns = checkins.map(c => ({
+        this.recentCheckIns = checkins.slice(0, 5).map(c => ({
           ...c,
           color: this.getAvatarColor(c.name)
         }));
