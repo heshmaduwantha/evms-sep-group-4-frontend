@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../auth/auth.service';
-import { EventService } from '../events/event.service';
+import { EventService } from '../events/services/event.service';
 import { ReportsService } from '../reports/reports.service';
 import { AttendanceService } from '../attendance/attendance.service';
 import { Event } from '../events/event.models';
@@ -47,7 +47,7 @@ export class HomeComponent implements OnInit {
 
   loadStats() {
     this.eventService.getStats().subscribe({
-      next: (data) => {
+      next: (data: any) => {
         this.stats.activeEvents.value = data.activeEvents || 0;
       }
     });
@@ -87,7 +87,7 @@ export class HomeComponent implements OnInit {
 
   loadRecentEvents() {
     this.eventService.getEvents().subscribe({
-      next: (events) => {
+      next: (events: Event[]) => {
         const now = new Date();
         const nextWeek = new Date();
         nextWeek.setDate(now.getDate() + 7);

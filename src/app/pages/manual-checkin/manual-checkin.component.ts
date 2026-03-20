@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ManualCheckinService } from './manual-checkin.service';
-import { EventService } from '../events/event.service';
+import { EventService } from '../events/services/event.service';
 import { Event } from '../events/event.models';
 import { forkJoin, map } from 'rxjs';
 
@@ -75,13 +75,13 @@ export class ManualCheckinComponent implements OnInit {
 
   loadEvents() {
     this.eventService.getEvents().subscribe({
-      next: (events) => {
+      next: (events: Event[]) => {
         this.events = events;
         // Default to 'all' to show all volunteers initially
         this.eventId = 'all';
         this.loadVolunteers();
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error loading events:', err);
         this.errorMessage = 'Failed to load events';
       }

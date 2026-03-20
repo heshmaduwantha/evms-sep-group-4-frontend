@@ -6,10 +6,9 @@ import { AttendanceComponent } from './pages/attendance/attendance.component';
 import { ReportsComponent } from './pages/reports/reports.component';
 import { ManualCheckinComponent } from './pages/manual-checkin/manual-checkin.component';
 import { AuthGuard } from './auth/auth.guard';
-import { EventListComponent } from './pages/events/event-list.component';
-import { EventManagementComponent } from './pages/events/event-management.component';
-import { EventFormComponent } from './pages/events/event-form.component';
-import { EventDetailsComponent } from './pages/events/event-details.component';
+import { EventListComponent } from './pages/events/event-list/event-list';
+import { CreateEventComponent } from './pages/events/create-event/create-event';
+import { EventDetails } from './pages/events/event-details/event-details';
 import { ApplicationManagementComponent } from './pages/applications/application-management.component';
 import { MyApplicationsComponent } from './pages/applications/my-applications.component';
 
@@ -22,10 +21,10 @@ export const routes: Routes = [
             { path: 'home', component: HomeComponent },
             { path: 'settings', component: SettingsComponent },
             { path: 'events', component: EventListComponent },
-            { path: 'events/manage', component: EventManagementComponent },
-            { path: 'events/create', component: EventFormComponent },
-            { path: 'events/edit/:id', component: EventFormComponent },
-            { path: 'events/:id', component: EventDetailsComponent },
+            { path: 'organizer/events', component: EventListComponent },
+            { path: 'organizer/create-event', component: CreateEventComponent },
+            { path: 'organizer/create-event/:id', component: CreateEventComponent },
+            { path: 'events/:id', component: EventDetails },
             { path: 'attendance', component: AttendanceComponent },
             { path: 'reports', component: ReportsComponent },
             { path: 'manual-checkin', component: ManualCheckinComponent },

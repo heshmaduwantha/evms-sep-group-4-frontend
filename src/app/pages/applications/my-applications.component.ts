@@ -13,7 +13,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ApplicationService } from './application.service';
-import { EventService } from '../events/event.service';
+import { EventService } from '../events/services/event.service';
 import { Application, ApplicationStatus, CreateApplicationDto, UpdateApplicationDto } from './application.models';
 import { Event } from '../events/event.models';
 
@@ -92,7 +92,7 @@ export class MyApplicationsComponent implements OnInit {
 
     loadAvailableEvents() {
         this.eventService.getEvents().subscribe({
-            next: (events) => {
+            next: (events: Event[]) => {
                 // Filter out events where the user already has an active (non-rejected) application
                 const activeEventIds = new Set(this.applications
                     .filter(a => a.status !== ApplicationStatus.REJECTED)

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AttendanceService } from './attendance.service';
-import { EventService } from '../events/event.service';
+import { EventService } from '../events/services/event.service';
 import { Event } from '../events/event.models';
 
 @Component({
@@ -47,13 +47,13 @@ export class AttendanceComponent implements OnInit {
 
   loadEvents() {
     this.eventService.getEvents().subscribe({
-      next: (events) => {
+      next: (events: Event[]) => {
         this.events = events;
         // Use 'all' for the overall attendance overview
         this.eventId = 'all';
         this.loadAttendanceData();
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error loading events:', err);
         this.errorMessage = 'Failed to load events';
       }

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReportsService } from './reports.service';
-import { EventService } from '../events/event.service';
+import { EventService } from '../events/services/event.service';
 import { Event } from '../events/event.models';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -70,13 +70,13 @@ export class ReportsComponent implements OnInit {
 
   loadEvents() {
     this.eventService.getEvents().subscribe({
-      next: (events) => {
+      next: (events: Event[]) => {
         this.events = events;
         // Default to 'all' instead of the first event
         this.eventId = 'all';
         this.loadReports();
       },
-      error: (err) => console.error('Error loading events:', err)
+      error: (err: any) => console.error('Error loading events:', err)
     });
   }
 
