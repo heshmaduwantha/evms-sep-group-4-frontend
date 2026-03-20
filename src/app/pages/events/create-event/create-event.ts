@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../services/event.service';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'app-create-event',
@@ -14,6 +15,7 @@ import { EventService } from '../services/event.service';
 export class CreateEventComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
+    public authService: AuthService,
     private eventService: EventService,
     private router: Router,
     private cdr: ChangeDetectorRef
@@ -74,7 +76,19 @@ export class CreateEventComponent implements OnInit {
 
       console.log("Creating new event...");
 
-      this.eventService.createEvent(this.eventData)
+      // Get current user for organizerId
+      const currentUser = this.authService.currentUserValue;
+      if (!currentUser) {
+        alert("Session expired. Please login again.");
+        return;
+      }
+
+      const submissionData = {
+        ...this.eventData,
+        organizerId: currentUser.id
+      };
+
+      this.eventService.createEvent(submissionData)
         .subscribe((response: any) => {
           console.log("Event created:", response);
           alert("Event created successfully");
