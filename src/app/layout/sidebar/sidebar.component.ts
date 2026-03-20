@@ -218,14 +218,6 @@ export class SidebarComponent implements OnInit {
             myAppsItem.badge = apps.length;
           });
         }
-
-        // Update events badges
-        this.eventService.getEvents().subscribe((events: any[]) => {
-          const eventsItem = this.navItems.find(item => item.label === 'Events Hub');
-          const managerItem = this.navItems.find(item => item.label === 'Event Manager(organizer)');
-          if (eventsItem) eventsItem.badge = events.length;
-          if (managerItem) managerItem.badge = events.length;
-        });
       }
     });
   }
