@@ -212,10 +212,15 @@ export class SidebarComponent implements OnInit {
         const myAppsItem = this.filteredItems.find(item => item.label === 'My Applications');
         if (myAppsItem) {
           this.applicationService.getMyApplications().subscribe((apps: any[]) => {
-            myAppsItem.badge = apps.length;
-          });
-        }
-      }
+      const myAppsItem = this.navItems.find(item => item.label === 'My Applications');
+      if (myAppsItem) myAppsItem.badge = apps.length;
+    });
+
+    this.eventService.getEvents().subscribe((events: any[]) => {
+      const eventsItem = this.navItems.find(item => item.label === 'Events Hub');
+      const managerItem = this.navItems.find(item => item.label === 'Event Manager(organizer)');
+      if (eventsItem) eventsItem.badge = events.length;
+      if (managerItem) managerItem.badge = events.length;
     });
   }
 

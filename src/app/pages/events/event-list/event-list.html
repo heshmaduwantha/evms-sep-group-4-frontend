@@ -1,145 +1,83 @@
-<div class="app-content event-page">
-
-  <div class="page-header">
-
-    <div class="header-left">
-      <h2>Event List</h2>
-      <p>Manage and monitor all emergency response events.</p>
+<div class="event-list-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="title-group">
+      <h1 class="page-title">Event List</h1>
+      <p class="subtitle">Manage and monitor all emergency response events.</p>
     </div>
-
-    <div class="header-right">
-
-      <div class="filters">
-
-        <button class="filter-btn upcoming" [class.active]="selectedStatus==='upcoming'"
-          (click)="filterStatus('upcoming')">
-          Upcoming
-        </button>
-
-        <button class="filter-btn ongoing" [class.active]="selectedStatus==='ongoing'"
-          (click)="filterStatus('ongoing')">
-          Ongoing
-        </button>
-
-        <button class="filter-btn completed" [class.active]="selectedStatus==='completed'"
-          (click)="filterStatus('completed')">
-          Completed
-        </button>
-
-        <button class="filter-btn cancelled" [class.active]="selectedStatus==='cancelled'"
-          (click)="filterStatus('cancelled')">
-          Cancelled
-        </button>
-
-        <button class="filter-btn all" [class.active]="selectedStatus==='all'" (click)="filterStatus('all')">
-          All
-        </button>
-
+    
+    <div class="header-actions">
+      <div class="status-filters">
+        <a (click)="filterStatus('upcoming')" [class.active]="selectedStatus==='upcoming'">Upcoming</a>
+        <a (click)="filterStatus('ongoing')" [class.active]="selectedStatus==='ongoing'">Ongoing</a>
+        <a (click)="filterStatus('completed')" [class.active]="selectedStatus==='completed'">Completed</a>
+        <a (click)="filterStatus('cancelled')" [class.active]="selectedStatus==='cancelled'">Cancelled</a>
+        <a (click)="filterStatus('all')" [class.active]="selectedStatus==='all'">All</a>
       </div>
+      <button class="btn-create" routerLink="/organizer/create-event">Create Event</button>
+    </div>
+  </div>
 
-      <button class="create-btn" routerLink="/organizer/create-event">
-        Create Event
-      </button>
-
-
-
+  <!-- Table Section -->
+  <div class="table-card">
+    <div *ngIf="loading" class="loading-state">
+      <i class="pi pi-spin pi-spinner"></i>
+      <span>Loading events...</span>
     </div>
 
-  </div>
-
-  <div *ngIf="loading" style="padding:20px;">
-    Loading events...
-  </div>
-
-
-  <div class="table-card">
-
-    <table class="event-table">
-
+    <table class="event-table" *ngIf="!loading">
       <thead>
         <tr>
-          <th>Event Name</th>
-          <th>Date</th>
-          <th>Location</th>
-          <th>Volunteers</th>
-          <th>Status</th>
-          <th>Actions</th>
+          <th style="width: 30%">EVENT NAME</th>
+          <th style="width: 12%">DATE</th>
+          <th style="width: 20%">LOCATION</th>
+          <th style="width: 10%">VOLUNTEERS</th>
+          <th style="width: 12%">STATUS</th>
+          <th style="width: 16%">ACTIONS</th>
         </tr>
       </thead>
-
       <tbody>
-
         <tr *ngIf="events.length === 0">
-          <td colspan="6" style="text-align:center; padding:30px;">
-            No events available
-          </td>
+          <td colspan="6" class="empty-message">No events available</td>
         </tr>
-
+        
         <tr *ngFor="let event of events">
-
           <td>
-            <div class="event-title">
-              {{ event.title }}
-              <span class="event-desc">
-                {{ event.description }}
-              </span>
+            <div class="event-info">
+              <span class="event-primary-name">{{ event.title }}</span>
+              <span class="event-description">{{ event.description }}</span>
             </div>
           </td>
-
-          <td>{{ event.date | date:'MMM d, y' }}</td>
-
-          <td>{{ event.location }}</td>
-
+          
+          <td class="date-cell">{{ event.date | date:'MMM d, y' }}</td>
+          
+          <td class="location-cell">{{ event.location }}</td>
+          
+          <td class="volunteer-cell">
+            <span class="count-badge">{{ event.volunteersNeeded }}</span>
+          </td>
+          
           <td>
-            <div class="volunteer-count">
-              {{ event.volunteersNeeded }}
+            <span class="status-badge" [ngClass]="event.status?.toLowerCase()">
+              {{ event.status === 'active' ? 'Ongoing' : (event.status | titlecase) }}
+            </span>
+          </td>
+          
+          <td class="actions-cell">
+            <div class="action-group">
+              <button class="btn-action edit" (click)="editEvent(event.id)" [disabled]="event.status === 'cancelled'">
+                Edit
+              </button>
+              <button class="btn-action cancel" *ngIf="event.status !== 'cancelled' && event.status !== 'completed'" (click)="cancelEvent(event.id)">
+                Cancel
+              </button>
+              <button class="btn-action delete" (click)="deleteEvent(event.id)">
+                Delete
+              </button>
             </div>
           </td>
-
-          <td>
-
-            <span class="status cancelled" *ngIf="event.status === 'cancelled'">
-              Cancelled
-            </span>
-
-            <span class="status upcoming" *ngIf="event.status !== 'cancelled' && event.date > today">
-              Upcoming
-            </span>
-
-            <span class="status active" *ngIf="event.status !== 'cancelled' && event.date === today">
-              Ongoing
-            </span>
-
-            <span class="status completed" *ngIf="event.status !== 'cancelled' && event.date < today">
-              Completed
-            </span>
-
-          </td>
-
-          <td class="actions">
-
-            <button class="edit-btn" (click)="editEvent(event.id)" [disabled]="event.status === 'cancelled'">
-              Edit
-            </button>
-
-            <button class="cancel-btn" *ngIf="event.status !== 'cancelled'" (click)="cancelEvent(event.id)">
-              Cancel
-            </button>
-
-            <button class="delete-btn" (click)="deleteEvent(event.id)">
-              Delete
-            </button>
-
-          </td>
-
-
-
         </tr>
-
       </tbody>
-
     </table>
-
   </div>
-
 </div>
