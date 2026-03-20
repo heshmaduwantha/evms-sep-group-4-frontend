@@ -13,14 +13,11 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dial
   styleUrls: ['./event-list.css']
 })
 export class EventListComponent implements OnInit {
-
   events: any[] = [];
   loading = true;
   allEvents: any[] = [];
   today: string = new Date().toISOString().split('T')[0];
   selectedStatus: string = 'all';
-
-
   constructor(
     private router: Router,
     private eventService: EventService,
