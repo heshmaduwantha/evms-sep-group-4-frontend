@@ -424,6 +424,9 @@
   font-weight: 500;
   color: var(--text-default);
   font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .recent-time {
@@ -484,6 +487,7 @@
 .action-buttons {
   display: flex;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .btn-action {
