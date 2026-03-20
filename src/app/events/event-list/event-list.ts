@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { EventService } from '../services/event.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
 
 @Component({
@@ -13,11 +13,13 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dial
   styleUrls: ['./event-list.css']
 })
 export class EventListComponent implements OnInit {
+
   events: any[] = [];
-  loading = true;
   allEvents: any[] = [];
+  loading = true;
   today: string = new Date().toISOString().split('T')[0];
   selectedStatus: string = 'all';
+
   constructor(
     private router: Router,
     private eventService: EventService,
@@ -30,23 +32,15 @@ export class EventListComponent implements OnInit {
   }
 
   loadEvents() {
-
     this.loading = true;
 
-    console.log("Loading events...");
     this.eventService.getEvents().subscribe((data: any) => {
-
-      console.log("Events from backend:", data);
-      console.log("Statuses:", data.map((e: any) => e.status));
       this.allEvents = data;
-
       this.events = data;
       this.loading = false;
-      console.log("events length:", this.events.length);
+
       this.cdr.detectChanges();
-
     });
-
   }
 
   editEvent(id: string) {
@@ -54,7 +48,6 @@ export class EventListComponent implements OnInit {
   }
 
   deleteEvent(id: string) {
-
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       maxWidth: '90vw',
@@ -73,11 +66,9 @@ export class EventListComponent implements OnInit {
         });
       }
     });
-
   }
 
   cancelEvent(id: string) {
-
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: {
@@ -95,12 +86,9 @@ export class EventListComponent implements OnInit {
         });
       }
     });
-
   }
 
-
   filterStatus(status: string) {
-
     this.selectedStatus = status;
 
     if (status === 'all') {
@@ -114,7 +102,6 @@ export class EventListComponent implements OnInit {
 
       if (!event.eventDate) return false;
 
-      // CANCELLED stays priority
       if (event.status === 'CANCELLED') {
         return status === 'cancelled';
       }
@@ -132,11 +119,7 @@ export class EventListComponent implements OnInit {
       }
 
       return false;
-
     });
-
   }
 
 }
-
-

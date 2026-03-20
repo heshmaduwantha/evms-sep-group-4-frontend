@@ -11,8 +11,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './create-event.html',
   styleUrls: ['./create-event.css']
 })
-
 export class CreateEventComponent implements OnInit {
+
   constructor(
     private route: ActivatedRoute,
     private eventService: EventService,
@@ -33,7 +33,6 @@ export class CreateEventComponent implements OnInit {
   };
 
   ngOnInit() {
-
     const id = this.route.snapshot.paramMap.get('id');
 
     if (id) {
@@ -42,7 +41,6 @@ export class CreateEventComponent implements OnInit {
 
       this.eventService.getEventById(this.eventId)
         .subscribe((event: any) => {
-
           console.log("Event loaded:", event);
 
           this.eventData.title = event.title;
@@ -51,11 +49,10 @@ export class CreateEventComponent implements OnInit {
           this.eventData.eventTime = event.eventTime;
           this.eventData.location = event.location;
           this.eventData.volunteersRequired = event.volunteersRequired;
+
           this.cdr.detectChanges();
         });
-
     }
-
   }
 
   submitEvent() {
@@ -67,31 +64,31 @@ export class CreateEventComponent implements OnInit {
       this.eventService.updateEvent(this.eventId, this.eventData)
         .subscribe((response: any) => {
           console.log("Event updated:", response);
+
           this.snackBar.open('Event updated successfully', 'Close', {
             duration: 3000
           });
+
           this.router.navigate(['/organizer/events']);
         });
 
-
     } else {
-
       console.log("Creating new event...");
 
       this.eventService.createEvent(this.eventData)
         .subscribe((response: any) => {
           console.log("Event created:", response);
+
           this.snackBar.open('Event created successfully', 'Close', {
             duration: 3000
           });
+
           this.router.navigate(['/organizer/events']);
         });
-
     }
-
   }
+
   cancelEvent() {
     this.router.navigate(['/organizer/events']);
   }
-
 }
