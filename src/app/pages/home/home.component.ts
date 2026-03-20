@@ -12,6 +12,8 @@ import { Event } from '../events/event.models';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { TagModule } from 'primeng/tag';
 import { AvatarModule } from 'primeng/avatar';
+import { ApplicationService } from '../applications/application.service';
+import { ApplicationStatus } from '../applications/application.models';
 
 @Component({
   selector: 'app-home',
@@ -39,6 +41,7 @@ export class HomeComponent implements OnInit {
     private eventService: EventService,
     private reportsService: ReportsService,
     private attendanceService: AttendanceService,
+    private applicationService: ApplicationService,
     private router: Router
   ) { }
 
@@ -72,14 +75,21 @@ export class HomeComponent implements OnInit {
       }
     });
 
-    this.attendanceService.getApplications().subscribe({
+    this.applicationService.getApplications().subscribe({
       next: (apps) => {
-        this.recentApplications = apps.slice(0, 6).map(app => ({
+        const pendingApps = apps.filter(a => a.status === ApplicationStatus.PENDING)
+          .sort((a, b) => new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime());
+          
+        this.recentApplications = pendingApps.slice(0, 6).map(app => ({
           ...app,
-          eventTitle: this.getEventName(app.event),
-          color: this.getAvatarColor(app.name)
+          name: app.user?.email ? app.user.email.split('@')[0] : 'Unknown',
+          role: app.experience || 'Volunteer',
+          eventTitle: app.event?.title || 'Unknown Event',
+          time: this.getTimeAgo(new Date(app.appliedDate)),
+          exp: app.experienceDetails || 'New volunteer',
+          color: this.getAvatarColor(app.user?.email || 'Unknown')
         }));
-        this.stats.pendingApplications.value = apps.length;
+        this.stats.pendingApplications.value = pendingApps.length;
       }
     });
 
@@ -186,5 +196,16 @@ export class HomeComponent implements OnInit {
     if (!eventId) return 'General';
     const event = this.recentEvents.find(e => e.id === eventId);
     return event ? event.title : 'Event';
+  }
+
+  getTimeAgo(date: Date): string {
+    const now = new Date();
+    const then = new Date(date);
+    const diffInSeconds = Math.floor((now.getTime() - then.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
   }
 }
