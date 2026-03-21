@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { EventService } from '../services/event.service';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
@@ -8,17 +9,20 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dial
 @Component({
   selector: 'app-event-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './event-list.html',
   styleUrls: ['./event-list.css']
 })
 export class EventListComponent implements OnInit {
 
-  events: any[] = [];
   allEvents: any[] = [];
+  filteredEvents: any[] = [];
+
   loading = true;
   today: string = new Date().toISOString().split('T')[0];
+
   selectedStatus: string = 'all';
+  searchTerm: string = '';
 
   constructor(
     private router: Router,
@@ -36,11 +40,65 @@ export class EventListComponent implements OnInit {
 
     this.eventService.getEvents().subscribe((data: any) => {
       this.allEvents = data;
-      this.events = data;
+      this.applyFilters();
       this.loading = false;
-
       this.cdr.detectChanges();
     });
+  }
+
+
+  applyFilters() {
+    let filtered = this.allEvents;
+
+    const term = this.searchTerm.toLowerCase();
+    const today = this.today;
+
+    // SEARCH
+    if (term) {
+      filtered = filtered.filter(event =>
+        event.title?.toLowerCase().includes(term) ||
+        event.location?.toLowerCase().includes(term)
+      );
+    }
+
+    // STATUS
+    if (this.selectedStatus !== 'all') {
+      filtered = filtered.filter(event => {
+
+        if (!event.eventDate) return false;
+
+        if (event.status === 'CANCELLED') {
+          return this.selectedStatus === 'cancelled';
+        }
+
+        if (this.selectedStatus === 'upcoming') {
+          return event.eventDate > today;
+        }
+
+        if (this.selectedStatus === 'ongoing') {
+          return event.eventDate === today;
+        }
+
+        if (this.selectedStatus === 'completed') {
+          return event.eventDate < today;
+        }
+
+        return false;
+      });
+    }
+
+    this.filteredEvents = filtered;
+  }
+
+
+  onSearchChange() {
+    this.applyFilters();
+  }
+
+
+  filterStatus(status: string) {
+    this.selectedStatus = status;
+    this.applyFilters();
   }
 
   editEvent(id: string) {
@@ -87,39 +145,4 @@ export class EventListComponent implements OnInit {
       }
     });
   }
-
-  filterStatus(status: string) {
-    this.selectedStatus = status;
-
-    if (status === 'all') {
-      this.events = this.allEvents;
-      return;
-    }
-
-    const today = this.today;
-
-    this.events = this.allEvents.filter(event => {
-
-      if (!event.eventDate) return false;
-
-      if (event.status === 'CANCELLED') {
-        return status === 'cancelled';
-      }
-
-      if (status === 'upcoming') {
-        return event.eventDate > today;
-      }
-
-      if (status === 'ongoing') {
-        return event.eventDate === today;
-      }
-
-      if (status === 'completed') {
-        return event.eventDate < today;
-      }
-
-      return false;
-    });
-  }
-
 }
