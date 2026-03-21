@@ -89,7 +89,7 @@
         </tr>
 
 
-        <tr *ngFor="let event of filteredEvents">
+        <tr *ngFor="let event of paginatedEvents">
 
           <td>
             <div class="event-title">
@@ -151,6 +151,22 @@
       </tbody>
 
     </table>
+
+    <div class="pagination">
+
+      <button (click)="goToPreviousPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
+
+      <span>
+        Page {{ currentPage }} of {{ totalPages }}
+      </span>
+
+      <button (click)="goToNextPage()" [disabled]="currentPage === totalPages">
+        Next
+      </button>
+
+    </div>
 
   </div>
 

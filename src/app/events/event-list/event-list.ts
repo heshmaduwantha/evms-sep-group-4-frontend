@@ -17,6 +17,10 @@ export class EventListComponent implements OnInit {
 
   allEvents: any[] = [];
   filteredEvents: any[] = [];
+  totalPages: number = 0;
+  currentPage: number = 1;
+  itemsPerPage: number = 5;
+  paginatedEvents: any[] = [];
 
   loading = true;
   today: string = new Date().toISOString().split('T')[0];
@@ -88,6 +92,9 @@ export class EventListComponent implements OnInit {
     }
 
     this.filteredEvents = filtered;
+    this.totalPages = Math.ceil(this.filteredEvents.length / this.itemsPerPage);
+    this.currentPage = 1;
+    this.paginate();
   }
 
 
@@ -145,4 +152,28 @@ export class EventListComponent implements OnInit {
       }
     });
   }
+  paginate() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+
+    this.paginatedEvents = this.filteredEvents.slice(start, end);
+  }
+
+  goToNextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.paginate();
+    }
+  }
+
+  goToPreviousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.paginate();
+    }
+  }
+
+
+
+
 }
