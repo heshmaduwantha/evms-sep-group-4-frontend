@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { EventService } from '../services/event.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -11,7 +11,8 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dial
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './event-list.html',
-  styleUrls: ['./event-list.css']
+  styleUrls: ['./event-list.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EventListComponent implements OnInit {
 
@@ -52,9 +53,15 @@ export class EventListComponent implements OnInit {
 
 
   applyFilters() {
+
+    if (!this.allEvents || this.allEvents.length === 0) {
+      this.filteredEvents = [];
+      this.paginatedEvents = [];
+      return;
+    }
     let filtered = this.allEvents;
 
-    const term = this.searchTerm.toLowerCase();
+    const term = this.searchTerm?.toLowerCase().trim();
     const today = this.today;
 
     // SEARCH
@@ -98,8 +105,14 @@ export class EventListComponent implements OnInit {
   }
 
 
+  searchTimeout: any;
+
   onSearchChange() {
-    this.applyFilters();
+    clearTimeout(this.searchTimeout);
+
+    this.searchTimeout = setTimeout(() => {
+      this.applyFilters();
+    }, 300);
   }
 
 
@@ -171,6 +184,9 @@ export class EventListComponent implements OnInit {
       this.currentPage--;
       this.paginate();
     }
+  }
+  trackByEventId(index: number, event: any): string {
+    return event.id;
   }
 
 

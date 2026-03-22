@@ -89,7 +89,7 @@
         </tr>
 
 
-        <tr *ngFor="let event of paginatedEvents">
+        <tr *ngFor="let event of paginatedEvents; trackBy: trackByEventId">
 
           <td>
             <div class="event-title">

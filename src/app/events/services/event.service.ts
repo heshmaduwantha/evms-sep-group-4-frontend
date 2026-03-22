@@ -24,8 +24,11 @@ export class EventService {
   }
 
   cancelEvent(id: string) {
-    return this.http.patch(`http://localhost:3000/events/${id}/cancel`, {});
+    return this.http.put(`http://localhost:3000/events/${id}`, {
+      status: 'CANCELLED'
+    });
   }
+
   getEvents(): Observable<any> {
     return this.http.get(this.apiUrl);
   }
