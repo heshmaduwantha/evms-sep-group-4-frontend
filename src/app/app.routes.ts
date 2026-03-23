@@ -31,6 +31,12 @@ export const routes: Routes = [
             { path: 'manual-checkin', component: ManualCheckinComponent, data: { breadcrumb: 'Manual Check-in' } },
             { path: 'applications', component: ApplicationManagementComponent, data: { breadcrumb: 'Applications' } },
             { path: 'my-applications', component: MyApplicationsComponent, data: { breadcrumb: 'My Applications' } },
+            {
+                path: 'roles',
+                loadChildren: () => import('./pages/roles/roles.routes').then(m => m.ROLES_ROUTES),
+                data: { breadcrumb: 'Roles' }
+            },
+
             { path: '', redirectTo: 'home', pathMatch: 'full' }
         ]
     },

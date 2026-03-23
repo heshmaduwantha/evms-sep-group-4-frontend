@@ -1,0 +1,231 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<!-- Back + Header -->
+<div class="page-top">
+  <button class="back-btn" (click)="goBack()">
+    <i class="pi pi-arrow-left"></i> Back to Dashboard
+  </button>
+</div>
+
+<div class="page-header" *ngIf="!loading">
+  <div class="header-content">
+    <div class="header-left">
+      <h1 class="page-title">{{ eventTitle }}</h1>
+      <div class="event-meta">
+        <span *ngIf="eventDate"><i class="pi pi-calendar"></i> {{ eventDate | date:'MMMM d, yyyy' }}</span>
+        <span *ngIf="eventLocation"><i class="pi pi-map-marker"></i> {{ eventLocation }}</span>
+      </div>
+      <p class="event-desc" *ngIf="eventDescription">{{ eventDescription }}</p>
+    </div>
+    <button pButton label="+ Add Role" class="btn-add-role" (click)="openAddRole()"></button>
+  </div>
+</div>
+
+<!-- Summary Stats -->
+<div class="stats-grid" *ngIf="!loading">
+  <div class="stat-card">
+    <div class="stat-icon"><i class="pi pi-users"></i></div>
+    <div>
+      <span class="stat-label">Total Roles</span>
+      <span class="stat-value">{{ roles.length }}</span>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="pi pi-user-plus"></i></div>
+    <div>
+      <span class="stat-label">Positions Required</span>
+      <span class="stat-value">{{ totalRequired }}</span>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="pi pi-check"></i></div>
+    <div>
+      <span class="stat-label">Volunteers Assigned</span>
+      <span class="stat-value">{{ totalAssigned }} <small>/ {{ totalRequired }}</small></span>
+    </div>
+  </div>
+</div>
+
+<!-- Roles Grid -->
+<div class="roles-grid" *ngIf="!loading && roles.length > 0">
+  <div class="role-card" *ngFor="let role of roles">
+    <div class="role-card-header">
+      <div class="role-title-row">
+        <h3 class="role-name">{{ role.name }}</h3>
+        <div class="role-actions">
+          <button class="icon-btn edit" pTooltip="Edit Role" (click)="openEditRole(role)">
+            <i class="pi pi-pencil"></i>
+          </button>
+          <button class="icon-btn delete" pTooltip="Delete Role" (click)="confirmDeleteRole(role)">
+            <i class="pi pi-trash"></i>
+          </button>
+        </div>
+      </div>
+      <p class="role-description">{{ role.description }}</p>
+      <div class="coverage-section">
+        <div class="coverage-header">
+          <span class="coverage-label">COVERAGE</span>
+          <span class="coverage-value">
+            {{ role.assignedVolunteers.length }} / {{ role.requiredVolunteers }}
+            ({{ getCoveragePercent(role) }}%)
+          </span>
+        </div>
+        <div class="coverage-bar">
+          <div class="coverage-fill" [class]="getCoverageClass(role)"
+            [style.width.%]="getCoveragePercent(role) > 100 ? 100 : getCoveragePercent(role)">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="role-card-body">
+      <div class="volunteers-header">
+        <span class="volunteers-label">Assigned Volunteers</span>
+        <button class="assign-btn" (click)="openAssignDialog(role)"
+          [disabled]="role.assignedVolunteers.length >= role.requiredVolunteers">
+          <i class="pi pi-user-plus"></i> Assign
+        </button>
+      </div>
+
+      <div class="volunteer-list" *ngIf="role.assignedVolunteers.length > 0; else noVolunteers">
+        <div class="volunteer-item" *ngFor="let vol of role.assignedVolunteers">
+          <div class="volunteer-avatar" [style.background]="getAvatarColor(vol.name)">
+            {{ getInitials(vol.name) }}
+          </div>
+          <div class="volunteer-info">
+            <span class="volunteer-name">{{ vol.name }}</span>
+            <span class="volunteer-email">{{ vol.email }}</span>
+          </div>
+          <button class="remove-btn" pTooltip="Remove volunteer" (click)="removeVolunteer(role, vol)">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+
+      <ng-template #noVolunteers>
+        <div class="empty-volunteers">
+          <i class="pi pi-user-plus"></i>
+          <span>No volunteers assigned yet</span>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<!-- Empty state -->
+<div class="empty-state" *ngIf="!loading && roles.length === 0">
+  <i class="pi pi-users"></i>
+  <h3>No roles defined yet</h3>
+  <p>Start by adding roles for this event.</p>
+  <button pButton label="+ Add First Role" class="btn-add-role" (click)="openAddRole()"></button>
+</div>
+
+<!-- Loading -->
+<div class="loading-state" *ngIf="loading">
+  <i class="pi pi-spin pi-spinner"></i>
+  <p>Loading roles...</p>
+</div>
+
+<!-- ─── Add / Edit Role Dialog ─────────────────────────── -->
+<p-dialog
+  [(visible)]="roleDialogVisible"
+  [header]="isEditMode ? 'Edit Role' : 'Add New Role'"
+  [modal]="true"
+  [style]="{width: '480px'}"
+  [closable]="true"
+  styleClass="role-dialog">
+
+  <form [formGroup]="roleForm" (ngSubmit)="saveRole()" class="role-form">
+    <div class="form-field">
+      <label>Role Name <span class="required">*</span></label>
+      <input pInputText formControlName="name" placeholder="e.g., Registration Desk" />
+      <small class="field-error" *ngIf="roleForm.get('name')?.invalid && roleForm.get('name')?.touched">
+        Role name is required (min 2 characters)
+      </small>
+    </div>
+
+    <div class="form-field">
+      <label>Description <span class="required">*</span></label>
+      <textarea pInputTextarea formControlName="description" rows="3"
+        placeholder="Describe the role and responsibilities..."></textarea>
+      <small class="field-error" *ngIf="roleForm.get('description')?.invalid && roleForm.get('description')?.touched">
+        Description is required
+      </small>
+    </div>
+
+    <div class="form-field">
+      <label>Required Volunteers <span class="required">*</span></label>
+      <p-inputNumber formControlName="requiredVolunteers" [min]="1" [showButtons]="true"
+        buttonLayout="horizontal" spinnerMode="horizontal"
+        decrementButtonClass="p-button-secondary" incrementButtonClass="p-button-secondary">
+      </p-inputNumber>
+    </div>
+
+    <div class="dialog-footer">
+      <button pButton type="button" label="Cancel" class="p-button-outlined p-button-secondary"
+        (click)="roleDialogVisible = false"></button>
+      <button pButton type="submit" [label]="isEditMode ? 'Save Changes' : 'Add Role'"
+        class="btn-primary" [disabled]="roleForm.invalid || savingRole"
+        [loading]="savingRole"></button>
+    </div>
+  </form>
+</p-dialog>
+
+<!-- ─── Assign Volunteer Dialog ────────────────────────── -->
+<p-dialog
+  [(visible)]="assignDialogVisible"
+  [header]="'Assign Volunteer'"
+  [modal]="true"
+  [style]="{width: '500px'}"
+  [closable]="true"
+  styleClass="assign-dialog">
+
+  <div class="assign-subtitle" *ngIf="assigningRole">
+    {{ assigningRole.name }} &middot;
+    {{ assigningRole.assignedVolunteers.length }} / {{ assigningRole.requiredVolunteers }} filled
+  </div>
+
+  <div class="search-box">
+    <i class="pi pi-search"></i>
+    <input type="text" [(ngModel)]="volunteerSearch" placeholder="Search by name, email, or skills..." />
+  </div>
+
+  <div class="volunteer-picker" *ngIf="filteredVolunteers.length > 0; else noAvailable">
+    <div class="picker-item" *ngFor="let vol of filteredVolunteers"
+      [class.assigning]="assigningUserId === vol.id"
+      (click)="assignVolunteer(vol)">
+      <div class="picker-avatar" [style.background]="getAvatarColor(vol.name)">
+        {{ getInitials(vol.name) }}
+      </div>
+      <div class="picker-info">
+        <div class="picker-name-row">
+          <span class="picker-name">{{ vol.name }}</span>
+          <span class="approved-badge">✓ Approved</span>
+        </div>
+        <span class="picker-email">{{ vol.email }}</span>
+        <div class="skill-chips" *ngIf="vol.skills">
+          <span class="skill-chip" *ngFor="let skill of vol.skills.split(',')">
+            {{ skill.trim() }}
+          </span>
+        </div>
+      </div>
+      <div class="picker-loading" *ngIf="assigningUserId === vol.id">
+        <i class="pi pi-spin pi-spinner"></i>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noAvailable>
+    <div class="empty-picker">
+      <i class="pi pi-users"></i>
+      <p *ngIf="approvedVolunteers.length === 0">No approved volunteers for this event yet.</p>
+      <p *ngIf="approvedVolunteers.length > 0">All approved volunteers are already assigned or no match found.</p>
+    </div>
+  </ng-template>
+
+  <div class="dialog-footer">
+    <button pButton label="Close" class="p-button-outlined p-button-secondary"
+      (click)="assignDialogVisible = false"></button>
+  </div>
+</p-dialog>
