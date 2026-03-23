@@ -1,0 +1,13 @@
+<h2>Edit Volunteer</h2>
+
+<form [formGroup]="form" (ngSubmit)="update()">
+
+  <input formControlName="name">
+  <input formControlName="email">
+  <input formControlName="phone">
+  <input formControlName="skills">
+  <input formControlName="availability">
+
+  <button type="submit">Update</button>
+
+</form>

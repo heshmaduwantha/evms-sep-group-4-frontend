@@ -1,0 +1,13 @@
+<h2>Register Volunteer</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+
+  <input formControlName="name" placeholder="Name">
+  <input formControlName="email" placeholder="Email">
+  <input formControlName="phone" placeholder="Phone">
+  <input formControlName="skills" placeholder="Skills">
+  <input formControlName="availability" placeholder="Availability">
+
+  <button type="submit">Register</button>
+
+</form>

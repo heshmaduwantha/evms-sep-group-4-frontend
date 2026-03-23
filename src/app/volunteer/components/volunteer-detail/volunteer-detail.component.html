@@ -1,0 +1,55 @@
+<div class="detail-container" *ngIf="volunteer">
+
+  <h2>Volunteer Details</h2>
+
+  <!-- Avatar -->
+  <div class="avatar">
+    {{ volunteer.name.charAt(0).toUpperCase() }}
+  </div>
+
+  <!-- Info -->
+  <div class="detail-row">
+    <span class="label">Name</span>
+    <span class="value">{{ volunteer.name }}</span>
+  </div>
+
+  <div class="detail-row">
+    <span class="label">Email</span>
+    <span class="value">{{ volunteer.email }}</span>
+  </div>
+
+  <div class="detail-row">
+    <span class="label">Skills</span>
+    <span class="value">{{ volunteer.skills }}</span>
+  </div>
+
+  <div class="detail-row">
+    <span class="label">Availability</span>
+    <span class="value">{{ volunteer.availability }}</span>
+  </div>
+
+  <!-- Status -->
+  <div class="detail-row">
+    <span class="label">Status</span>
+    <span class="status-badge"
+          [ngClass]="volunteer.status === 'active' ? 'active' : 'inactive'">
+
+      {{ volunteer.status | titlecase }}
+
+    </span>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button routerLink="/volunteers" class="btn-back">Back</button>
+
+    <button *ngIf="true"
+            [routerLink]="['/volunteers/edit', volunteer.id]"
+            class="btn-edit">
+
+      Edit
+
+    </button>
+  </div>
+
+</div>
