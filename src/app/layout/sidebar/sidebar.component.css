@@ -1,0 +1,159 @@
+
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background: #020617;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 20px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+
+.brand {
+  font-size: 20px;
+  font-weight: 600;
+  color: #22c55e;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: #94a3b8;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.25s;
+  font-size: 14px;
+}
+
+
+.menu-item .left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+
+.menu-item i {
+  font-size: 16px;
+  width: 16px; 
+  text-align: center;
+}
+
+
+.menu-item:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+
+.menu-item.active {
+  background: #064e3b;
+  color: #22c55e;
+}
+
+/* Expand icon */
+.menu-item .pi-angle-right {
+  font-size: 12px;
+  transition: 0.3s;
+}
+
+/* Rotate animation */
+.rotate {
+  transform: rotate(90deg);
+}
+
+/* Submenu */
+.submenu {
+  display: none;
+  flex-direction: column;
+  margin-left: 30px; /* 🔥 perfect indentation */
+  margin-top: 4px;
+  gap: 4px;
+}
+
+.submenu.open {
+  display: flex;
+}
+
+/* Submenu items */
+.submenu-item {
+  padding: 8px 10px;
+  font-size: 13px;
+  color: #64748b;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: 0.25s;
+}
+
+/* Hover */
+.submenu-item:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+/* Active */
+.submenu-item.active {
+  color: #22c55e;
+  font-weight: 500;
+}
+
+/* Profile section */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid #1e293b;
+  padding-top: 12px;
+  margin-top: 10px;
+}
+
+/* Avatar */
+.avatar {
+  width: 36px;
+  height: 36px;
+  background: #22c55e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  font-weight: bold;
+}
+
+/* Text */
+.name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.role {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* Logout icon */
+.logout {
+  margin-left: auto;
+  cursor: pointer;
+  font-size: 14px;
+}
