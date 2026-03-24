@@ -166,13 +166,12 @@ export class SidebarComponent implements OnInit {
     {
       label: 'Attendance',
       icon: 'pi pi-check-square',
-      link: '/attendance',
+      link: '/manual-checkin',
       roles: [UserRole.ORGANIZER, UserRole.ADMIN],
       expandable: true,
       expanded: false,
       badge: 0,
       children: [
-        { label: 'Overview', icon: 'pi pi-eye', link: '/attendance', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
         { label: 'Manual Check-in', icon: 'pi pi-user-plus', link: '/manual-checkin', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
         { label: 'Attendance Reports', icon: 'pi pi-chart-bar', link: '/reports', roles: [UserRole.ORGANIZER, UserRole.ADMIN ] }
       ]
