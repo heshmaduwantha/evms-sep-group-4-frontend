@@ -29,19 +29,33 @@
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+.header-right input {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 180px;
 }
 
 
 .filter-btn {
-  border: none;
-  padding: 6px 14px;
+  border: 1px solid #ddd;
+  padding: 4px 10px;
   border-radius: 20px;
   font-size: 13px;
   cursor: pointer;
   transition: 0.2s;
-  background: transparent;
+  background: #f8f9fa;
   color: #475569;
+}
+
+.filter-btn.active {
+  background: #f4c542;
+  color: #000;
+  border: none;
 }
 
 /* UPCOMING */
@@ -78,11 +92,12 @@
   background: #14b8a6;
   color: white;
   border: none;
-  padding: 10px 18px;
+  padding: 6px 12px;
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
   transition: 0.2s;
+  margin-left: auto;
 }
 
 .create-btn:hover {
@@ -117,7 +132,7 @@
 }
 
 .event-table td {
-  padding: 16px;
+  padding: 14px 12px;
   border-top: 1px solid #e5e7eb;
   font-size: 14px;
   vertical-align: top;
@@ -207,6 +222,7 @@
   font-size: 12px;
   cursor: pointer;
   transition: 0.2s;
+  margin-right: 6px;
 }
 
 /* EDIT */
@@ -251,4 +267,48 @@ button:disabled {
   text-align: center;
   padding: 30px;
   color: #64748b;
+}
+
+.filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+.search-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  background: #f8f9fa;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 80px;
+}
+
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-weight: 600;
+  color: #334155;
+  min-width: 90px;
+  text-align: center;
 }

@@ -1,0 +1,31 @@
+<div class="dialog-box">
+
+  <!-- Header -->
+  <div class="dialog-header">
+    <span class="title">{{ data.title }}</span>
+    <button class="close-btn" (click)="close(false)">✕</button>
+  </div>
+
+  <!-- Body -->
+  <div class="dialog-body">
+    <span class="warning-icon">⚠️</span>
+    <p>
+      {{ data.message }} <br>
+      <strong>This action cannot be undone.</strong>
+    </p>
+  </div>
+
+  <!-- Actions -->
+  <div class="dialog-actions">
+    <button class="cancel-btn" (click)="close(false)">
+      ✖ Cancel
+    </button>
+
+    <button class="confirm-btn" [ngClass]="{
+    'delete-btn': !data.type || data.type === 'danger',
+    'warning-btn': data.type === 'warning'
+  }" (click)="close(true)">
+      ✔ {{ data.confirmText }}
+    </button>
+  </div>
+</div>
