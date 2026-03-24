@@ -34,7 +34,7 @@ export const routes: Routes = [
             {
                 path: 'roles',
                 loadChildren: () => import('./pages/roles/roles.routes').then(m => m.ROLES_ROUTES),
-                data: { breadcrumb: 'Roles' }
+                //data: { breadcrumb: 'Roles' }
             },
 
             { path: '', redirectTo: 'home', pathMatch: 'full' }
