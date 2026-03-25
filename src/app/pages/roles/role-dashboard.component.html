@@ -1,0 +1,87 @@
+<p-toast></p-toast>
+
+<div class="page-header">
+  <div class="header-content">
+    <div>
+      <h1 class="page-title">Role & Assignment Management</h1>
+      <p class="page-subtitle">Manage volunteer roles and assignments</p>
+    </div>
+    <button pButton label="+ New Event" class="p-button-primary btn-new-event"
+      routerLink="/organizer/create-event">
+    </button>
+  </div>
+</div>
+
+<div class="stats-grid" *ngIf="!loading">
+  <div class="stat-card">
+    <div class="stat-icon">
+      <i class="pi pi-calendar"></i>
+    </div>
+    <div class="stat-info">
+      <span class="stat-label">Total Events</span>
+      <span class="stat-value">{{ stats.totalEvents }}</span>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon">
+      <i class="pi pi-users"></i>
+    </div>
+    <div class="stat-info">
+      <span class="stat-label">Total Roles</span>
+      <span class="stat-value">{{ stats.totalRoles }}</span>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon">
+      <i class="pi pi-check-circle"></i>
+    </div>
+    <div class="stat-info">
+      <span class="stat-label">Volunteers Assigned</span>
+      <span class="stat-value">{{ stats.volunteersAssigned }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="events-section" *ngIf="!loading">
+  <h2 class="section-title">Upcoming Events</h2>
+
+  <div class="event-list" *ngIf="getUpcomingEvents().length > 0; else noEvents">
+    <div class="event-card" *ngFor="let evt of getUpcomingEvents()"
+      (click)="navigateToEvent(evt.eventId)">
+      <div class="event-card-header">
+        <h3 class="event-title">{{ evt.eventTitle }}</h3>
+        <i class="pi pi-chevron-right"></i>
+      </div>
+      <div class="event-meta">
+        <span><i class="pi pi-calendar"></i> {{ evt.date | date:'MMM d, yyyy' }}</span>
+        <span><i class="pi pi-map-marker"></i> {{ evt.location }}</span>
+        <span><i class="pi pi-users"></i> {{ evt.totalRoles }} roles</span>
+      </div>
+      <div class="coverage-section">
+        <div class="coverage-header">
+          <span class="coverage-label">VOLUNTEER COVERAGE</span>
+          <span class="coverage-value">{{ evt.totalAssigned }} / {{ evt.totalRequired }} ({{ evt.coveragePercent }}%)</span>
+        </div>
+        <div class="coverage-bar">
+          <div class="coverage-fill" [class]="getCoverageClass(evt.coveragePercent)"
+            [style.width.%]="evt.coveragePercent > 100 ? 100 : evt.coveragePercent">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noEvents>
+    <div class="empty-state">
+      <i class="pi pi-calendar-times"></i>
+      <p>No upcoming events found.</p>
+    </div>
+  </ng-template>
+</div>
+
+<div class="loading-state" *ngIf="loading">
+  <i class="pi pi-spin pi-spinner"></i>
+  <p>Loading dashboard...</p>
+</div>
