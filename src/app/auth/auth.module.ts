@@ -11,6 +11,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { AuthRoutingModule } from './auth-routing.module';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
+import { FooterComponent } from '../layout/footer/footer.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { RegisterComponent } from './register/register.component';
     ButtonModule,
     MessageModule,
     MessagesModule,
-    RadioButtonModule
+    RadioButtonModule,
+    FooterComponent
   ]
 })
 export class AuthModule { }

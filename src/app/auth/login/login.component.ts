@@ -8,8 +8,14 @@ import { AuthService } from '../auth.service';
   standalone: false,
   templateUrl: './login.component.html',
   styles: [`
-    .login-wrapper {
+    .auth-page-container {
+      display: flex;
+      flex-direction: column;
       min-height: 100vh;
+      background: #0f172a;
+    }
+    .login-wrapper {
+      flex: 1;
       width: 100%;
       display: flex;
       align-items: center;

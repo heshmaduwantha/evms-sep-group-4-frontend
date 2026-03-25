@@ -9,8 +9,14 @@ import { UserRole } from '../auth.models';
   standalone: false,
   templateUrl: './register.component.html',
   styles: [`
-    .register-wrapper {
+    .auth-page-container {
+      display: flex;
+      flex-direction: column;
       min-height: 100vh;
+      background: #0f172a;
+    }
+    .register-wrapper {
+      flex: 1;
       width: 100%;
       display: flex;
       align-items: center;
