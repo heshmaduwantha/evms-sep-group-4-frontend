@@ -1,0 +1,97 @@
+<p-dialog [(visible)]="visible" [modal]="true" [showHeader]="false" [style]="{width: '700px'}" 
+          styleClass="review-dialog" (onHide)="close()">
+    <div class="modal-header">
+        <div class="title-section">
+            <h2>Application Review</h2>
+            <p class="text-muted">Review and make a decision on this application</p>
+        </div>
+        <button class="close-btn" (click)="close()"><i class="pi pi-times"></i></button>
+    </div>
+
+    <div class="modal-body" *ngIf="application">
+        <!-- Timeline -->
+        <div class="timeline">
+            <div class="step completed">
+                <div class="dot"><i class="pi pi-check"></i></div>
+                <div class="label">Applied</div>
+                <div class="date">{{ application.appliedDate | date:'MMM d, yyyy' }}</div>
+            </div>
+            <div class="line active"></div>
+            <div class="step active">
+                <div class="dot"><i class="pi pi-check"></i></div>
+                <div class="label">Under Review</div>
+                <div class="date">Organizer reviewing</div>
+            </div>
+            <div class="line"></div>
+            <div class="step pending">
+                <div class="dot">3</div>
+                <div class="label">Decision Made</div>
+                <div class="date">Final status</div>
+            </div>
+        </div>
+
+        <!-- Volunteer Header -->
+        <div class="volunteer-profile">
+            <div class="avatar-large">{{ application.user.email.charAt(0).toUpperCase() }}</div>
+            <div class="profile-details">
+                <div class="name-row">
+                    <h3>{{ application.user.email.split('@')[0] }}</h3>
+                    <p-tag value="Approved" severity="success" styleClass="status-pill" *ngIf="application.status === 'approved'"></p-tag>
+                </div>
+                <p class="email">{{ application.user.email }}</p>
+                <div class="meta-info">
+                    <span><i class="pi pi-briefcase"></i> Role: <strong>Volunteer</strong></span>
+                    <span><i class="pi pi-bolt"></i> Intermediate</span>
+                    <span><i class="pi pi-calendar"></i> Applied: {{ application.appliedDate | date:'MMM d, yyyy' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Context -->
+        <div class="context-banner mb-4">
+            <div class="context-item">
+                <label>GENDER</label>
+                <span>{{ application.gender || 'N/A' }}</span>
+            </div>
+            <div class="context-item">
+                <label>LOCATION</label>
+                <span>{{ application.location || 'N/A' }}</span>
+            </div>
+            <div class="context-item">
+                <label>APPLIED ON</label>
+                <span>{{ application.appliedDate | date:'MMM d, yyyy' }}</span>
+            </div>
+        </div>
+
+        <!-- Detail Sections -->
+        <div class="detail-section">
+            <h4><i class="pi pi-heart mr-2"></i> Motivation</h4>
+            <p>{{ application.motivation || 'No motivation provided.' }}</p>
+        </div>
+
+        <div class="detail-section">
+            <h4><i class="pi pi-star mr-2"></i> Skills & Expertise</h4>
+            <div class="skills-grid">
+                <p-tag *ngFor="let skill of getSkills(application.skills)" [value]="skill" styleClass="skill-tag"></p-tag>
+                <span *ngIf="!application.skills" class="text-muted">No skills listed</span>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h4><i class="pi pi-briefcase mr-2"></i> Background & Context</h4>
+            <p>{{ application.experienceDetails || application.experience || 'No additional background provided.' }}</p>
+        </div>
+
+        <div class="section">
+            <h4>Organizer Notes (Optional)</h4>
+            <textarea pInputTextarea [(ngModel)]="notes" placeholder="Add internal notes about this decision..." rows="4"></textarea>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button pButton label="Approve" icon="pi pi-check" class="p-button-success" (click)="updateStatus(ApplicationStatus.APPROVED)" [loading]="loading"></button>
+        <button pButton label="Waitlist" icon="pi pi-exclamation-circle" class="p-button-warning" (click)="updateStatus(ApplicationStatus.WAITLISTED)" [loading]="loading"></button>
+        <button pButton label="Reject" icon="pi pi-times" class="p-button-danger" (click)="updateStatus(ApplicationStatus.REJECTED)" [loading]="loading"></button>
+        <button pButton label="Cancel" class="p-button-text" (click)="close()"></button>
+    </div>
+</p-dialog>
