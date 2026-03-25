@@ -6,7 +6,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .header-left {
@@ -271,8 +271,9 @@ button:disabled {
 
 .filters {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: nowrap;
+  margin-bottom: 16px;
 }
 
 .search-filter-group {
