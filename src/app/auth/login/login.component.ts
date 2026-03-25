@@ -151,8 +151,12 @@ export class LoginComponent implements OnInit {
     this.loading = true;
     this.authService.login(this.loginForm.value.email, this.loginForm.value.password)
       .subscribe({
-        next: () => {
-          const redirect = this.returnUrl === '/' ? '/home' : this.returnUrl;
+        next: (response) => {
+          const role = response.user?.role;
+          let redirect = this.returnUrl !== '/' ? this.returnUrl : '/home';
+          if (role === 'volunteer') {
+            redirect = '/applications';
+          }
           this.router.navigate([redirect]);
         },
         error: err => {

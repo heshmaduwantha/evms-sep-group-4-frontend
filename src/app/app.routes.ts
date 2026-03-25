@@ -3,6 +3,7 @@ import { MainLayoutComponent } from './layout/main-layout/main-layout.component'
 import { HomeComponent } from './pages/home/home.component';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { ReportsComponent } from './pages/reports/reports.component';
+import { AttendanceComponent } from './pages/attendance/attendance.component';
 import { ManualCheckinComponent } from './pages/manual-checkin/manual-checkin.component';
 import { AuthGuard } from './auth/auth.guard';
 import { EventListComponent } from './pages/events/event-list/event-list';
@@ -26,6 +27,7 @@ export const routes: Routes = [
             { path: 'organizer/create-event/:id', component: CreateEventComponent, data: { breadcrumb: 'Edit Event' } },
             { path: 'events/:id', component: EventDetails, data: { breadcrumb: 'Event Details' } },
             { path: 'reports', component: ReportsComponent, data: { breadcrumb: 'Reports' } },
+            { path: 'attendance', component: AttendanceComponent, data: { breadcrumb: 'Attendance Overview' } },
             { path: 'manual-checkin', component: ManualCheckinComponent, data: { breadcrumb: 'Manual Check-in' } },
             { path: 'applications', component: ApplicationManagementComponent, data: { breadcrumb: 'Applications' } },
             { path: 'my-applications', component: MyApplicationsComponent, data: { breadcrumb: 'My Applications' } },

@@ -1,7 +1,7 @@
 .events-hub-page {
-    padding: 2.5rem;
+    padding: 1rem 2.5rem 2.5rem;
     background-color: #f8fafc;
-    min-height: 100vh;
+    min-height: 0;
     font-family: 'Poppins', sans-serif;
 }
 
@@ -12,11 +12,12 @@
 }
 
 .page-title {
-    font-size: 2.5rem;
+    font-size: 1.75rem;
     font-weight: 800;
     background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin: 0;
     letter-spacing: -0.03em;
 }

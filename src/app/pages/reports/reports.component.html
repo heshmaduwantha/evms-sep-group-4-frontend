@@ -36,7 +36,7 @@
             <div class="filter-group">
                 <label class="block text-xs font-bold text-500 mb-2 uppercase tracking-wider">Date Range</label>
                 <p-calendar [(ngModel)]="filters.date" (onSelect)="onFilterChange()" 
-                    placeholder="Select Date" [showIcon]="true" styleClass="premium-calendar"></p-calendar>
+                    placeholder="Select Date" [showIcon]="true" styleClass="premium-calendar" appendTo="body"></p-calendar>
             </div>
 
             <div class="filter-group align-self-end pb-1">

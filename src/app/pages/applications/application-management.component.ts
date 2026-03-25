@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
@@ -18,6 +18,7 @@ import { ApplicationService } from './application.service';
 import { Application, ApplicationStatus, ApplicationStats } from './application.models';
 import { Event } from '../events/event.models';
 import { ApplicationReviewModalComponent } from './application-review-modal.component';
+import { retry } from 'rxjs';
 
 @Component({
     selector: 'app-application-management',
@@ -68,7 +69,9 @@ export class ApplicationManagementComponent implements OnInit {
 
     constructor(
         private applicationService: ApplicationService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private cdr: ChangeDetectorRef,
+        private ngZone: NgZone
     ) { }
 
     ngOnInit() {
@@ -77,16 +80,20 @@ export class ApplicationManagementComponent implements OnInit {
 
     loadApplications() {
         this.loading = true;
-        this.applicationService.getApplications().subscribe({
+        this.applicationService.getApplications().pipe(retry(1)).subscribe({
             next: (data: Application[]) => {
-                this.applications = data;
-                this.stats = this.applicationService.getStats(data);
-                this.filterApplications();
-                this.loading = false;
+                this.ngZone.run(() => {
+                    this.applications = data;
+                    this.stats = this.applicationService.getStats(data);
+                    this.filterApplications();
+                    this.loading = false;
+                    this.cdr.detectChanges();
+                });
             },
             error: (error: any) => {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load applications' });
                 this.loading = false;
+                this.cdr.detectChanges();
             }
         });
     }

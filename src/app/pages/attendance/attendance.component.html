@@ -1,0 +1,161 @@
+<div class="attendance-container">
+  <!-- Loading Overlay -->
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="loading-spinner">
+      <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: #3b82f6;"></i>
+      <p style="margin-top: 1rem; color: #64748b;">Loading attendance data...</p>
+    </div>
+  </div>
+
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="title-wrap">
+      <h1 class="page-title">Attendance Overview</h1>
+      <p class="page-subtitle">Real-time participation metrics and volunteer management.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-refresh" (click)="refreshData()">
+        <i class="pi pi-refresh"></i>
+        Sync Data
+      </button>
+      <button class="btn-primary" (click)="toggleQRScanner()">
+        <i class="pi pi-qrcode"></i>
+        {{ showQRScanner ? 'Hide Scanner' : 'QR Check-in' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <div class="stat-icon"><i class="pi pi-users"></i></div>
+      <div class="stat-content">
+        <span class="stat-label">Total Volunteers</span>
+        <span class="stat-value">{{ attendanceData.totalVolunteers }}</span>
+      </div>
+    </div>
+    <div class="stat-card present">
+      <div class="stat-icon"><i class="pi pi-check-circle"></i></div>
+      <div class="stat-content">
+        <span class="stat-label">Checked In</span>
+        <span class="stat-value">{{ attendanceData.checkedIn }}</span>
+      </div>
+    </div>
+    <div class="stat-card late">
+      <div class="stat-icon"><i class="pi pi-clock"></i></div>
+      <div class="stat-content">
+        <span class="stat-label">Late Arrivals</span>
+        <span class="stat-value">{{ attendanceData.lateArrivals }}</span>
+      </div>
+    </div>
+    <div class="stat-card absent">
+      <div class="stat-icon"><i class="pi pi-times-circle"></i></div>
+      <div class="stat-content">
+        <span class="stat-label">Absent</span>
+        <span class="stat-value">{{ attendanceData.absent }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <!-- Main Content: Volunteer Roster -->
+    <div class="main-section">
+      <div class="card-header">
+        <h3 class="card-title">Volunteer Roster</h3>
+        <div class="search-wrap">
+          <i class="pi pi-search"></i>
+          <input type="text" placeholder="Search by name or role...">
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table class="roster-table">
+          <thead>
+            <tr>
+              <th>Volunteer</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Check-in Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="!loading && volunteerRoster.length === 0">
+              <td colspan="5" style="text-align: center; padding: 2rem; color: #94a3b8;">
+                <i class="pi pi-inbox" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem;"></i>
+                No volunteers found.
+              </td>
+            </tr>
+            <tr *ngFor="let volunteer of volunteerRoster">
+              <td>
+                <div class="volunteer-info">
+                  <div class="volunteer-avatar">{{ volunteer.name ? volunteer.name.charAt(0) : '?' }}</div>
+                  <div class="volunteer-details">
+                    <span class="volunteer-name">{{ volunteer.name || 'Unknown' }}</span>
+                    <span class="volunteer-id">ID: {{ volunteer.id ? volunteer.id.substring(0, 8) : '--' }}</span>
+                  </div>
+                </div>
+              </td>
+              <td><span class="role-badge">{{ volunteer.role }}</span></td>
+              <td>
+                <span class="status-badge" [ngClass]="getStatusClass(volunteer.status)">
+                  {{ getStatusLabel(volunteer.status) }}
+                </span>
+              </td>
+              <td>
+                <span class="time-text">{{ volunteer.checkedInTime || '--:--' }}</span>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-icon" pTooltip="Edit Record"><i class="pi pi-pencil"></i></button>
+                  <button class="btn-icon" pTooltip="View History"><i class="pi pi-history"></i></button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Sidebar: Live Updates & Tools -->
+    <div class="sidebar-section">
+      <!-- QR Scanner Placeholder -->
+      <div class="qr-card" *ngIf="showQRScanner">
+        <h3 class="card-title">QR Scanner</h3>
+        <div class="scanner-placeholder">
+          <div class="scanner-overlay">
+            <div class="qr-corner top-left"></div>
+            <div class="qr-corner top-right"></div>
+            <div class="qr-corner bottom-left"></div>
+            <div class="qr-corner bottom-right"></div>
+            <p class="camera-status">Camera inactive</p>
+          </div>
+        </div>
+
+        <button class="btn-full-scanner" (click)="openFullScanner()">
+          Open Full Scanner
+        </button>
+      </div>
+
+      <!-- Recent Check-ins -->
+      <div class="recent-card">
+        <h3 class="card-title">Recent Check-ins</h3>
+        
+        <div class="recent-list">
+          <div *ngIf="!loading && recentCheckIns.length === 0" style="text-align: center; padding: 1rem; color: #94a3b8;">
+            No recent check-ins.
+          </div>
+          <div *ngFor="let checkIn of recentCheckIns" class="recent-item">
+            <div class="recent-avatar">{{ checkIn.name ? checkIn.name.charAt(0) : '?' }}</div>
+            <div class="recent-info">
+              <div class="recent-name">{{ checkIn.name || 'Unknown' }}</div>
+              <div class="recent-time">{{ checkIn.time }}</div>
+            </div>
+            <span class="status-badge present">{{ getStatusLabel(checkIn.status) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

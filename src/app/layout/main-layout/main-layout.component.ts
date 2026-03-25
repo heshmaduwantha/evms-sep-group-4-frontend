@@ -21,12 +21,13 @@ import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
       display: flex;
       flex-direction: column;
       height: 100vh;
+      overflow: hidden;
       background: var(--bg-light);
     }
     .main-content {
       flex: 1;
       overflow-y: auto;
-      padding: 0 2rem 2rem 2rem;
+      padding: 1rem 2rem 2rem 2rem;
     }
   `
 })

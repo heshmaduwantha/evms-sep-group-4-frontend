@@ -1,5 +1,5 @@
 .dashboard-container {
-    padding: 2rem;
+    padding: 1rem 2rem 2rem 2rem;
     background-color: #f8fafc;
     min-height: calc(100vh - 64px);
     font-family: 'Poppins', sans-serif;
@@ -14,7 +14,7 @@
 }
 
 .welcome-msg h1 {
-    font-size: 2.2rem;
+    font-size: 1.6rem;
     font-weight: 700;
     color: #1e293b;
     margin: 0;

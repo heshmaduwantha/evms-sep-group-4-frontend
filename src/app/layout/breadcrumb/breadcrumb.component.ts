@@ -28,8 +28,9 @@ import { Observable } from 'rxjs';
   `,
   styles: `
     .breadcrumb-container {
-      padding: 1.5rem 2rem 1rem 2rem;
+      padding: 0.75rem 2rem 0.5rem 2rem;
       background: var(--bg-light);
+      border-bottom: 1px solid rgba(0,0,0,0.04);
       z-index: 10;
     }
     .breadcrumb-list {

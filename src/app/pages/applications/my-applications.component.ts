@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { TagModule } from 'primeng/tag';
@@ -16,6 +16,7 @@ import { ApplicationService } from './application.service';
 import { EventService } from '../events/services/event.service';
 import { Application, ApplicationStatus, CreateApplicationDto, UpdateApplicationDto } from './application.models';
 import { Event } from '../events/event.models';
+import { catchError, of, retry } from 'rxjs';
 
 @Component({
     selector: 'app-my-applications',
@@ -73,7 +74,9 @@ export class MyApplicationsComponent implements OnInit {
         private eventService: EventService,
         private confirmationService: ConfirmationService,
         private messageService: MessageService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private cdr: ChangeDetectorRef,
+        private ngZone: NgZone
     ) {}
 
     ngOnInit() {
@@ -87,35 +90,46 @@ export class MyApplicationsComponent implements OnInit {
 
     loadData() {
         this.loading = true;
-        // Load applications and events in parallel would be better, but let's keep it simple
-        this.applicationService.getMyApplications().subscribe({
+        this.applicationService.getMyApplications().pipe(retry(1), catchError(() => of([]))).subscribe({
             next: (apps) => {
-                this.applications = apps;
-                this.loadAvailableEvents();
+                this.ngZone.run(() => {
+                    this.applications = apps;
+                    this.cdr.detectChanges();
+                    this.loadAvailableEvents();
+                });
             },
-            error: () => this.loading = false
+            error: () => {
+                this.loading = false;
+                this.cdr.detectChanges();
+            }
         });
     }
 
     loadAvailableEvents() {
-        this.eventService.getEvents().subscribe({
+        this.eventService.getEvents().pipe(retry(1), catchError(() => of([]))).subscribe({
             next: (events: Event[]) => {
                 // Filter out events where the user already has an active (non-rejected) application
                 const activeEventIds = new Set(this.applications
                     .filter(a => a.status !== ApplicationStatus.REJECTED)
                     .map(a => a.event.id));
-                this.availableEvents = events.filter(e => !activeEventIds.has(e.id));
-                this.loading = false;
+                this.ngZone.run(() => {
+                    this.availableEvents = events.filter(e => !activeEventIds.has(e.id));
+                    this.loading = false;
+                    this.cdr.detectChanges();
 
-                if (this.pendingEventId) {
-                    const event = this.availableEvents.find(e => e.id === this.pendingEventId);
-                    if (event) {
-                        this.openApplyModal(event);
+                    if (this.pendingEventId) {
+                        const event = this.availableEvents.find(e => e.id === this.pendingEventId);
+                        if (event) {
+                            this.openApplyModal(event);
+                        }
+                        this.pendingEventId = null;
                     }
-                    this.pendingEventId = null;
-                }
+                });
             },
-            error: () => this.loading = false
+            error: () => {
+                this.loading = false;
+                this.cdr.detectChanges();
+            }
         });
     }
 

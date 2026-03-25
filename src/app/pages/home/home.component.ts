@@ -14,6 +14,7 @@ import { TagModule } from 'primeng/tag';
 import { AvatarModule } from 'primeng/avatar';
 import { ApplicationService } from '../applications/application.service';
 import { ApplicationStatus } from '../applications/application.models';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -46,36 +47,35 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.authService.currentUser.subscribe(user => {
-      if (user?.role === UserRole.VOLUNTEER) {
-        this.router.navigate(['/events']);
-      } else {
-        this.loadStats();
-        this.loadRecentEvents();
-      }
-    });
+    const user = this.authService.currentUserValue;
+    if (user?.role === UserRole.VOLUNTEER) {
+      this.router.navigate(['/applications']);
+    } else {
+      this.loadStats();
+      this.loadRecentEvents();
+    }
   }
 
   loadStats() {
-    this.eventService.getStats().subscribe({
+    this.eventService.getStats().pipe(catchError(() => of({ activeEvents: 0 }))).subscribe({
       next: (data: any) => {
         this.stats.activeEvents.value = data.activeEvents || 0;
       }
     });
 
-    this.attendanceService.getVolunteerCount().subscribe({
+    this.attendanceService.getVolunteerCount().pipe(catchError(() => of(0))).subscribe({
       next: (count) => {
         this.stats.totalVolunteers.value = count || 0;
       }
     });
 
-    this.reportsService.getSummary('').subscribe({
+    this.reportsService.getSummary('').pipe(catchError(() => of({ attendanceRate: 0 }))).subscribe({
       next: (summary) => {
         this.stats.attendanceRate.value = summary.attendanceRate || 0;
       }
     });
 
-    this.applicationService.getApplications().subscribe({
+    this.applicationService.getApplications().pipe(catchError(() => of([]))).subscribe({
       next: (apps) => {
         const pendingApps = apps.filter(a => a.status === ApplicationStatus.PENDING)
           .sort((a, b) => new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime());
