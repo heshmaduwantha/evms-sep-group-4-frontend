@@ -1,10 +1,63 @@
 <div class="reports-container">
 
-    <!-- Header Section -->
-    <div class="header-section mb-5">
-        <div class="title-wrap">
-            <h1 class="page-title">Attendance Reports</h1>
-            <p class="page-subtitle text-500">Deeper insights into your event participation and volunteer metrics.</p>
+  <!-- Header -->
+  <div class="header-section">
+    <div>
+      <h1 class="page-title">Attendance Reports</h1>
+      <p class="page-subtitle">Analyze and export attendance data</p>
+    </div>
+    <div class="export-buttons">
+      <button class="btn-export pdf" (click)="exportPDF()">
+        <i class="pi pi-file-pdf"></i>
+        Export PDF
+        <i class="pi pi-download"></i>
+      </button>
+      <button class="btn-export csv" (click)="exportCSV()">
+        <i class="pi pi-file-excel"></i>
+        Export CSV
+        <i class="pi pi-download"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <span class="filter-label">
+      <i class="pi pi-filter"></i>
+      Filters:
+    </span>
+    <select class="filter-select" [(ngModel)]="eventId" (change)="onEventChange()">
+      <option value="" disabled>Select Event</option>
+      <option *ngFor="let event of events" [value]="event.id">
+        {{ event.title }}
+      </option>
+    </select>
+
+    <select class="filter-select" [(ngModel)]="filters.status" (change)="onFilterChange()">
+      <option *ngFor="let opt of statusOptions" [value]="opt.value">
+        {{ opt.label }}
+      </option>
+    </select>
+
+    <select class="filter-select" [(ngModel)]="filters.department" (change)="onFilterChange()">
+      <option *ngFor="let opt of departmentOptions" [value]="opt.value">
+        {{ opt.label }}
+      </option>
+    </select>
+
+    <div class="date-picker">
+      <input type="date" [(ngModel)]="filters.date" (change)="onFilterChange()" class="date-input">
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Attendance Records Table -->
+      <div class="records-section">
+        <div class="records-header">
+          <h2 class="section-title">Attendance Records</h2>
+          <span class="record-count">{{ totalRecords }} records</span>
         </div>
         <div class="export-actions flex gap-3">
             <button pButton label="Export PDF" icon="pi pi-file-pdf" class="p-button-rounded p-button-outlined p-button-secondary" (click)="exportPDF()"></button>
