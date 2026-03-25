@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class EventService {
 
-  private apiUrl = 'http://localhost:3000/events';
+  private apiUrl = 'http://localhost:3100/events';
 
   constructor(private http: HttpClient) { }
 
@@ -16,7 +16,7 @@ export class EventService {
   }
 
   updateEvent(id: string, eventData: any) {
-    return this.http.put(`http://localhost:3000/events/${id}`, eventData);
+    return this.http.put(`${this.apiUrl}/${id}`, eventData);
   }
 
   deleteEvent(id: string) {
@@ -24,7 +24,7 @@ export class EventService {
   }
 
   cancelEvent(id: string) {
-    return this.http.put(`http://localhost:3000/events/${id}`, {
+    return this.http.put(`${this.apiUrl}/${id}`, {
       status: 'CANCELLED'
     });
   }
@@ -36,5 +36,4 @@ export class EventService {
   getEventById(id: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/${id}`);
   }
-
 }
