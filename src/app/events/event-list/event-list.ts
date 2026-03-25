@@ -44,7 +44,7 @@ export class EventListComponent implements OnInit {
     this.loading = true;
 
     this.eventService.getEvents().subscribe((data: any) => {
-      this.allEvents = data;
+      this.allEvents = data.data;
       this.applyFilters();
       this.loading = false;
       this.cdr.detectChanges();
