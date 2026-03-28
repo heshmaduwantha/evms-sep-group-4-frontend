@@ -24,15 +24,27 @@
       </span>
     </a>
 
-    <a routerLink="/organizer/events" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-      class="menu-item">
+    <!-- EVENTS WITH SUB MENU -->
+    <div class="menu-item has-submenu" (click)="toggleEvents()">
       <span>
         <i class="pi pi-calendar"></i>
         Events
       </span>
       <span class="badge">3</span>
-    </a>
+    </div>
 
+    <div class="submenu" *ngIf="isEventsOpen">
+
+      <a routerLink="/organizer/events" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+        class="menu-item sub-item">
+        Event List
+      </a>
+
+      <a routerLink="/organizer/events/create" routerLinkActive="active" class="menu-item sub-item">
+        Create Event
+      </a>
+
+    </div>
     <a routerLink="/organizer/applications" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
       class="menu-item">
       <span>

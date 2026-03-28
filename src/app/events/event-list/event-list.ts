@@ -118,7 +118,7 @@ export class EventListComponent implements OnInit {
 
     this.filteredEvents = filtered;
     this.totalPages = Math.ceil(this.filteredEvents.length / this.itemsPerPage);
-    this.currentPage = this.totalPages;
+    this.currentPage = Math.min(this.currentPage, this.totalPages) || 1;
     this.paginate();
   }
 
@@ -140,7 +140,7 @@ export class EventListComponent implements OnInit {
   }
 
   editEvent(id: string) {
-    this.router.navigate(['/organizer/create-event', id]);
+    this.router.navigate(['/organizer/events/edit', id]);
   }
 
   deleteEvent(id: string) {
@@ -206,8 +206,4 @@ export class EventListComponent implements OnInit {
   trackByEventId(index: number, event: any): string {
     return event.id;
   }
-
-
-
-
 }

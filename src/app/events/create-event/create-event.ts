@@ -68,10 +68,8 @@ export class CreateEventComponent implements OnInit {
           this.snackBar.open('Event updated successfully', 'Close', {
             duration: 3000
           });
+          this.router.navigate(['/organizer/events']);
 
-          this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-            this.router.navigate(['/organizer/events']);
-          });
         });
 
     } else {
@@ -84,17 +82,13 @@ export class CreateEventComponent implements OnInit {
           this.snackBar.open('Event created successfully', 'Close', {
             duration: 3000
           });
-
-          this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-            this.router.navigate(['/organizer/events']);
-          });
+         
+          this.router.navigate(['/organizer/events']);
         });
     }
   }
 
   cancelEvent() {
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/organizer/events']);
-    });
+        this.router.navigate(['/organizer/events']);
   }
 }
