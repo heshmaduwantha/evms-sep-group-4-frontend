@@ -69,7 +69,9 @@ export class CreateEventComponent implements OnInit {
             duration: 3000
           });
 
-          this.router.navigate(['/organizer/events']);
+          this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+            this.router.navigate(['/organizer/events']);
+          });
         });
 
     } else {
@@ -83,12 +85,16 @@ export class CreateEventComponent implements OnInit {
             duration: 3000
           });
 
-          this.router.navigate(['/organizer/events']);
+          this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+            this.router.navigate(['/organizer/events']);
+          });
         });
     }
   }
 
   cancelEvent() {
-    this.router.navigate(['/organizer/events']);
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/organizer/events']);
+    });
   }
 }

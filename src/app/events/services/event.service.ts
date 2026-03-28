@@ -28,10 +28,10 @@ export class EventService {
       status: 'CANCELLED'
     });
   }
-
   getEvents(): Observable<any> {
-    return this.http.get(this.apiUrl);
+    return this.http.get(`${this.apiUrl}?limit=1000`);
   }
+
 
   getEventById(id: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/${id}`);

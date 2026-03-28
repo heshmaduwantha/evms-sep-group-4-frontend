@@ -44,10 +44,28 @@ export class EventListComponent implements OnInit {
     this.loading = true;
 
     this.eventService.getEvents().subscribe((data: any) => {
-      this.allEvents = data.data;
+
+      console.log("RAW API RESPONSE:", data);
+
+
+      if (Array.isArray(data)) {
+        this.allEvents = data;
+      } else if (Array.isArray(data?.data)) {
+        this.allEvents = data.data;
+      } else if (Array.isArray(data?.events)) {
+        this.allEvents = data.events;
+      } else {
+        console.error("Invalid response:", data);
+        this.allEvents = [];
+      }
+
+      console.log("MAPPED EVENTS:", this.allEvents);
+
       this.applyFilters();
+
       this.loading = false;
-      this.cdr.detectChanges();
+      this.cdr.markForCheck();
+
     });
   }
 
@@ -100,7 +118,7 @@ export class EventListComponent implements OnInit {
 
     this.filteredEvents = filtered;
     this.totalPages = Math.ceil(this.filteredEvents.length / this.itemsPerPage);
-    this.currentPage = 1;
+    this.currentPage = this.totalPages;
     this.paginate();
   }
 
