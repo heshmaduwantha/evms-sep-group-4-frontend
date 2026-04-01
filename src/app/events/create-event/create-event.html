@@ -1,0 +1,57 @@
+<div class="app-content event-form-page">
+
+  <div class="form-header">
+    <h2>{{ eventId ? 'Edit Event' : 'Create Event' }}</h2>
+    <p>Fill in the details below to schedule a new event in the system.</p>
+  </div>
+
+  <form (ngSubmit)="submitEvent()" class="event-form">
+
+    <div class="form-grid">
+
+      <div class="form-group full">
+        <label>Event Title</label>
+        <input type="text" [(ngModel)]="eventData.title" name="title" placeholder="e.g. Community Tree Plantation">
+      </div>
+
+      <div class="form-group full">
+        <label>Event Description</label>
+        <textarea [(ngModel)]="eventData.description" name="description"
+          placeholder="Provide a detailed description of the event..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Event Date</label>
+        <input type="date" [(ngModel)]="eventData.eventDate" name="eventDate">
+      </div>
+
+      <div class="form-group">
+        <label>Event Time</label>
+        <input type="time" [(ngModel)]="eventData.eventTime" name="eventTime">
+      </div>
+
+      <div class="form-group">
+        <label>Location</label>
+        <input type="text" [(ngModel)]="eventData.location" name="location" placeholder="Street address or venue name">
+      </div>
+
+      <div class="form-group">
+        <label>Volunteers Needed</label>
+        <input type="number" [(ngModel)]="eventData.volunteersRequired" name="volunteersRequired">
+      </div>
+
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="cancel-btn" (click)="cancelEvent()">
+        Cancel
+      </button>
+
+      <button type="submit" class="submit-btn">
+        {{ eventId ? 'Update Event' : 'Create Event' }}
+      </button>
+    </div>
+
+  </form>
+
+</div>

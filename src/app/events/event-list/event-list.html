@@ -1,0 +1,210 @@
+<div class="app-content event-page">
+
+  <!-- HEADER -->
+  <div class="page-header">
+
+    <!-- LEFT -->
+    <div class="header-left">
+      <h2>Event Management</h2>
+      <p>Manage and oversee all system events and volunteer allocations.</p>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="header-right">
+
+      <div class="search-filter-group">
+
+        <!-- SEARCH -->
+        <input type="text" placeholder="Search events..." [(ngModel)]="searchTerm" (input)="onSearchChange()"
+          class="search-input" />
+
+        <!-- CREATE BUTTON -->
+        <button class="create-btn" routerLink="/organizer/events/create">
+          Create New Event
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+  <div class="dashboard-cards">
+
+    <div class="card">
+      <p>Total Events</p>
+      <h3>{{ allEvents.length }}</h3>
+      <span class="card-sub">+ this month</span>
+    </div>
+
+    <div class="card">
+      <p>Upcoming Events</p>
+      <h3>{{ getEventCount('Upcoming') }}</h3>
+      <span class="card-sub warning">Starts within 30 days</span>
+    </div>
+
+    <div class="card">
+      <p>Active Events</p>
+      <h3>{{ getEventCount('Ongoing') }}</h3>
+      <span class="card-sub success">Currently in progress</span>
+    </div>
+
+    <div class="card">
+      <p>Completed Events</p>
+      <h3>{{ getEventCount('Completed') }}</h3>
+      <span class="card-sub">Successfully finished</span>
+    </div>
+
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+
+    <button class="filter-btn upcoming" [class.active]="selectedStatus==='upcoming'" (click)="filterStatus('upcoming')">
+      Upcoming
+    </button>
+
+    <button class="filter-btn ongoing" [class.active]="selectedStatus==='ongoing'" (click)="filterStatus('ongoing')">
+      Ongoing
+    </button>
+
+    <button class="filter-btn completed" [class.active]="selectedStatus==='completed'"
+      (click)="filterStatus('completed')">
+      Completed
+    </button>
+
+    <button class="filter-btn cancelled" [class.active]="selectedStatus==='cancelled'"
+      (click)="filterStatus('cancelled')">
+      Cancelled
+    </button>
+
+    <button class="filter-btn all" [class.active]="selectedStatus==='all'" (click)="filterStatus('all')">
+      All
+    </button>
+
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="loading" style="padding:20px;">
+    Loading events...
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-card">
+
+    <table class="event-table">
+
+      <thead>
+        <tr>
+          <th>Event Name</th>
+          <th>Date</th>
+          <th>Location</th>
+          <th>Volunteers</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <!-- EMPTY STATE -->
+        <tr *ngIf="!loading && filteredEvents.length === 0">
+          <td colspan="6" style="text-align:center; padding:30px;">
+            No events available
+          </td>
+        </tr>
+
+        <!-- DATA -->
+        <tr *ngFor="let event of paginatedEvents; trackBy: trackByEventId" (click)="viewEvent(event.id)">
+
+          <td>
+            <div class="event-title">
+              {{ event.title }}
+              <span class="event-desc">
+                {{ event.description }}
+              </span>
+            </div>
+          </td>
+
+          <td>{{ event.eventDate | date:'MMM d, y' }}</td>
+
+          <td>{{ event.location }}</td>
+
+          <td>
+            <div class="volunteer-cell">
+
+              <div class="volunteer-bar">
+                <div class="volunteer-fill"
+                  [style.width.%]="(event.assignedVolunteers || 0) / event.volunteersRequired * 100">
+                </div>
+              </div>
+
+              <span class="volunteer-text">
+                {{ event.assignedVolunteers || 0 }} / {{ event.volunteersRequired }}
+              </span>
+
+            </div>
+          </td>
+
+          <td>
+
+            <span class="status cancelled" *ngIf="event.status === 'CANCELLED'">
+              Cancelled
+            </span>
+
+            <span class="status upcoming" *ngIf="event.status !== 'CANCELLED' && event.eventDate > today">
+              Upcoming
+            </span>
+
+            <span class="status active" *ngIf="event.status !== 'CANCELLED' && event.eventDate === today">
+              Ongoing
+            </span>
+
+            <span class="status completed" *ngIf="event.status !== 'CANCELLED' && event.eventDate < today">
+              Completed
+            </span>
+
+          </td>
+
+          <td class="actions">
+
+            <button class="icon-btn edit" (click)="editEvent(event.id); $event.stopPropagation()" title="Edit">
+              ✏️
+            </button>
+
+            <button class="icon-btn cancel" *ngIf="event.status !== 'CANCELLED'"
+              (click)="cancelEvent(event); $event.stopPropagation()" title="Cancel">
+              ⛔
+            </button>
+
+            <button class="icon-btn delete" (click)="deleteEvent(event.id); $event.stopPropagation()" title="Delete">
+              🗑️
+            </button>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+    <!-- PAGINATION -->
+    <div class="pagination">
+
+      <button (click)="goToPreviousPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
+
+      <span>
+        Page {{ currentPage }} of {{ totalPages }}
+      </span>
+
+      <button (click)="goToNextPage()" [disabled]="currentPage === totalPages">
+        Next
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

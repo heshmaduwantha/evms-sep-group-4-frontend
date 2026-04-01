@@ -1,0 +1,29 @@
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <app-sidebar>
+        <div class="logo">
+            <span>EVMS</span>
+            <small>Organizer Portal</small>
+        </div>
+
+        <nav class="menu">
+
+            <a routerLink="/organizer/dashboard" routerLinkActive="active">Dashboard</a>
+            <a routerLink="/organizer/events" routerLinkActive="active">Events</a>
+            <a routerLink="/organizer/create-event" routerLinkActive="active">Create Event</a>
+            <a routerLink="/organizer/applications" routerLinkActive="active">Applications</a>
+            <a routerLink="/organizer/roles" routerLinkActive="active">Roles</a>
+            <a routerLink="/organizer/attendance" routerLinkActive="active">Attendance</a>
+            <a routerLink="/organizer/reports" routerLinkActive="active">Reports</a>
+
+        </nav>
+
+    </app-sidebar>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+        <router-outlet></router-outlet>
+    </main>
+
+</div>

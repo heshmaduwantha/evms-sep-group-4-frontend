@@ -1,0 +1,109 @@
+<div class="sidebar">
+
+  <!-- HEADER -->
+  <div class="sidebar-header">
+    <div class="logo">
+      <i class="pi pi-calendar"></i>
+    </div>
+    <div>
+      <div class="title">EVMS</div>
+      <div class="subtitle">Organizer Portal</div>
+    </div>
+  </div>
+
+  <!-- MAIN MENU -->
+  <div class="section-title">Main Menu</div>
+
+  <nav class="menu">
+
+    <a routerLink="/organizer/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      class="menu-item">
+      <span>
+        <i class="pi pi-th-large"></i>
+        Dashboard
+      </span>
+    </a>
+
+    <!-- EVENTS WITH SUB MENU -->
+    <div class="menu-item has-submenu" (click)="toggleEvents()">
+      <span>
+        <i class="pi pi-calendar"></i>
+        Events
+      </span>
+      <span class="badge">3</span>
+    </div>
+
+    <div class="submenu" *ngIf="isEventsOpen">
+
+      <a routerLink="/organizer/events" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+        class="menu-item sub-item">
+        Event List
+      </a>
+
+      <a routerLink="/organizer/events/create" routerLinkActive="active" class="menu-item sub-item">
+        Create Event
+      </a>
+
+    </div>
+    <a routerLink="/organizer/applications" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      class="menu-item">
+      <span>
+        <i class="pi pi-file"></i>
+        Applications
+      </span>
+      <span class="badge">12</span>
+    </a>
+
+    <a routerLink="/organizer/roles" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      class="menu-item">
+      <span>
+        <i class="pi pi-users"></i>
+        Roles
+      </span>
+    </a>
+
+    <a routerLink="/organizer/attendance" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      class="menu-item">
+      <span>
+        <i class="pi pi-check-square"></i>
+        Attendance
+      </span>
+    </a>
+
+    <a routerLink="/organizer/reports" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      class="menu-item">
+      <span>
+        <i class="pi pi-chart-bar"></i>
+        Reports
+      </span>
+    </a>
+
+  </nav>
+  <div class="divider"></div>
+
+  <!-- SYSTEM -->
+  <div class="section-title">System</div>
+
+  <nav class="menu">
+    <a routerLink="/organizer/settings" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      class="menu-item">
+      <span>
+        <i class="pi pi-cog"></i>
+        Settings
+      </span>
+    </a>
+  </nav>
+
+  <div class="divider"></div>
+
+  <!-- USER -->
+  <div class="sidebar-user">
+    <div class="avatar">EO</div>
+    <div class="user-info">
+
+      <div class="role">Event Organizer</div>
+    </div>
+    <i class="pi pi-angle-right arrow"></i>
+  </div>
+
+</div>

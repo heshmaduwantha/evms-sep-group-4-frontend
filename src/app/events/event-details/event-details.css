@@ -1,0 +1,216 @@
+.details-page {
+    padding: 24px;
+    background: #f5f7fb;
+}
+
+.breadcrumb {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 16px;
+}
+
+/* LAYOUT */
+.layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.side {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* CARD */
+.card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+
+/* HEADER */
+.header-card {
+    padding-bottom: 16px;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title {
+    margin: 10px 0 16px;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.organizer {
+    text-align: right;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.organizer strong {
+    display: block;
+    color: #111827;
+}
+
+/* STATUS */
+.status {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: white;
+    font-weight: 500;
+}
+
+.status.upcoming {
+    background: #3b82f6;
+}
+
+.status.ongoing {
+    background: #22c55e;
+}
+
+.status.completed {
+    background: #6b7280;
+}
+
+.status.cancelled {
+    background: #ef4444;
+}
+
+/* INFO GRID */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin-bottom: 12px;
+}
+
+.label {
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #111827;
+}
+
+/* LOCATION */
+.location {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* DESCRIPTION */
+.description {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #374151;
+}
+
+/* VOLUNTEERS */
+.vol-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.badge {
+    background: #e5e7eb;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    text-align: left;
+    font-size: 12px;
+    color: #6b7280;
+    padding-bottom: 6px;
+}
+
+.table td {
+    padding: 10px 0;
+    border-top: 1px solid #f1f5f9;
+}
+
+/* TAGS */
+.tag {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: white;
+}
+
+.tag.confirmed {
+    background: #22c55e;
+}
+
+.tag.pending {
+    background: #f59e0b;
+}
+
+/* ACTIONS */
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btn {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn.primary {
+    background: #14b8a6;
+    color: white;
+}
+
+.btn.light {
+    background: #e5e7eb;
+}
+
+.btn.danger {
+    background: #ef4444;
+    color: white;
+}
+
+.back {
+    margin-top: 6px;
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* MAP */
+.map {
+    height: 150px;
+    background: #f3f4f6;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

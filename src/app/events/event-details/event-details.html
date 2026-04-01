@@ -1,0 +1,136 @@
+<div class="details-page">
+
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb">
+        EVMS > Events > Event Details
+    </div>
+
+    <div class="layout">
+
+        <!-- LEFT CONTENT -->
+        <div class="main">
+
+            <!-- HEADER CARD -->
+            <div class="card header-card">
+
+                <div class="header-top">
+                    <span class="status" [ngClass]="getEventStatus()">
+                        {{ getEventStatus() | uppercase }}
+                    </span>
+
+                    <div class="organizer">
+                        <span>ORGANIZER</span>
+                        <strong>Admin User</strong>
+                    </div>
+                </div>
+
+                <h2 class="title">
+                    {{ event?.title || 'Loading...' }}
+                </h2>
+
+                <div class="info-grid">
+
+                    <div>
+                        <p class="label">DATE</p>
+                        <p class="value">{{ event?.eventDate }}</p>
+                    </div>
+
+                    <div>
+                        <p class="label">TIME</p>
+                        <p class="value">{{ event?.eventTime }}</p>
+                    </div>
+
+                    <div>
+                        <p class="label">VOLUNTEERS NEEDED</p>
+                        <p class="value">{{ event?.volunteersRequired }}</p>
+                    </div>
+
+                    <div>
+                        <p class="label">ASSIGNED</p>
+                        <p class="value">0 / {{ event?.volunteersRequired }}</p>
+                    </div>
+
+                </div>
+
+                <div class="location">
+                    📍 {{ event?.location }}
+                </div>
+
+            </div>
+
+            <!-- DESCRIPTION -->
+            <div class="card">
+                <h3>Event Description</h3>
+                <p class="description">{{ event?.description }}</p>
+            </div>
+
+            <!-- VOLUNTEERS -->
+            <div class="card">
+
+                <div class="vol-header">
+                    <h3>Assigned Volunteers</h3>
+                    <span class="badge">
+                        {{ volunteers.length }} Active Participants
+                    </span>
+                </div>
+
+                <table class="table">
+
+                    <thead>
+                        <tr>
+                            <th>Volunteer</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr *ngFor="let v of volunteers">
+
+                            <td>{{ v.name }}</td>
+                            <td>{{ v.role }}</td>
+
+                            <td>
+                                <span class="tag" [ngClass]="v.status?.toLowerCase()">
+                                    {{ v.status }}
+                                </span>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div class="side">
+
+            <div class="card actions">
+
+                <h4>Event Actions</h4>
+
+                <button class="btn primary">Edit Event</button>
+                <button class="btn light">Publish Event</button>
+                <button class="btn danger">Delete Event</button>
+
+                <button class="back" routerLink="/organizer/events">
+                    ← Back to Event List
+                </button>
+
+            </div>
+
+            <div class="card">
+                <h4>Event Location</h4>
+                <div class="map">Map Preview</div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
