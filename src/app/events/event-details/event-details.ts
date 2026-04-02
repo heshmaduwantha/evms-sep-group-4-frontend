@@ -13,6 +13,11 @@ export class EventDetailsComponent implements OnInit {
 
   event: any = {};
   volunteers: any[] = [];
+  loading = false;
+  error: string | null = null;
+  toastMessage: string = '';
+  toastType: 'success' | 'error' = 'success';
+  showToast = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -38,49 +43,98 @@ export class EventDetailsComponent implements OnInit {
     });
 
   }
-
   loadEvent(id: string) {
-    this.event = {}; 
+    this.loading = true;
+    this.error = null;
+    this.event = {};
 
-    this.eventService.getEventById(id).subscribe((res: any) => {
+    this.eventService.getEventById(id).subscribe({
 
-      console.log("FULL RESPONSE:", res);
-      this.event = res?.data || res?.event || res;
-      console.log("FINAL EVENT:", this.event);
-      this.cdr.detectChanges();
+      next: (res: any) => {
 
-      // mock volunteers (temporary)
-      this.volunteers = [
-        { name: 'John Doe', role: 'Team Lead', status: 'CONFIRMED' },
-        { name: 'Alice Smith', role: 'Support', status: 'PENDING' }
-      ];      
+        const raw = res?.data || res?.event || res;
+
+        // mock volunteers
+        this.volunteers = [
+          { name: 'John Doe', role: 'Team Lead', status: 'CONFIRMED' },
+          { name: 'Alice Smith', role: 'Support', status: 'PENDING' }
+        ];
+
+        this.event = {
+          id: raw.id,
+          title: raw.title,
+          description: raw.description,
+          date: raw.eventDate,
+          time: raw.eventTime,
+          location: raw.location,
+          volunteersNeeded: raw.volunteersRequired || 0,
+          assigned: this.volunteers.length,
+          status: (raw.status || 'UPCOMING').toUpperCase()
+        };
+
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+
+      error: (err) => {
+        console.error(err);
+        this.error = 'Failed to load event details';
+        this.loading = false;
+      }
 
     });
-
   }
+
+
   getEventStatus(): string {
 
-    if (!this.event?.eventDate) return '';
+    if (!this.event?.date) return '';
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date();
+    const eventDate = new Date(this.event.date);
+
+    // Normalize time (avoid time mismatch bugs)
+    today.setHours(0, 0, 0, 0);
+    eventDate.setHours(0, 0, 0, 0);
 
     if (this.event.status === 'CANCELLED') {
       return 'cancelled';
     }
 
-    if (this.event.eventDate > today) {
+    if (eventDate > today) {
       return 'upcoming';
     }
 
-    if (this.event.eventDate === today) {
+    if (eventDate.getTime() === today.getTime()) {
       return 'ongoing';
     }
 
-    if (this.event.eventDate < today) {
+    if (eventDate < today) {
       return 'completed';
     }
 
     return '';
   }
+  showToastMessage(message: string, type: 'success' | 'error' = 'success') {
+    this.toastMessage = message;
+    this.toastType = type;
+    this.showToast = true;
+
+    setTimeout(() => {
+      this.showToast = false;
+    }, 3000);
+  } onEdit() {
+    this.showToastMessage('Edit functionality coming soon');
+  }
+
+  onPublish() {
+    this.showToastMessage('Event published successfully');
+  }
+
+  onDelete() {
+    this.showToastMessage('Event deleted successfully');
+  }
+
+
 
 }

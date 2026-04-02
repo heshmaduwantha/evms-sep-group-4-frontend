@@ -1,59 +1,83 @@
-<div class="details-page">
+<div *ngIf="!loading && !error && event" class="event-details-container">
 
-    <!-- BREADCRUMB -->
-    <div class="breadcrumb">
-        EVMS > Events > Event Details
+    <!-- LOADING -->
+    <div *ngIf="loading" class="state loading">
+        Loading event details...
     </div>
 
+    <!-- ERROR -->
+    <div *ngIf="error" class="state error">
+        {{ error }}
+    </div>
+
+    <div *ngIf="showToast" class="toast" [ngClass]="toastType">
+        {{ toastMessage }}
+    </div>
+
+
+    <!-- HEADER -->
+    <div class="header">
+        <div>
+            <h1>{{ event.title }}</h1>
+            <p class="subtitle">Event Details Overview</p>
+        </div>
+
+        <span class="status-badge" [ngClass]="getEventStatus()">
+            {{ getEventStatus().toUpperCase() }}
+        </span>
+    </div>
+
+    <!-- MAIN GRID -->
     <div class="layout">
 
-        <!-- LEFT CONTENT -->
+        <!-- LEFT -->
         <div class="main">
 
-            <!-- HEADER CARD -->
-            <div class="card header-card">
+            <!-- MAIN CARD -->
+            <div class="card main-card">
 
-                <div class="header-top">
-                    <span class="status" [ngClass]="getEventStatus()">
-                        {{ getEventStatus() | uppercase }}
+                <div class="main-header">
+                    <span class="status-badge" [ngClass]="getEventStatus()">
+                        {{ getEventStatus().toUpperCase() }}
                     </span>
 
                     <div class="organizer">
-                        <span>ORGANIZER</span>
+                        ORGANIZER
                         <strong>Admin User</strong>
                     </div>
                 </div>
 
-                <h2 class="title">
-                    {{ event?.title || 'Loading...' }}
-                </h2>
+                <h2 class="event-title">{{ event.title }}</h2>
 
-                <div class="info-grid">
+                <!-- INFO -->
+                <div class="info-row">
 
                     <div>
-                        <p class="label">DATE</p>
-                        <p class="value">{{ event?.eventDate }}</p>
+                        <label>DATE</label>
+                        <p>{{ event.date }}</p>
                     </div>
 
                     <div>
-                        <p class="label">TIME</p>
-                        <p class="value">{{ event?.eventTime }}</p>
+                        <label>TIME</label>
+                        <p>{{ event.time }}</p>
                     </div>
 
                     <div>
-                        <p class="label">VOLUNTEERS NEEDED</p>
-                        <p class="value">{{ event?.volunteersRequired }}</p>
+                        <label>VOLUNTEERS NEEDED</label>
+                        <p>{{ event.volunteersNeeded }}</p>
                     </div>
 
                     <div>
-                        <p class="label">ASSIGNED</p>
-                        <p class="value">0 / {{ event?.volunteersRequired }}</p>
+                        <label>ASSIGNED</label>
+                        <p>{{ event.assigned }}/{{ event.volunteersNeeded }}</p>
                     </div>
 
                 </div>
 
+                <hr />
+
                 <div class="location">
-                    📍 {{ event?.location }}
+                    📍 {{ event.location }}
                 </div>
 
             </div>
@@ -61,7 +85,7 @@
             <!-- DESCRIPTION -->
             <div class="card">
                 <h3>Event Description</h3>
-                <p class="description">{{ event?.description }}</p>
+                <p class="description">{{ event.description }}</p>
             </div>
 
             <!-- VOLUNTEERS -->
@@ -69,63 +93,52 @@
 
                 <div class="vol-header">
                     <h3>Assigned Volunteers</h3>
-                    <span class="badge">
-                        {{ volunteers.length }} Active Participants
-                    </span>
+                    <span class="badge">{{ volunteers.length }} Active Participants</span>
                 </div>
 
-                <table class="table">
+                <div *ngIf="volunteers.length === 0" class="empty">
+                    No volunteers assigned yet
+                </div>
 
-                    <thead>
-                        <tr>
-                            <th>Volunteer</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
+                <table *ngIf="volunteers.length > 0" class="table">
+                    <tr>
+                        <th>Volunteer</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                    </tr>
 
-                    <tbody>
-
-                        <tr *ngFor="let v of volunteers">
-
-                            <td>{{ v.name }}</td>
-                            <td>{{ v.role }}</td>
-
-                            <td>
-                                <span class="tag" [ngClass]="v.status?.toLowerCase()">
-                                    {{ v.status }}
-                                </span>
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
+                    <tr *ngFor="let v of volunteers">
+                        <td>{{ v.name }}</td>
+                        <td>{{ v.role }}</td>
+                        <td>
+                            <span class="tag" [ngClass]="v.status.toLowerCase()">
+                                {{ v.status }}
+                            </span>
+                        </td>
+                    </tr>
                 </table>
 
             </div>
 
         </div>
 
-        <!-- RIGHT SIDE -->
+        <!-- RIGHT -->
         <div class="side">
 
-            <div class="card actions">
+            <!-- ACTIONS -->
+            <div class="card">
+                <h3>Event Actions</h3>
 
-                <h4>Event Actions</h4>
+                <button class="btn primary" (click)="onEdit()">Edit Event</button>
+                <button class="btn outline" (click)="onPublish()">Publish Event</button>
+                <button class="btn danger" (click)="onDelete()">Delete Event</button>
 
-                <button class="btn primary">Edit Event</button>
-                <button class="btn light">Publish Event</button>
-                <button class="btn danger">Delete Event</button>
-
-                <button class="back" routerLink="/organizer/events">
-                    ← Back to Event List
-                </button>
-
+                <button class="back">← Back to Event List</button>
             </div>
 
+            <!-- MAP -->
             <div class="card">
-                <h4>Event Location</h4>
+                <h3>Event Location</h3>
                 <div class="map">Map Preview</div>
             </div>
 
