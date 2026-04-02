@@ -38,15 +38,19 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
         path: 'organizer',
         component: OrganizerLayoutComponent,
         children: [
-          { path: '', component: OrganizerDashboardComponent },
+          { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+          { path: 'dashboard', component: OrganizerDashboardComponent },
           { path: 'events', component: EventListComponent },
           { path: 'events/create', component: CreateEventComponent },
           { path: 'events/edit/:id', component: CreateEventComponent },
           { path: 'events/:id', component: EventDetailsComponent }
         ]
       },
-      { path: '', redirectTo: 'organizer', pathMatch: 'full' }
+
+      { path: '', redirectTo: 'organizer/events', pathMatch: 'full' },
+      { path: '**', redirectTo: 'organizer/events' }
     ])
+
 
   ],
 
