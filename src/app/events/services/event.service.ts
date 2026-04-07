@@ -23,17 +23,13 @@ export class EventService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  cancelEvent(id: string, eventData: any) {
-    return this.http.put(`${this.apiUrl}/${id}`, {
-      ...eventData,
-      status: 'CANCELLED'
-    });
+  cancelEvent(id: string) {
+    return this.http.patch(`${this.apiUrl}/${id}/cancel`, {});
   }
 
   getEvents(): Observable<any> {
     return this.http.get(`${this.apiUrl}?limit=1000`);
   }
-
 
   getEventById(id: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/${id}`);

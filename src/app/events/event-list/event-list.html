@@ -19,7 +19,7 @@
           class="search-input" />
 
         <!-- CREATE BUTTON -->
-        <button class="create-btn" routerLink="/organizer/events/create">
+        <button class="create-btn" routerLink="/organizer/events/create-event">
           Create New Event
         </button>
 
@@ -98,7 +98,7 @@
           <th>Event Name</th>
           <th>Date</th>
           <th>Location</th>
-          <th>Volunteers</th>
+          <th>Required Volunteers</th>
           <th>Status</th>
           <th>Actions</th>
         </tr>
@@ -114,9 +114,9 @@
         </tr>
 
         <!-- DATA -->
-        <tr *ngFor="let event of paginatedEvents; trackBy: trackByEventId" (click)="viewEvent(event.id)">
+        <tr *ngFor="let event of paginatedEvents; trackBy: trackByEventId">
 
-          <td>
+          <td (click)="viewEvent(event.id)" style="cursor:pointer;">
             <div class="event-title">
               {{ event.title }}
               <span class="event-desc">
@@ -125,58 +125,52 @@
             </div>
           </td>
 
-          <td>{{ event.eventDate | date:'MMM d, y' }}</td>
+          <td>{{ event.date | date:'MMM d, y' }}</td>
 
           <td>{{ event.location }}</td>
 
           <td>
             <div class="volunteer-cell">
-
               <div class="volunteer-bar">
-                <div class="volunteer-fill"
-                  [style.width.%]="(event.assignedVolunteers || 0) / event.volunteersRequired * 100">
+                <div class="volunteer-fill" [style.width.%]="(event.assigned || 0) / event.volunteersNeeded * 100">
                 </div>
               </div>
 
               <span class="volunteer-text">
-                {{ event.assignedVolunteers || 0 }} / {{ event.volunteersRequired }}
+                {{ event.assigned || 0 }}/{{ event.volunteersNeeded }}
               </span>
-
             </div>
           </td>
 
           <td>
-
-            <span class="status cancelled" *ngIf="event.status === 'CANCELLED'">
+            <span class="status cancelled" *ngIf="event.status === 'cancelled'">
               Cancelled
             </span>
 
-            <span class="status upcoming" *ngIf="event.status !== 'CANCELLED' && event.eventDate > today">
+            <span class="status upcoming" *ngIf="event.status !== 'cancelled' && event.date > today">
               Upcoming
             </span>
 
-            <span class="status active" *ngIf="event.status !== 'CANCELLED' && event.eventDate === today">
+            <span class="status active" *ngIf="event.status !== 'cancelled' && event.date === today">
               Ongoing
             </span>
 
-            <span class="status completed" *ngIf="event.status !== 'CANCELLED' && event.eventDate < today">
+            <span class="status completed" *ngIf="event.status !== 'cancelled' && event.date < today">
               Completed
             </span>
-
           </td>
 
           <td class="actions">
 
-            <button class="icon-btn edit" (click)="editEvent(event.id); $event.stopPropagation()" title="Edit">
+            <button class="icon-btn edit" (click)="editEvent(event.id); $event.stopPropagation()">
               ✏️
             </button>
 
-            <button class="icon-btn cancel" *ngIf="event.status !== 'CANCELLED'"
-              (click)="cancelEvent(event); $event.stopPropagation()" title="Cancel">
+            <button class="icon-btn cancel" (click)="cancelEvent(event); $event.stopPropagation()">
               ⛔
             </button>
 
-            <button class="icon-btn delete" (click)="deleteEvent(event.id); $event.stopPropagation()" title="Delete">
+            <button class="icon-btn delete" (click)="deleteEvent(event.id); $event.stopPropagation()">
               🗑️
             </button>
 

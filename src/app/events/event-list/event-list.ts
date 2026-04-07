@@ -6,20 +6,20 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog';
 
-
 @Component({
   selector: 'app-event-list',
   templateUrl: './event-list.html',
   styleUrls: ['./event-list.css']
-  })
+})
 export class EventListComponent implements OnInit {
 
   allEvents: any[] = [];
   filteredEvents: any[] = [];
-  totalPages: number = 0;
-  currentPage: number = 1;
-  itemsPerPage: number = 3;
   paginatedEvents: any[] = [];
+
+  totalPages = 0;
+  currentPage = 1;
+  itemsPerPage = 3;
 
   loading = true;
   today: string = new Date().toISOString().split('T')[0];
@@ -38,47 +38,60 @@ export class EventListComponent implements OnInit {
     this.loadEvents();
   }
 
+  // LOAD EVENTS
   loadEvents() {
     this.loading = true;
 
     this.eventService.getEvents().subscribe((data: any) => {
 
-      console.log("RAW API RESPONSE:", data);
+      this.allEvents = (Array.isArray(data) ? data :
+        Array.isArray(data?.data) ? data.data :
+          Array.isArray(data?.events) ? data.events : []
+      ).map((event: any) => ({
 
+        id: event.id,
+        title: event.title,
+        description: event.description,
 
-      if (Array.isArray(data)) {
-        this.allEvents = data;
-      } else if (Array.isArray(data?.data)) {
-        this.allEvents = data.data;
-      } else if (Array.isArray(data?.events)) {
-        this.allEvents = data.events;
-      } else {
-        console.error("Invalid response:", data);
-        this.allEvents = [];
-      }
+        // FORCE CONSISTENCY
+        date: event.date || event.eventDate,
+        time: event.time || event.eventTime,
+        location: event.location,
 
-      console.log("MAPPED EVENTS:", this.allEvents);
+        volunteersNeeded:
+          event.volunteersNeeded ??
+          event.volunteersRequired ??
+          0,
+
+        status: (event.status || 'upcoming').toLowerCase(),
+
+        // optional but useful
+        assigned: event.assignedVolunteers ?? 0
+
+      }));
 
       this.applyFilters();
 
       this.loading = false;
       this.cdr.markForCheck();
-
+      console.log("FINAL EVENTS:", this.allEvents);
     });
   }
 
+  // FILTER + SEARCH + STATUS
 
   applyFilters() {
-
     if (!this.allEvents || this.allEvents.length === 0) {
       this.filteredEvents = [];
       this.paginatedEvents = [];
       return;
     }
+
     let filtered = this.allEvents;
 
     const term = this.searchTerm?.toLowerCase().trim();
-    const today = this.today;
+    const todayDate = new Date(this.today);
+    todayDate.setHours(0, 0, 0, 0);
 
     // SEARCH
     if (term) {
@@ -88,39 +101,46 @@ export class EventListComponent implements OnInit {
       );
     }
 
-    // STATUS
+    // STATUS FILTER
     if (this.selectedStatus !== 'all') {
+
       filtered = filtered.filter(event => {
 
-        if (!event.eventDate) return false;
+        if (!event.date) return false;
 
-        if (event.status === 'CANCELLED') {
+        const eventDate = new Date(event.date + 'T00:00:00');
+        const todayDate = new Date();
+        todayDate.setHours(0, 0, 0, 0);
+
+        if (event.status === 'cancelled') {
           return this.selectedStatus === 'cancelled';
         }
 
         if (this.selectedStatus === 'upcoming') {
-          return event.eventDate > today;
+          return eventDate > todayDate;
         }
 
         if (this.selectedStatus === 'ongoing') {
-          return event.eventDate === today;
+          return eventDate.getTime() === todayDate.getTime();
         }
 
         if (this.selectedStatus === 'completed') {
-          return event.eventDate < today;
+          return eventDate < todayDate;
         }
 
         return false;
       });
-    }
 
+    }
     this.filteredEvents = filtered;
-    this.totalPages = Math.ceil(this.filteredEvents.length / this.itemsPerPage);
+    this.totalPages = Math.ceil(filtered.length / this.itemsPerPage);
     this.currentPage = this.totalPages === 0 ? 1 : Math.min(this.currentPage, this.totalPages);
+
     this.paginate();
   }
 
 
+  // SEARCH DEBOUNCE
   searchTimeout: any;
 
   onSearchChange() {
@@ -132,63 +152,17 @@ export class EventListComponent implements OnInit {
     }, 150);
   }
 
-
   filterStatus(status: string) {
     this.selectedStatus = status;
     this.currentPage = 1;
     this.applyFilters();
   }
 
-  editEvent(id: string) {
-    this.router.navigate(['/organizer/events/edit', id]);
-  }
 
-  deleteEvent(id: string) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      maxWidth: '90vw',
-      disableClose: true,
-      data: {
-        title: 'Delete Event Confirmation',
-        message: 'Are you sure you want to delete this event?',
-        confirmText: 'Yes, Delete'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((result: boolean) => {
-      if (result) {
-        this.eventService.deleteEvent(id).subscribe(() => {
-          this.loadEvents();
-        });
-      }
-    });
-  }
-
-  cancelEvent(event: any) {
-
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Cancel Event Confirmation',
-        message: 'Are you sure you want to cancel this event?',
-        confirmText: 'Yes, Cancel',
-        type: 'warning'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((result: boolean) => {
-      if (result) {
-        this.eventService.cancelEvent(event.id, event).subscribe(() => {
-          this.loadEvents();
-        });
-      }
-    });
-  }
-
+  // PAGINATION
   paginate() {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
-
     this.paginatedEvents = this.filteredEvents.slice(start, end);
   }
 
@@ -205,31 +179,38 @@ export class EventListComponent implements OnInit {
       this.paginate();
     }
   }
+
   trackByEventId(index: number, event: any): string {
     return event.id;
   }
 
+  // COUNTS (FIXED)
   getEventCount(type: string): number {
-    const today = this.today;
+
+    const todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0);
 
     return this.allEvents?.filter(event => {
 
-      if (!event.eventDate) return false;
+      if (!event.date) return false;
 
-      if (event.status === 'CANCELLED') {
+      const eventDate = new Date(event.date + 'T00:00:00');
+      eventDate.setHours(0, 0, 0, 0);
+
+      if (event.status?.toLowerCase() === 'cancelled') {
         return type === 'Cancelled';
       }
 
       if (type === 'Upcoming') {
-        return event.eventDate > today;
+        return eventDate > todayDate;
       }
 
       if (type === 'Ongoing') {
-        return event.eventDate === today;
+        return eventDate.getTime() === todayDate.getTime();
       }
 
       if (type === 'Completed') {
-        return event.eventDate < today;
+        return eventDate < todayDate;
       }
 
       return false;
@@ -237,11 +218,47 @@ export class EventListComponent implements OnInit {
     }).length || 0;
   }
 
-  viewEvent(id: string) {
-    this.router.navigate(['/organizer/events', id]);
+  // ACTIONS
+  editEvent(id: string) {
+    this.router.navigate(['/organizer/events/edit', id]);
   }
 
+  viewEvent(id: string) {
+    console.log("NAVIGATING TO:", id);
+    this.router.navigate(['/organizer/events/details', id]);
+  }
 
+  deleteEvent(id: string) {
 
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Event',
+        message: 'Are you sure?',
+        confirmText: 'Delete'
+      }
+    });
 
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.eventService.deleteEvent(id).subscribe(() => this.loadEvents());
+      }
+    });
+  }
+
+  cancelEvent(event: any) {
+
+    console.log("CANCEL CLICKED", event);
+
+    this.eventService.cancelEvent(event.id).subscribe({
+      next: (res) => {
+        console.log("CANCEL SUCCESS", res);
+        this.loadEvents();
+      },
+      error: (err) => {
+        console.error("CANCEL ERROR", err);
+      }
+    });
+
+  }
 }

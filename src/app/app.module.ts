@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { AppComponent } from './app.component';
 import { SidebarComponent } from './shared/components/sidebar/sidebar';
 import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog';
+import { routes } from './app.routes';
 
 // Import your main components (adjust if needed)
 import { EventListComponent } from './events/event-list/event-list';
@@ -20,8 +21,6 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
   declarations: [
     AppComponent,
     EventListComponent,
-    CreateEventComponent,
-    EventDetailsComponent,
     OrganizerLayoutComponent,
     OrganizerDashboardComponent,
     ConfirmDialogComponent,
@@ -32,28 +31,8 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     CommonModule,
     HttpClientModule,
     FormsModule,
-
-    RouterModule.forRoot([
-      {
-        path: 'organizer',
-        component: OrganizerLayoutComponent,
-        children: [
-          { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-          { path: 'dashboard', component: OrganizerDashboardComponent },
-          { path: 'events', component: EventListComponent },
-          { path: 'events/create', component: CreateEventComponent },
-          { path: 'events/edit/:id', component: CreateEventComponent },
-          { path: 'events/:id', component: EventDetailsComponent }
-        ]
-      },
-
-      { path: '', redirectTo: 'organizer/events', pathMatch: 'full' },
-      { path: '**', redirectTo: 'organizer/events' }
-    ])
-
-
+    RouterModule.forRoot(routes)
   ],
-
   providers: [
     provideAnimationsAsync()
   ],
