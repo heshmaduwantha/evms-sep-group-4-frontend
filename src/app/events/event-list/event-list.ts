@@ -19,7 +19,7 @@ export class EventListComponent implements OnInit {
 
   totalPages = 0;
   currentPage = 1;
-  itemsPerPage = 3;
+  itemsPerPage = 5;
 
   loading = true;
   today: string = new Date().toISOString().split('T')[0];

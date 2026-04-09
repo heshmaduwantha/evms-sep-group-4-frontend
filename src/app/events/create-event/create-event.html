@@ -9,64 +9,79 @@
 
     <div class="form-grid">
 
-      <div class="form-group full">
-        <label>Event Title</label>
-        <input type="text" [(ngModel)]="eventData.title" name="title" placeholder="e.g. Community Tree Plantation">
+      <!-- LEFT COLUMN -->
+      <div class="left-column">
+
+        <div class="card">
+          <div class="form-group">
+            <label>Event Title</label>
+            <input type="text" [(ngModel)]="eventData.title" name="title" placeholder="e.g. Community Tree Plantation">
+          </div>
+
+          <div class="form-group">
+            <label>Event Description</label>
+            <textarea [(ngModel)]="eventData.description" name="description"
+              placeholder="Provide a detailed description..."></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="form-group">
+            <label>Search Location</label>
+            <input type="text" [(ngModel)]="searchText" name="searchText" placeholder="Type location"
+              (keyup.enter)="searchLocation()" />
+
+            <button type="button" class="map-btn" (click)="searchLocation()">
+              Search Location
+            </button>
+          </div>
+
+          <div class="form-group">
+            <div id="map" class="leaflet-map compact"></div>
+          </div>
+        </div>
+
       </div>
 
-      <div class="form-group full">
-        <label>Event Description</label>
-        <textarea [(ngModel)]="eventData.description" name="description"
-          placeholder="Provide a detailed description of the event..."></textarea>
+      <!-- RIGHT COLUMN -->
+
+
+
+
+      <div class="right-column">
+
+        <div class="card side-card">
+
+          <div class="form-group">
+            <label>Event Date</label>
+            <input type="date" [(ngModel)]="eventData.eventDate" name="eventDate">
+          </div>
+
+          <div class="form-group">
+            <label>Event Time</label>
+            <input type="time" [(ngModel)]="eventData.eventTime" name="eventTime">
+          </div>
+
+          <div class="form-group">
+            <label>Volunteers Needed</label>
+            <input type="number" [(ngModel)]="eventData.volunteersRequired" name="volunteersRequired">
+          </div>
+
+          <!-- ACTIONS INSIDE SAME CARD -->
+          <div class="form-actions inline">
+            <button type="button" class="cancel-btn" (click)="cancelEvent()">
+              Cancel
+            </button>
+
+            <button type="submit" class="submit-btn">
+              {{ eventId ? 'Update Event' : 'Create Event' }}
+            </button>
+          </div>
+
+        </div>
+
       </div>
 
-      <div class="form-group">
-        <label>Event Date</label>
-        <input type="date" [(ngModel)]="eventData.eventDate" name="eventDate">
-      </div>
-
-      <div class="form-group">
-        <label>Event Time</label>
-        <input type="time" [(ngModel)]="eventData.eventTime" name="eventTime">
-      </div>
-
-
-      <div class="form-group full">
-        <label>Search Location</label>
-
-        <input type="text" [(ngModel)]="searchText" name="searchText" placeholder="Type location (e.g. Homagama)"
-          (keyup.enter)="searchLocation()" />
-
-        <button type="button" class="map-btn" (click)="searchLocation()">
-          Search Location
-        </button>
-
-        <p class="hint">Type location → search → then click exact point on map</p>
-      </div>
-
-      <div class="form-group full">
-        <label>Select Exact Location</label>
-        <div id="map" class="leaflet-map"></div>
-        <p class="hint">Click on map to confirm exact location</p>
-      </div>
-
-
-
-      <div class="form-group">
-        <label>Volunteers Needed</label>
-        <input type="number" [(ngModel)]="eventData.volunteersRequired" name="volunteersRequired">
-      </div>
-
-    </div>
-
-    <div class="form-actions">
-      <button type="button" class="cancel-btn" (click)="cancelEvent()">
-        Cancel
-      </button>
-
-      <button type="submit" class="submit-btn">
-        {{ eventId ? 'Update Event' : 'Create Event' }}
-      </button>
     </div>
 
   </form>

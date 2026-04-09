@@ -33,7 +33,7 @@
     <div class="card">
       <p>Total Events</p>
       <h3>{{ allEvents.length }}</h3>
-      <span class="card-sub">+ this month</span>
+      <span class="card-sub">+ This month</span>
     </div>
 
     <div class="card">
@@ -114,20 +114,22 @@
         </tr>
 
         <!-- DATA -->
-        <tr *ngFor="let event of paginatedEvents; trackBy: trackByEventId">
+        <tr *ngFor="let event of paginatedEvents; trackBy: trackByEventId" (click)="viewEvent(event.id)"
+          class="clickable-row">
 
-          <td (click)="viewEvent(event.id)" style="cursor:pointer;">
+          <td>
             <div class="event-title">
               {{ event.title }}
-              <span class="event-desc">
-                {{ event.description }}
-              </span>
             </div>
           </td>
 
           <td>{{ event.date | date:'MMM d, y' }}</td>
 
-          <td>{{ event.location }}</td>
+          <td>
+            <div class="location-text">
+              {{ event.location }}
+            </div>
+          </td>
 
           <td>
             <div class="volunteer-cell">

@@ -1,5 +1,6 @@
+/* CONTAINER */
 .event-details-container {
-    padding: 24px;
+    padding: 0 16px;
     background: #f5f7fb;
 }
 
@@ -8,17 +9,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 12px;
 }
 
 .header h1 {
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 600;
     margin: 0;
 }
 
 .subtitle {
-    font-size: 14px;
+    font-size: 13px;
     color: #6b7280;
 }
 
@@ -26,20 +27,22 @@
 .layout {
     display: grid;
     grid-template-columns: 2.5fr 1fr;
+    grid-template-rows: auto auto;
     gap: 24px;
 }
 
+/* MAIN + SIDE */
 .main,
 .side {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 16px;
 }
 
-/* CARD */
+/* CARD (UNIFIED) */
 .card {
     background: white;
-    padding: 20px;
+    padding: 20px; /* unified */
     border-radius: 14px;
     border: 1px solid #f1f5f9;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
@@ -47,7 +50,7 @@
 
 /* MAIN CARD */
 .main-card {
-    padding: 24px;
+    padding: 22px;
 }
 
 .main-header {
@@ -56,12 +59,20 @@
     align-items: center;
 }
 
+/* TITLES */
 .event-title {
-    margin: 12px 0 20px;
-    font-size: 22px;
+    margin: 12px 0 18px;
+    font-size: 18px;
     font-weight: 600;
 }
 
+.card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+/* ORGANIZER */
 .organizer {
     text-align: right;
     font-size: 12px;
@@ -101,7 +112,7 @@
     color: #991b1b;
 }
 
-/* INFO */
+/* INFO GRID */
 .info-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -127,7 +138,7 @@ hr {
 
 /* LOCATION */
 .location {
-    font-size: 14px;
+    font-size: 13px;
     color: #374151;
 }
 
@@ -135,6 +146,7 @@ hr {
 .description {
     font-size: 14px;
     line-height: 1.6;
+    margin-top: 6px;
     color: #374151;
 }
 
@@ -147,27 +159,27 @@ hr {
 
 .badge {
     background: #e5e7eb;
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 /* TABLE */
 .table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin-top: 6px;
 }
 
 .table th {
     text-align: left;
     font-size: 12px;
     color: #6b7280;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
 }
 
 .table td {
-    padding: 10px 0;
+    padding: 6px 0;
     border-top: 1px solid #f1f5f9;
 }
 
@@ -190,9 +202,10 @@ hr {
 /* BUTTONS */
 .btn {
     width: 100%;
-    padding: 12px;
-    margin-bottom: 12px;
-    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 6px;
+    border-radius: 6px;
+    font-size: 14px;
     border: none;
     cursor: pointer;
 }
@@ -216,85 +229,97 @@ hr {
     background: none;
     border: none;
     color: #6b7280;
-    font-size: 13px;
+    margin-top: 4px;
+    font-size: 12px;
     cursor: pointer;
 }
 
 /* MAP */
 .map {
-    height: 180px;
-    background: #f3f4f6;
+    height: 240px;
     border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 100%;
+    border: none;
+    display: block;
 }
 
 /* STATES */
 .state {
-  padding: 20px;
-  border-radius: 12px;
-  text-align: center;
-  margin-bottom: 20px;
-  font-weight: 500;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 500;
 }
 
 .state.loading {
-  background: #e0f2fe;
-  color: #0369a1;
+    background: #e0f2fe;
+    color: #0369a1;
 }
 
 .state.error {
-  background: #fee2e2;
-  color: #991b1b;
+    background: #fee2e2;
+    color: #991b1b;
 }
 
 /* EMPTY */
 .empty {
-  padding: 20px;
-  text-align: center;
-  color: #6b7280;
-  font-size: 14px;
+    padding: 20px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 14px;
 }
 
 /* TOAST */
 .toast {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  padding: 14px 18px;
-  border-radius: 10px;
-  color: white;
-  font-size: 14px;
-  font-weight: 500;
-  z-index: 999;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  animation: slideIn 0.3s ease;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease;
 }
 
 .toast.success {
-  background: #16a34a;
+    background: #16a34a;
 }
 
 .toast.error {
-  background: #dc2626;
+    background: #dc2626;
 }
 
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
+/* BOTTOM GRID */
+.bottom-section {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 20px;
+    align-items: stretch;
+}
 
+/* VOLUNTEERS SCROLL */
+.volunteers-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
 
-
-
-
-
-
+.table-container {
+    flex: 1;
+    overflow-y: auto;
+}

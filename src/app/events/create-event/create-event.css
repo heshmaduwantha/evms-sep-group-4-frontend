@@ -1,136 +1,100 @@
+* {
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+input,
+textarea,
+button {
+    font-family: inherit;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
 .event-form-page {
-    padding: 24px;
-}
-
-.form-header h2 {
-    margin: 0;
-    font-size: 22px;
-}
-
-.form-header p {
-    margin-top: 6px;
-    color: #64748b;
-}
-
-.event-form {
-    background: white;
-    margin-top: 20px;
-    padding: 28px;
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-}
-
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-}
-
-.form-group {
+    padding: 0px 24px 16px 24px;
+    min-height: 100vh;
+    overflow: visible;
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
 }
 
-.form-group.full {
-    grid-column: 1 / -1;
-}
-
-.form-group label {
-    font-size: 14px;
-    margin-bottom: 6px;
-    font-weight: 500;
-}
-
-.form-group input,
-.form-group textarea {
-    padding: 12px;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: inherit;
-    background: #ffffff;
-}
-
-.form-group textarea {
-    min-height: 100px;
-    resize: vertical;
-}
-
-.form-actions {
-    margin-top: 24px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-}
-
-.submit-btn {
-    background: #14b8a6;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.submit-btn:hover {
-    background: #0f9f94;
-    transform: translateY(-1px);
-}
-
-.cancel-btn {
-    background: #f1f5f9;
-    color: #475569;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: #14b8a6;
-    box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.15);
-}
-
-.submit-btn,
-.cancel-btn {
-    font-weight: 500;
-    transition: 0.2s;
-}
-
-.submit-btn:hover {
-    transform: translateY(-1px);
-}
-
-.submit-btn,
-.cancel-btn {
-    font-weight: 500;
-    transition: 0.2s;
-}
-
-.submit-btn:hover {
-    transform: translateY(-1px);
-}
 
 .form-header {
-    margin-bottom: 16px;
+    max-width: 1100px;
+    margin-bottom: 12px;
+
+
 }
 
 .form-header h2 {
     font-size: 24px;
     font-weight: 600;
+    margin: 0;
 }
 
 .form-header p {
     font-size: 14px;
     color: #64748b;
+    margin-top: 2px;
+    max-width: 1100px;
+    line-height: 1.5;
 }
 
+
+.event-form {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    padding: 12px 12px 16px 12px;
+    border-radius: 20px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.06);
+    max-width: 1100px;
+    width: 100%;
+
+}
+
+
 .form-grid {
-    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 24px;
+    align-items: stretch;
+    overflow-y: hidden;
+}
+
+
+.left-column,
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+
+.card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.side-card {
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .form-group label {
@@ -139,14 +103,116 @@
     color: #334155;
 }
 
+.form-group input,
+.form-group textarea {
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    background: #ffffff;
+    transition: all 0.2s ease;
+}
 
-@media (max-width:768px) {
+/* textarea */
+.form-group textarea {
+    min-height: 64px;
+    resize: vertical;
+}
 
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
+/* focus */
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #14b8a6;
+    box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.15);
+}
 
-    .form-actions {
+
+.leaflet-map {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.leaflet-map.compact {
+    height: 185px;
+    margin-top: 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+}
+
+
+.map-btn {
+    margin-top: 8px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.map-btn:hover {
+    background: #1d4ed8;
+}
+
+
+.form-actions.inline {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* primary */
+.submit-btn {
+    background: #0d9488;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+    opacity: 1;
+    min-width: 130px;
+}
+
+.submit-btn:hover {
+    background: #0f9f94;
+    transform: translateY(-1px);
+}
+
+/* secondary */
+.cancel-btn {
+    background: #e2e8f0;
+    color: #334155;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    opacity: 0.7;
+    min-width: 100px;
+}
+
+
+.hint {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+::placeholder {
+    color: #9ca3af;
+}
+
+
+@media (max-width: 900px) {
+
+    .form-actions.inline {
         flex-direction: column;
         align-items: stretch;
     }
@@ -155,41 +221,8 @@
     .cancel-btn {
         width: 100%;
     }
-
 }
 
-.map-picker {
-    width: 100%;
-    height: 250px;
-    border: none;
-    border-radius: 10px;
-    margin-top: 10px;
-}
-
-.hint {
-    font-size: 12px;
-    color: #6b7280;
-    margin-top: 6px;
-}
-
-.map-btn {
-    margin-top: 8px;
-    padding: 8px 12px;
-    border-radius: 6px;
-    background: #2563eb;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-.map-btn:hover {
-    background: #1d4ed8;
-}
-
-
-.leaflet-map {
-    height: 300px;
-    width: 100%;
-    border-radius: 10px;
-    margin-top: 10px;
+.content {
+    overflow: visible;
 }

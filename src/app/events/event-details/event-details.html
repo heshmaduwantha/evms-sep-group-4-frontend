@@ -10,10 +10,10 @@
         {{ error }}
     </div>
 
+    <!-- TOAST -->
     <div *ngIf="showToast" class="toast" [ngClass]="toastType">
         {{ toastMessage }}
     </div>
-
 
     <!-- HEADER -->
     <div class="header">
@@ -21,10 +21,6 @@
             <h1>{{ event.title }}</h1>
             <p class="subtitle">Event Details Overview</p>
         </div>
-
-        <span class="status-badge" [ngClass]="getEventStatus()">
-            {{ getEventStatus().toUpperCase() }}
-        </span>
     </div>
 
     <!-- MAIN GRID -->
@@ -51,7 +47,6 @@
 
                 <!-- INFO -->
                 <div class="info-row">
-
                     <div>
                         <label>DATE</label>
                         <p>{{ event.date }}</p>
@@ -71,7 +66,6 @@
                         <label>ASSIGNED</label>
                         <p>{{ event.assigned }}/{{ event.volunteersNeeded }}</p>
                     </div>
-
                 </div>
 
                 <hr />
@@ -82,41 +76,50 @@
 
             </div>
 
-            <!-- DESCRIPTION -->
-            <div class="card">
-                <h3>Event Description</h3>
-                <p class="description">{{ event.description }}</p>
-            </div>
+            <!-- BOTTOM GRID -->
+            <div class="bottom-section">
 
-            <!-- VOLUNTEERS -->
-            <div class="card">
-
-                <div class="vol-header">
-                    <h3>Assigned Volunteers</h3>
-                    <span class="badge">{{ volunteers.length }} Active Participants</span>
+                <!-- DESCRIPTION -->
+                <div class="card">
+                    <h3>Event Description</h3>
+                    <p class="description">{{ event.description }}</p>
                 </div>
 
-                <div *ngIf="volunteers.length === 0" class="empty">
-                    No volunteers assigned yet
+                <!-- VOLUNTEERS -->
+                <div class="card volunteers-card">
+
+                    <div class="vol-header">
+                        <h3>Assigned Volunteers</h3>
+                        <span class="badge">{{ volunteers.length }} Active Participants</span>
+                    </div>
+
+                    <!-- EMPTY -->
+                    <div *ngIf="volunteers.length === 0" class="empty">
+                        No volunteers assigned yet
+                    </div>
+
+                    <!-- TABLE -->
+                    <div *ngIf="volunteers.length > 0" class="table-container">
+                        <table class="table">
+                            <tr>
+                                <th>Volunteer</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                            </tr>
+
+                            <tr *ngFor="let v of volunteers">
+                                <td>{{ v.name }}</td>
+                                <td>{{ v.role }}</td>
+                                <td>
+                                    <span class="tag" [ngClass]="v.status.toLowerCase()">
+                                        {{ v.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
                 </div>
-
-                <table *ngIf="volunteers.length > 0" class="table">
-                    <tr>
-                        <th>Volunteer</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                    </tr>
-
-                    <tr *ngFor="let v of volunteers">
-                        <td>{{ v.name }}</td>
-                        <td>{{ v.role }}</td>
-                        <td>
-                            <span class="tag" [ngClass]="v.status.toLowerCase()">
-                                {{ v.status }}
-                            </span>
-                        </td>
-                    </tr>
-                </table>
 
             </div>
 
@@ -132,15 +135,13 @@
                 <button class="btn primary" (click)="onEdit()">Edit Event</button>
                 <button class="btn outline" (click)="onPublish()">Publish Event</button>
                 <button class="btn danger" (click)="onDelete()">Delete Event</button>
-
                 <button class="back">← Back to Event List</button>
             </div>
 
             <!-- MAP -->
             <div class="card">
                 <h3>Event Location</h3>
-                <iframe class="map" [src]="mapUrl" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
+                <iframe class="map" [src]="mapUrl" loading="lazy"></iframe>
             </div>
 
         </div>
