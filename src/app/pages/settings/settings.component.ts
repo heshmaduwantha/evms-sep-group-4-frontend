@@ -36,7 +36,7 @@ export class SettingsComponent implements OnInit {
 
   
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe((user: User | null) => {
+    this.authService.currentUser.subscribe((user: User | null) => {
 
       
       if (!user) {
