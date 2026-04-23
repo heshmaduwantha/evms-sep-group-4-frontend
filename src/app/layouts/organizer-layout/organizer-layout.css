@@ -1,0 +1,59 @@
+.layout {
+    display: flex;
+    height: 100vh;
+    overflow: hidden; /* ✅ prevents page-level scroll */
+    background: #f5f7fb;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 240px;
+    background: linear-gradient(180deg, #0f172a, #1e293b);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.logo {
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+.logo span {
+    font-size: 18px;
+    display: block;
+}
+
+.logo small {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.menu a {
+    display: block;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    color: #cbd5f5;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.menu a:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.menu a.active {
+    background: #14b8a6;
+    color: #fff;
+}
+
+/* CONTENT */
+.content {
+    flex: 1;
+    padding: 16px 20px; /* slightly reduced */
+    overflow: hidden;   /* ✅ REMOVE SCROLLBAR HERE */
+    display: flex;
+    flex-direction: column;
+}
