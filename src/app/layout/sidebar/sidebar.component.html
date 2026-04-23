@@ -16,34 +16,33 @@
                 <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
             </a>
 
-            <!-- Expandable menu item with submenu -->
-            <ng-container *ngIf="item.expandable">
-                <button class="menu-item expandable" 
-                        (click)="toggleExpand(item)"
-                        [class.active]="item.expanded">
-                    <span style="display: flex; align-items: center; gap: 12px;">
+            <!-- Expandable menu item -->
+            <div *ngIf="item.expandable" class="menu-group">
+                <div class="menu-item expandable" 
+                     (click)="toggleExpand(item)"
+                     [class.active]="item.expanded">
+                    <div style="display: flex; align-items: center; gap: 12px;">
                         <i [class]="item.icon"></i>
                         <span>{{ item.label }}</span>
-                        <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
-                    </span>
-                    <i class="pi pi-angle-right expand-icon" [class.expanded]="item.expanded"></i>
-                </button>
-
-                <!-- Submenu items -->
+                    </div>
+                    <i class="pi pi-chevron-right expand-icon" [class.expanded]="item.expanded"></i>
+                </div>
+                
                 <div class="submenu" [class.expanded]="item.expanded">
-                    <a *ngFor="let child of item.children" 
-                       [routerLink]="child.link" 
-                       routerLinkActive="active" 
+                    <a *ngFor="let child of item.children"
+                       [routerLink]="child.link"
+                       routerLinkActive="active"
                        class="submenu-item">
                         <i [class]="child.icon"></i>
                         <span>{{ child.label }}</span>
                     </a>
                 </div>
-            </ng-container>
+            </div>
         </ng-container>
     </div>
 
     <div class="menu-divider"></div>
+    
     <div class="menu" style="flex: none; padding-bottom: 1rem;">
         <a [routerLink]="['/settings']" routerLinkActive="active" class="menu-item">
             <i class="pi pi-cog"></i>
@@ -57,10 +56,10 @@
             {{ user.email.charAt(0).toUpperCase() }}
         </div>
         <div class="user-info">
-            <span class="font-bold">{{ user.email.split('@')[0] }}</span>
-            <span class="user-role">{{ user.role | titlecase }}</span>
+            <span style="color: white; font-weight: 600;">{{ user.email.split('@')[0] }}</span>
+            <span class="user-role">{{ user.role }}</span>
         </div>
-        <i class="pi pi-sign-out ml-auto text-muted"></i>
+        <i class="pi pi-sign-out" style="margin-left: auto; font-size: 0.9rem;"></i>
     </div>
     }
 </div>

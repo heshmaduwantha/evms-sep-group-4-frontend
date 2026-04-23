@@ -13,6 +13,12 @@ import { EventsHubComponent } from './pages/events/events-hub/events-hub';
 import { ApplicationManagementComponent } from './pages/applications/application-management.component';
 import { MyApplicationsComponent } from './pages/applications/my-applications.component';
 
+
+import { VolunteerListComponent } from './volunteer/components/volunteer-list/volunteer-list.component';
+import { VolunteerFormComponent } from './volunteer/components/volunteer-form/volunteer-form.component';
+import { VolunteerDetailComponent } from './volunteer/components/volunteer-detail/volunteer-detail.component';
+import { VolunteerEditComponent } from './volunteer/components/volunteer-edit/volunteer-edit.component';
+
 export const routes: Routes = [
     {
         path: '',
@@ -31,10 +37,16 @@ export const routes: Routes = [
             { path: 'manual-checkin', component: ManualCheckinComponent, data: { breadcrumb: 'Manual Check-in' } },
             { path: 'applications', component: ApplicationManagementComponent, data: { breadcrumb: 'Applications' } },
             { path: 'my-applications', component: MyApplicationsComponent, data: { breadcrumb: 'My Applications' } },
+            
+            // Volunteer routes
+            { path: 'volunteers', component: VolunteerListComponent, data: { breadcrumb: 'Volunteers' } },
+            { path: 'volunteers/register', component: VolunteerFormComponent, data: { breadcrumb: 'Register Volunteer' } },
+            { path: 'volunteers/:id', component: VolunteerDetailComponent, data: { breadcrumb: 'Volunteer Details' } },
+            { path: 'volunteers/edit/:id', component: VolunteerEditComponent, data: { breadcrumb: 'Edit Volunteer' } },
+
             {
                 path: 'roles',
                 loadChildren: () => import('./pages/roles/roles.routes').then(m => m.ROLES_ROUTES),
-                //data: { breadcrumb: 'Roles' }
             },
 
             { path: '', redirectTo: 'home', pathMatch: 'full' }

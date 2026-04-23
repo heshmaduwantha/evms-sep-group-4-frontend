@@ -1,22 +1,21 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { User, AuthResponse } from './auth.models';
+
+export type UserRole = 'admin' | 'organizer' | 'volunteer';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private apiUrl = 'http://localhost:3100/auth';
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
-  private apiUrl = 'http://localhost:3100/auth';
 
   constructor(private http: HttpClient) {
-    const savedUser = localStorage.getItem('currentUser');
-    this.currentUserSubject = new BehaviorSubject<User | null>(
-      savedUser ? JSON.parse(savedUser) : null
-    );
+    const storedUser = localStorage.getItem('currentUser');
+    this.currentUserSubject = new BehaviorSubject<User | null>(storedUser ? JSON.parse(storedUser) : null);
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
@@ -24,35 +23,70 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  // ✅ LOGIN
   login(email: string, password: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { email, password })
-      .pipe(map(response => {
-        localStorage.setItem('token', response.access_token);
-        localStorage.setItem('currentUser', JSON.stringify(response.user));
-        this.currentUserSubject.next(response.user);
-        return response;
-      }));
+      .pipe(
+        tap(response => {
+          localStorage.setItem('token', response.access_token);
+          localStorage.setItem('currentUser', JSON.stringify(response.user));
+          this.currentUserSubject.next(response.user);
+        })
+      );
   }
 
-  logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('currentUser');
+  // ✅ LOGOUT
+  logout(): void {
+    localStorage.clear();
     this.currentUserSubject.next(null);
   }
 
+  // ✅ REGISTER
   register(userData: any): Observable<User> {
     return this.http.post<User>(`${this.apiUrl}/register`, userData);
   }
 
+  // ✅ GET USERS (ADMIN)
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>('http://localhost:3100/users');
   }
 
+  // ✅ TOKEN
   getToken(): string | null {
     return localStorage.getItem('token');
   }
 
   isLoggedIn(): boolean {
     return !!this.getToken();
+  }
+
+  getRole(): string | null {
+    return this.currentUserValue?.role || null;
+  }
+
+  isAdmin(): boolean {
+    return this.getRole() === 'admin';
+  }
+
+  isOrganizer(): boolean {
+    return this.getRole() === 'organizer';
+  }
+
+  isVolunteer(): boolean {
+    return this.getRole() === 'volunteer';
+  }
+
+  hasAnyRole(roles: string[]): boolean {
+    const userRole = this.getRole();
+    return !!userRole && roles.includes(userRole);
+  }
+
+  // Merged from volunteer branch
+  canManageVolunteers(): boolean {
+    return this.isAdmin() || this.isOrganizer();
+  }
+
+  isOwner(resourceOwnerId: string): boolean {
+    return this.currentUserValue?.id === resourceOwnerId;
   }
 }

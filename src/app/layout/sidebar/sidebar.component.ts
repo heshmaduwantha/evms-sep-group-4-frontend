@@ -5,13 +5,15 @@ import { AuthService } from '../../auth/auth.service';
 import { UserRole } from '../../auth/auth.models';
 import { AttendanceService } from '../../pages/attendance/attendance.service';
 import { ApplicationService } from '../../pages/applications/application.service';
-
 import { EventService } from '../../pages/events/services/event.service';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [
+    CommonModule,   
+    RouterModule
+  ],
   templateUrl: './sidebar.component.html',
   styles: `
     .sidebar {
@@ -151,11 +153,10 @@ import { EventService } from '../../pages/events/services/event.service';
       background: rgba(255,255,255,0.08);
       margin: 1.5rem 1.25rem 1rem;
     }
-
   `
 })
 export class SidebarComponent implements OnInit {
-  navItems = [
+  navItems: any[] = [
     { label: 'Dashboard', icon: 'pi pi-th-large', link: '/home', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
     { label: 'Dashboard', icon: 'pi pi-th-large', link: '/events', roles: [UserRole.VOLUNTEER] },
     { label: 'Events Hub', icon: 'pi pi-calendar', link: '/events', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
@@ -163,6 +164,18 @@ export class SidebarComponent implements OnInit {
     { label: 'Applications', icon: 'pi pi-file', link: '/applications', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
     { label: 'My Applications', icon: 'pi pi-file', link: '/my-applications', roles: [UserRole.VOLUNTEER] },
     { label: 'Roles', icon: 'pi pi-users', link: '/roles', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
+    {
+      label: 'Volunteers',
+      icon: 'pi pi-users',
+      link: '/volunteers',
+      roles: [UserRole.ORGANIZER, UserRole.ADMIN],
+      expandable: true,
+      expanded: false,
+      children: [
+        { label: 'View Volunteers', icon: 'pi pi-list', link: '/volunteers', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
+        { label: 'Register Volunteer', icon: 'pi pi-user-plus', link: '/volunteers/register', roles: [UserRole.ORGANIZER, UserRole.ADMIN] }
+      ]
+    },
     {
       label: 'Attendance',
       icon: 'pi pi-check-square',
@@ -181,6 +194,7 @@ export class SidebarComponent implements OnInit {
   ];
 
   filteredItems: any[] = [];
+  expandedMenu: string | null = null;
 
   constructor(
     public authService: AuthService,
@@ -226,13 +240,13 @@ export class SidebarComponent implements OnInit {
     if (item.expandable) {
       item.expanded = !item.expanded;
     }
-    if (item.link) {
+    if (item.link && !item.expandable) {
       this.router.navigate([item.link]);
     }
   }
 
   logout() {
     this.authService.logout();
-    window.location.reload();
+    this.router.navigate(['/auth/login']);
   }
 }
