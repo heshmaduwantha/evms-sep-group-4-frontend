@@ -248,17 +248,24 @@ export class EventListComponent implements OnInit {
 
   cancelEvent(event: any) {
 
-    console.log("CANCEL CLICKED", event);
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Cancel Event',
+        message: 'Are you sure you want to cancel this event?',
+        confirmText: 'Cancel Event'
+      }
+    });
 
-    this.eventService.cancelEvent(event.id).subscribe({
-      next: (res) => {
-        console.log("CANCEL SUCCESS", res);
-        this.loadEvents();
-      },
-      error: (err) => {
-        console.error("CANCEL ERROR", err);
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.eventService.cancelEvent(event.id).subscribe({
+          next: () => this.loadEvents(),
+          error: (err) => console.error("CANCEL ERROR", err)
+        });
       }
     });
 
   }
+
 }
