@@ -40,8 +40,10 @@ export class SettingsComponent implements OnInit {
 
       
       if (!user) {
-        this.loading = false;
-        this.error = 'User not logged in';
+        setTimeout(() => {
+          this.loading = false;
+          this.error = 'User not logged in';
+        });
         return;
       }
 
@@ -54,8 +56,10 @@ export class SettingsComponent implements OnInit {
       if (this.isOrganizer) {
         this.loadUsers();
       } else {
-        this.loading = false;
-        this.error = 'Access denied. Only organizers can view user lists.';
+        setTimeout(() => {
+          this.loading = false;
+          this.error = 'Access denied. Only organizers can view user lists.';
+        });
       }
     });
   }
@@ -67,12 +71,12 @@ export class SettingsComponent implements OnInit {
     this.authService.getUsers().subscribe({
       next: (users: User[]) => {
         this.users = users;
-        this.loading = false;
+        setTimeout(() => this.loading = false);
       },
       error: (err: any) => {
         console.error(err);
         this.error = 'Failed to load users.';
-        this.loading = false;
+        setTimeout(() => this.loading = false);
       }
     });
   }

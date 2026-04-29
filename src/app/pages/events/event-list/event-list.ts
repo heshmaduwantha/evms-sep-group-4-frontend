@@ -34,17 +34,19 @@ export class EventListComponent implements OnInit {
     this.loading = true;
 
     console.log("Loading events...");
-    this.eventService.getEvents().subscribe((data: any) => {
-
-      console.log("Events from backend:", data);
-      console.log("Statuses:", data.map((e: any) => e.status));
-      this.allEvents = data;
-
-      this.events = data;
-      this.loading = false;
-      console.log("events length:", this.events.length);
-      this.cdr.detectChanges();
-
+    this.eventService.getEvents().subscribe({
+      next: (data: any) => {
+        console.log("Events from backend:", data);
+        this.allEvents = data;
+        this.events = data;
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error("Error loading events:", err);
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
     });
 
   }
