@@ -1,19 +1,6 @@
 # EVMS Frontend – Angular Client
 
-> Single Page Application for the Event Management System, built with **Angular 21** and **PrimeNG**.
-
-## Table of Contents
-
-1. [Overview](#overview)
-2. [App Structure](#app-structure)
-3. [Routing](#routing)
-4. [Key Components & Pages](#key-components--pages)
-5. [Services](#services)
-6. [Setup & Running](#setup--running)
-7. [Building for Production](#building-for-production)
-8. [Connecting to the Backend](#connecting-to-the-backend)
-9. [UI Libraries](#ui-libraries)
-
+ 
 ---
 
 ## Overview
