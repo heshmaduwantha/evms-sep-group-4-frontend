@@ -1,61 +1,61 @@
 <div class="auth-page-container">
     <div class="register-wrapper">
-    <div class="register-container">
-        <p-card styleClass="register-card">
-            <div class="text-center mb-4">
-                <h1 class="auth-title">Join Us</h1>
-                <p class="auth-subtitle">Create your volunteer account</p>
-            </div>
-
-            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-column">
-                <div class="input-field-group">
-                    <label for="email" class="input-label">Email Address</label>
-                    <span class="p-input-icon-left w-full">
-                        <i class="pi pi-envelope"></i>
-                        <input pInputText id="email" formControlName="email" type="email" 
-                               placeholder="name@example.com" class="w-full" />
-                    </span>
-                    <small class="p-error block mt-1" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
-                        Valid email is required.
-                    </small>
+        <div class="register-container">
+            <p-card styleClass="register-card">
+                <div class="text-center mb-4">
+                    <h1 class="auth-title">Join Us</h1>
+                    <p class="auth-subtitle">Create your volunteer account</p>
                 </div>
 
-                <div class="input-field-group">
-                    <label for="password" class="input-label">Password</label>
-                    <span class="p-input-icon-left w-full">
-                        <i class="pi pi-lock"></i>
-                        <input pInputText id="password" formControlName="password" type="password" 
-                               placeholder="Min 6 characters" class="w-full" />
-                    </span>
-                    <small class="p-error block mt-1" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
-                        Password (min 6 chars) is required.
-                    </small>
-                </div>
+                <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-column">
+                    <div class="input-field-group">
+                        <label for="email" class="input-label">Email Address</label>
+                        <span class="p-input-icon-left w-full">
+                            <i class="pi pi-envelope"></i>
+                            <input pInputText id="email" formControlName="email" type="email" 
+                                   placeholder="name@example.com" class="w-full" />
+                        </span>
+                        <small class="p-error block mt-1" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+                            Valid email is required.
+                        </small>
+                    </div>
 
-                <div class="input-field-group">
-                    <label class="input-label">I am a:</label>
-                    <div class="role-selection">
-                        <div *ngFor="let r of roles" class="flex align-items-center">
-                            <p-radioButton [value]="r.value" formControlName="role" [inputId]="r.value"></p-radioButton>
-                            <label [for]="r.value" class="ml-2 cursor-pointer">{{ r.label }}</label>
+                    <div class="input-field-group">
+                        <label for="password" class="input-label">Password</label>
+                        <span class="p-input-icon-left w-full">
+                            <i class="pi pi-lock"></i>
+                            <input pInputText id="password" formControlName="password" type="password" 
+                                   placeholder="Min 6 characters" class="w-full" />
+                        </span>
+                        <small class="p-error block mt-1" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+                            Password (min 6 chars) is required.
+                        </small>
+                    </div>
+
+                    <div class="input-field-group">
+                        <label class="input-label">I am a:</label>
+                        <div class="role-selection">
+                            <div *ngFor="let r of roles" class="flex align-items-center">
+                                <p-radioButton [value]="r.value" formControlName="role" [inputId]="r.value"></p-radioButton>
+                                <label [for]="r.value" class="ml-2 cursor-pointer">{{ r.label }}</label>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="mt-4">
-                    <p-button label="Create Account" type="submit" [loading]="loading" [disabled]="registerForm.invalid"
-                        styleClass="w-full"></p-button>
-                </div>
+                    <div class="mt-4">
+                        <p-button label="Create Account" type="submit" [loading]="loading" [disabled]="registerForm.invalid"
+                            styleClass="w-full"></p-button>
+                    </div>
 
-                <p-message *ngIf="error" severity="error" [text]="error" styleClass="mt-3"></p-message>
+                    <p-message *ngIf="error" severity="error" variant="simple" styleClass="mt-3 w-full">{{error}}</p-message>
 
-                <div class="auth-footer">
-                    <span>Already have an account? </span>
-                    <a routerLink="/auth/login" class="auth-link">Sign In</a>
-                </div>
-            </form>
-        </p-card>
-    </div>
+                    <div class="auth-footer">
+                        <span>Already have an account? </span>
+                        <a routerLink="/auth/login" class="auth-link">Sign In</a>
+                    </div>
+                </form>
+            </p-card>
+        </div>
     </div>
     <app-footer></app-footer>
 </div>
