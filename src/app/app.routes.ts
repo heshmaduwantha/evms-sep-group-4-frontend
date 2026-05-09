@@ -18,6 +18,7 @@ import { VolunteerListComponent } from './volunteer/components/volunteer-list/vo
 import { VolunteerFormComponent } from './volunteer/components/volunteer-form/volunteer-form.component';
 import { VolunteerDetailComponent } from './volunteer/components/volunteer-detail/volunteer-detail.component';
 import { VolunteerEditComponent } from './volunteer/components/volunteer-edit/volunteer-edit.component';
+import { VolunteerDashboardComponent } from './pages/volunteer-dashboard/volunteer-dashboard.component';
 
 export const routes: Routes = [
     {
@@ -26,6 +27,7 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
         children: [
             { path: 'home', component: HomeComponent, data: { breadcrumb: 'Dashboard' } },
+            { path: 'volunteer/dashboard', component: VolunteerDashboardComponent, data: { breadcrumb: 'Volunteer Dashboard' } },
             { path: 'settings', component: SettingsComponent, data: { breadcrumb: 'Settings' } },
             { path: 'events', component: EventsHubComponent, data: { breadcrumb: 'Events Hub' } },
             { path: 'organizer/events', component: EventListComponent, data: { breadcrumb: 'Event Manager' } },
@@ -34,7 +36,7 @@ export const routes: Routes = [
             { path: 'events/:id', component: EventDetails, data: { breadcrumb: 'Event Details' } },
             { path: 'reports', component: ReportsComponent, data: { breadcrumb: 'Reports' } },
             { path: 'attendance', component: AttendanceComponent, data: { breadcrumb: 'Attendance Overview' } },
-            { path: 'manual-checkin', component: ManualCheckinComponent, data: { breadcrumb: 'Manual Check-in' } },
+            { path: 'manual-checkin', component: ManualCheckinComponent, data: { breadcrumb: 'All Check-ins' } },
             { path: 'applications', component: ApplicationManagementComponent, data: { breadcrumb: 'Applications' } },
             { path: 'my-applications', component: MyApplicationsComponent, data: { breadcrumb: 'My Applications' } },
             

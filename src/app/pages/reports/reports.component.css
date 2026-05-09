@@ -4,25 +4,24 @@
     min-height: 0;
 }
 
-.page-title {
-    font-size: 1.75rem;
-    font-weight: 800;
-    margin: 0;
-    background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
+/* Filters Card */
 .filters-card {
-    background: rgba(255, 255, 255, 0.7);
+    background: linear-gradient(135deg, #f0fdfa 0%, rgba(255, 255, 255, 0.9) 100%);
     backdrop-filter: blur(10px);
     padding: 1.5rem 2rem;
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.02);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-top: 4px solid #10b981;
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.05);
+    position: relative;
+    z-index: 100;
 }
 
+.filter-group {
+    min-width: 180px;
+}
+
+/* Glass Panel */
 .glass-panel {
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(10px);
@@ -32,6 +31,58 @@
     box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05);
 }
 
+/* Table Card - matching applications module */
+.table-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05);
+    overflow: hidden;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-top: 4px solid #6366f1;
+}
+
+/* PrimeNG Table Customization - matching applications module */
+:host ::ng-deep .p-datatable {
+    border-radius: 16px;
+    overflow: hidden;
+    background: transparent;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-header {
+    background: transparent;
+    border: none;
+    padding: 1.5rem 0;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    background: rgba(248, 250, 252, 0.5);
+    color: #475569;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1.25rem 1.5rem;
+    border: none;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr {
+    background: transparent;
+    transition: all 0.2s;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+    color: #334155;
+}
+
+/* Avatar */
 .small-avatar {
     width: 32px;
     height: 32px;
@@ -44,6 +95,7 @@
     font-size: 0.8rem;
 }
 
+/* Status Dots */
 .status-dot {
     width: 8px;
     height: 8px;
@@ -54,6 +106,7 @@
 .status-late { background: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
 .status-absent { background: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
 
+/* Method Pill */
 .method-pill {
     padding: 2px 8px;
     border-radius: 6px;
@@ -63,21 +116,31 @@
 }
 
 .method-pill.manual { background: #eef2ff; color: #6366f1; }
+.method-pill.online { background: #ecfdf5; color: #10b981; }
 
+/* Vital Cards */
 .vital-card {
-    padding: 1rem;
+    padding: 1.25rem 1rem;
     border-radius: 16px;
     display: flex;
     flex-direction: column;
     gap: 4px;
+    border-left: 4px solid transparent;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.vital-card.present { background: #ecfdf5; color: #065f46; border: 1px solid #d1fae5; }
-.vital-card.late { background: #fffbeb; color: #92400e; border: 1px solid #fef3c7; }
+.vital-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.vital-card.present { background: linear-gradient(145deg, #ffffff, #ecfdf5); color: #065f46; border: 1px solid #d1fae5; border-left-color: #10b981; }
+.vital-card.late { background: linear-gradient(145deg, #ffffff, #fffbeb); color: #92400e; border: 1px solid #fef3c7; border-left-color: #f59e0b; }
 
 .vital-card .label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; opacity: 0.8; }
 .vital-card .value { font-size: 1.5rem; font-weight: 800; }
 
+/* Rate Bar */
 .rate-bar-bg {
     height: 10px;
     background: #f1f5f9;
@@ -91,27 +154,32 @@
     border-radius: 5px;
 }
 
+/* Department Bars */
 .dept-multi-bar {
-    height: 8px;
-    background: #f1f5f9;
-    border-radius: 4px;
+    height: 10px;
+    background: transparent;
+    border-radius: 5px;
     display: flex;
-    overflow: hidden;
+    gap: 2px;
 }
 
-.dept-multi-bar .segment { height: 100%; }
+.dept-multi-bar .segment { height: 100%; border-radius: 5px; transition: width 0.3s ease; }
 .dept-multi-bar .segment.present { background: #10b981; }
 .dept-multi-bar .segment.late { background: #f59e0b; }
 .dept-multi-bar .segment.absent { background: #ef4444; }
 
-/* Customizing PrimeNG */
-:host ::ng-deep .premium-dropdown .p-dropdown {
+/* Customizing PrimeNG Dropdowns */
+:host ::ng-deep .premium-dropdown .p-select {
     border-radius: 12px;
     border: 1px solid #e2e8f0;
     background: white;
 }
 
-:host ::ng-deep .premium-calendar .p-calendar .p-inputtext {
+:host ::ng-deep .premium-calendar .p-datepicker .p-inputtext {
     border-radius: 12px;
     border: 1px solid #e2e8f0;
 }
+
+/* Utility classes */
+.flex { display: flex; }
+.gap-2 { gap: 0.5rem; }

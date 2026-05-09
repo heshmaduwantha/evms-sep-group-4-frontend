@@ -21,9 +21,10 @@
                 <div class="menu-item expandable" 
                      (click)="toggleExpand(item)"
                      [class.active]="item.expanded">
-                    <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
                         <i [class]="item.icon"></i>
                         <span>{{ item.label }}</span>
+                        <span *ngIf="item.badge" class="badge" style="margin-left: auto; margin-right: 10px;">{{ item.badge }}</span>
                     </div>
                     <i class="pi pi-chevron-right expand-icon" [class.expanded]="item.expanded"></i>
                 </div>

@@ -10,7 +10,7 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
 import { MessageService } from 'primeng/api';
@@ -32,7 +32,7 @@ import { retry } from 'rxjs';
         CardModule,
         TagModule,
         InputTextModule,
-        DropdownModule,
+        SelectModule,
         ToastModule,
         DialogModule,
         ApplicationReviewModalComponent
@@ -118,10 +118,10 @@ export class ApplicationManagementComponent implements OnInit {
         this.filterApplications();
     }
 
-    getStatusSeverity(status: ApplicationStatus): "success" | "secondary" | "info" | "warning" | "danger" | "contrast" | undefined {
+    getStatusSeverity(status: ApplicationStatus): "success" | "secondary" | "info" | "warn" | "danger" | "contrast" | undefined {
         switch (status) {
             case ApplicationStatus.APPROVED: return 'success';
-            case ApplicationStatus.PENDING: return 'warning';
+            case ApplicationStatus.PENDING: return 'warn';
             case ApplicationStatus.REJECTED: return 'danger';
             case ApplicationStatus.WAITLISTED: return 'info';
             default: return 'info';

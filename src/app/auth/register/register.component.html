@@ -47,8 +47,7 @@
                         styleClass="w-full"></p-button>
                 </div>
 
-                <p-messages *ngIf="error" [value]="[{severity:'error', summary:'Error', detail:error}]"
-                    [closable]="false" styleClass="mt-3"></p-messages>
+                <p-message *ngIf="error" severity="error" [text]="error" styleClass="mt-3"></p-message>
 
                 <div class="auth-footer">
                     <span>Already have an account? </span>

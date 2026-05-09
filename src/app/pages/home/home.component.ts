@@ -14,12 +14,15 @@ import { TagModule } from 'primeng/tag';
 import { AvatarModule } from 'primeng/avatar';
 import { ApplicationService } from '../applications/application.service';
 import { ApplicationStatus } from '../applications/application.models';
-import { catchError, of } from 'rxjs';
+import { SkeletonModule } from 'primeng/skeleton';
+import { ChartModule } from 'primeng/chart';
+import { Observable, forkJoin, of, BehaviorSubject } from 'rxjs';
+import { catchError, map, retry, take, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, CardModule, ButtonModule, ProgressBarModule, TagModule, AvatarModule],
+  imports: [CommonModule, RouterModule, CardModule, ButtonModule, ProgressBarModule, TagModule, AvatarModule, SkeletonModule, ChartModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
@@ -31,11 +34,17 @@ export class HomeComponent implements OnInit {
     attendanceRate: { value: 0, trend: '', label: 'average' }
   };
 
+  loading = true;
   nearestEvent: any = null;
   recentEvents: any[] = [];
   recentApplications: any[] = [];
   recentCheckIns: any[] = [];
   alerts: any[] = [];
+
+  // Chart Data
+  attendanceChartData: any;
+  eventsChartData: any;
+  chartOptions: any;
 
   constructor(
     public authService: AuthService,
@@ -49,99 +58,127 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     const user = this.authService.currentUserValue;
     if (user?.role === UserRole.VOLUNTEER) {
-      this.router.navigate(['/applications']);
+      this.router.navigate(['/volunteer/dashboard']);
     } else {
+      this.initCharts();
       this.loadStats();
-      this.loadRecentEvents();
     }
   }
 
+  initCharts() {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color');
+    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
+    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+
+    this.attendanceChartData = {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [
+        {
+          label: 'Attendance Rate',
+          data: [65, 59, 80, 81, 56, 55, 40],
+          fill: true,
+          borderColor: '#3b82f6',
+          tension: 0.4,
+          backgroundColor: 'rgba(59, 130, 246, 0.1)'
+        }
+      ]
+    };
+
+    this.eventsChartData = {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [
+        {
+          label: 'Events Completed',
+          backgroundColor: '#10b981',
+          data: [4, 7, 5, 12, 8, 15]
+        }
+      ]
+    };
+
+    this.chartOptions = {
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        x: { display: false },
+        y: { display: false }
+      },
+      maintainAspectRatio: false
+    };
+  }
+
+
   loadStats() {
-    this.eventService.getStats().pipe(catchError(() => of({ activeEvents: 0 }))).subscribe({
-      next: (data: any) => {
-        this.stats.activeEvents.value = data.activeEvents || 0;
-      }
+    this.loading = true;
+    const now = new Date();
+
+    // 1. Stats and Individual Components
+    this.eventService.getStats().pipe(take(1), catchError(() => of({ activeEvents: 0 }))).subscribe(stats => {
+      this.stats.activeEvents.value = stats.activeEvents || 0;
     });
 
-    this.attendanceService.getVolunteerCount().pipe(catchError(() => of(0))).subscribe({
-      next: (count) => {
-        this.stats.totalVolunteers.value = count || 0;
-      }
+    this.attendanceService.getVolunteerCount().pipe(take(1), catchError(() => of(0))).subscribe(count => {
+      this.stats.totalVolunteers.value = count || 0;
     });
 
-    this.reportsService.getSummary('').pipe(catchError(() => of({ attendanceRate: 0 }))).subscribe({
-      next: (summary) => {
-        this.stats.attendanceRate.value = summary.attendanceRate || 0;
-      }
+    this.reportsService.getSummary('').pipe(take(1), catchError(() => of({ attendanceRate: 0 }))).subscribe(summary => {
+      this.stats.attendanceRate.value = summary.attendanceRate || 0;
     });
 
-    this.applicationService.getApplications().pipe(catchError(() => of([]))).subscribe({
-      next: (apps) => {
-        const pendingApps = apps.filter(a => a.status === ApplicationStatus.PENDING)
-          .sort((a, b) => new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime());
-          
-        this.recentApplications = pendingApps.slice(0, 6).map(app => ({
-          ...app,
-          name: app.user?.email ? app.user.email.split('@')[0] : 'Unknown',
-          role: app.experience || 'Volunteer',
-          eventTitle: app.event?.title || 'Unknown Event',
-          time: this.getTimeAgo(new Date(app.appliedDate)),
-          exp: app.experienceDetails || 'New volunteer',
-          color: this.getAvatarColor(app.user?.email || 'Unknown')
-        }));
-        this.stats.pendingApplications.value = pendingApps.length;
-      }
-    });
-
-    this.attendanceService.getRecentCheckIns('all').subscribe({
-      next: (checkins) => {
-        this.recentCheckIns = checkins.slice(0, 5).map(c => ({
-          ...c,
-          color: this.getAvatarColor(c.name)
-        }));
-      }
-    });
-  }
-
-  loadRecentEvents() {
-    this.eventService.getEvents().subscribe({
-      next: (events: Event[]) => {
-        const now = new Date();
-        const nextWeek = new Date();
-        nextWeek.setDate(now.getDate() + 7);
-
-        // Events starting this week
-        const startingThisWeek = events.filter(e => {
-          const eventDate = new Date(e.date);
-          return eventDate >= now && eventDate <= nextWeek;
-        }).length;
-
-        // Find nearest upcoming event
-        const upcoming = events
-          .filter(e => new Date(e.date) >= now)
-          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    this.applicationService.getApplications().pipe(take(1), catchError(() => of([]))).subscribe(apps => {
+      const pendingApps = (apps || []).filter((a: any) => a.status === ApplicationStatus.PENDING)
+        .sort((a: any, b: any) => new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime());
         
-        this.nearestEvent = upcoming.length > 0 ? upcoming[0] : (events.length > 0 ? events[0] : null);
-
-        this.recentEvents = events.slice(0, 5).map(e => {
-          const staffed = e.volunteers?.length || 0;
-          const needed = e.volunteersNeeded || 1;
-          return {
-            ...e,
-            volunteersCount: staffed,
-            progress: Math.min(100, Math.round((staffed / needed) * 100))
-          };
-        });
-
-        // Re-map application titles and update alerts
-        this.recentApplications.forEach(app => {
-          app.eventTitle = this.getEventName(app.event);
-        });
-
-        this.updateAlerts(startingThisWeek);
-      }
+      this.recentApplications = pendingApps.slice(0, 6).map((app: any) => ({
+        ...app,
+        name: app.user?.email ? app.user.email.split('@')[0] : 'Unknown',
+        role: app.experience || 'Volunteer',
+        eventTitle: app.event?.title || 'Unknown Event',
+        time: this.getTimeAgo(new Date(app.appliedDate)),
+        exp: app.experienceDetails || 'New volunteer',
+        color: this.getAvatarColor(app.user?.email || 'Unknown')
+      }));
+      this.stats.pendingApplications.value = pendingApps.length;
     });
+
+    this.attendanceService.getRecentCheckIns('all').pipe(take(1), catchError(() => of([]))).subscribe(checkins => {
+      this.recentCheckIns = (checkins || []).slice(0, 5).map((c: any) => ({
+        ...c,
+        color: this.getAvatarColor(c.name)
+      }));
+    });
+
+    this.eventService.getEvents().pipe(take(1), catchError(() => of([]))).subscribe(events => {
+      const allEvents = Array.isArray(events) ? events : (events && (events as any).data ? (events as any).data : []);
+      
+      this.recentEvents = [...allEvents]
+        .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, 5);
+
+      const upcoming = [...allEvents]
+        .filter((e: any) => new Date(e.date) >= now)
+        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+      if (upcoming.length > 0) {
+        this.nearestEvent = upcoming[0];
+      } else if (allEvents.length > 0) {
+        this.nearestEvent = allEvents[0];
+      } else {
+        this.nearestEvent = { title: 'No Upcoming Events' };
+      }
+      
+      this.loading = false;
+    });
+
+    // Final safety to clear loading even if all fail
+    setTimeout(() => {
+        this.loading = false;
+        if (!this.nearestEvent) this.nearestEvent = { title: 'No Events Found' };
+    }, 3000);
   }
+
+
 
   updateAlerts(startingThisWeek: number) {
     this.alerts = [];
@@ -174,11 +211,11 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  getEventStatusSeverity(status: string): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' | undefined {
+  getEventStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | undefined {
     switch (status?.toLowerCase()) {
       case 'active': return 'success';
       case 'upcoming': return 'info';
-      case 'completed': return 'warning';
+      case 'completed': return 'warn';
       default: return 'secondary';
     }
   }

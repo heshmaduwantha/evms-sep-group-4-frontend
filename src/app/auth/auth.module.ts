@@ -5,7 +5,6 @@ import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
-import { MessagesModule } from 'primeng/messages';
 import { RadioButtonModule } from 'primeng/radiobutton';
 
 import { AuthRoutingModule } from './auth-routing.module';
@@ -26,8 +25,7 @@ import { FooterComponent } from '../layout/footer/footer.component';
     InputTextModule,
     ButtonModule,
     MessageModule,
-    MessagesModule,
-    RadioButtonModule,
+        RadioButtonModule,
     FooterComponent
   ]
 })

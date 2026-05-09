@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { User, AuthResponse } from './auth.models';
+import { environment } from '../../environments/environment';
 
 export type UserRole = 'admin' | 'organizer' | 'volunteer';
 
@@ -9,7 +11,7 @@ export type UserRole = 'admin' | 'organizer' | 'volunteer';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3100/auth';
+  private apiUrl = `${environment.apiUrl}/auth`;
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
 
@@ -48,7 +50,7 @@ export class AuthService {
 
   // ✅ GET USERS (ADMIN)
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>('http://localhost:3100/users');
+    return this.http.get<User[]>(`${environment.apiUrl}/users`);
   }
 
   // ✅ TOKEN

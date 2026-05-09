@@ -1,0 +1,285 @@
+.dashboard-container {
+    padding: 2rem;
+    animation: fadeIn 0.5s ease-out;
+    background: linear-gradient(160deg, #f0fdf9 0%, #f8fafc 50%, #eff6ff 100%);
+    min-height: 100vh;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===========================
+   Header
+=========================== */
+.header-row { margin-bottom: 2rem; }
+
+.welcome-msg h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+}
+
+.welcome-msg p {
+    color: #64748b;
+    margin-top: 0.3rem;
+    font-size: 1rem;
+}
+
+/* ===========================
+   Stats Grid - Colorful Tiles
+=========================== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    border-radius: 20px;
+    padding: 1.75rem 1.75rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Teal card */
+.stat-card.applications {
+    background: linear-gradient(135deg, #00d1b2 0%, #00b89c 100%);
+    box-shadow: 0 10px 30px rgba(0, 209, 178, 0.35);
+    color: white;
+}
+
+/* Blue card */
+.stat-card.events {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.35);
+    color: white;
+}
+
+/* Amber card */
+.stat-card.hours {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.35);
+    color: white;
+}
+
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+    display: block;
+}
+
+.stat-card i {
+    font-size: 1.75rem;
+    opacity: 0.9;
+    background: rgba(255,255,255,0.2);
+    padding: 10px;
+    border-radius: 12px;
+}
+
+.stat-value {
+    font-size: 3rem;
+    font-weight: 900;
+    color: white;
+    line-height: 1;
+    display: block;
+}
+
+/* ===========================
+   Content Sections Grid
+=========================== */
+.content-sections {
+    display: grid;
+    grid-template-columns: 1.3fr 0.7fr;
+    gap: 2rem;
+}
+
+.section-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.8);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.section-header h2 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+}
+
+.view-all {
+    color: #00b89c;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 0.4rem 1rem;
+    background: rgba(0, 209, 178, 0.1);
+    border-radius: 10px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.view-all:hover {
+    background: rgba(0, 209, 178, 0.2);
+    transform: translateX(2px);
+}
+
+/* ===========================
+   Event Items
+=========================== */
+.event-item {
+    background: #f8fafc;
+    margin-bottom: 0.75rem;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    border: 1px solid #f1f5f9;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.event-item:nth-child(1) .event-icon { background: linear-gradient(135deg, #00d1b2, #00b89c); }
+.event-item:nth-child(2) .event-icon { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.event-item:nth-child(3) .event-icon { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.event-item:nth-child(4) .event-icon { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+.event-item:hover {
+    background: white;
+    border-color: #00d1b2;
+    box-shadow: 0 4px 12px rgba(0,209,178,0.1);
+    transform: translateX(3px);
+}
+
+.event-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.event-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #00d1b2, #00b89c);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.event-title {
+    display: block;
+    color: #1e293b;
+    font-weight: 700;
+    font-size: 0.92rem;
+}
+
+.event-date {
+    display: block;
+    color: #64748b;
+    font-size: 0.8rem;
+    margin-top: 0.15rem;
+}
+
+/* ===========================
+   Application Items
+=========================== */
+.app-item {
+    background: #f8fafc;
+    margin-bottom: 0.75rem;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    border: 1px solid #f1f5f9;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.app-item:hover {
+    background: white;
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 12px rgba(99,102,241,0.08);
+}
+
+.app-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+/* ===========================
+   Empty States
+=========================== */
+.empty-state {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: #64748b;
+}
+
+.empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.4;
+    display: block;
+}
+
+/* ===========================
+   Responsive
+=========================== */
+@media (max-width: 1100px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .content-sections { grid-template-columns: 1fr; }
+}

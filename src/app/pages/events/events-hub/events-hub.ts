@@ -31,6 +31,18 @@ export class EventsHubComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) { }
 
+  selectedFilter: string = 'all';
+
+  get filteredEvents(): Event[] {
+    if (this.selectedFilter === 'all') return this.events;
+    return this.events.filter(e => e.status.toLowerCase() === this.selectedFilter.toLowerCase());
+  }
+
+  setFilter(filter: string) {
+    this.selectedFilter = filter;
+    this.cdr.detectChanges();
+  }
+
   ngOnInit() {
     this.authService.currentUser.subscribe(user => {
       this.currentRole = user?.role || null;

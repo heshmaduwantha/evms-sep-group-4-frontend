@@ -1,25 +1,37 @@
 <div class="app-content event-form-page">
 
-  <div class="form-header">
-    <h2>{{ eventId ? 'Edit Event' : 'Create Event' }}</h2>
-    <p>Fill in the details below to schedule a new event in the system.</p>
+  <div class="header-card">
+    <div>
+      <h1>{{ eventId ? 'Edit Event' : 'Create Event' }}</h1>
+      <p class="page-subtitle">Fill in the details below to schedule a new event in the system.</p>
+    </div>
   </div>
 
-  <form (ngSubmit)="submitEvent()" class="event-form">
-
-    <div class="form-grid">
-
-      <div class="form-group full">
+  <form (ngSubmit)="submitEvent()" class="event-form-split">
+    
+    <div class="form-column left-column card">
+      <div class="form-group">
         <label>Event Title</label>
         <input type="text" [(ngModel)]="eventData.title" name="title" placeholder="e.g. Community Tree Plantation">
       </div>
 
-      <div class="form-group full">
+      <div class="form-group">
         <label>Event Description</label>
-        <textarea [(ngModel)]="eventData.description" name="description"
+        <textarea [(ngModel)]="eventData.description" name="description" rows="4"
           placeholder="Provide a detailed description of the event..."></textarea>
       </div>
 
+      <div class="form-group map-group">
+        <label>Search Location</label>
+        <input type="text" [(ngModel)]="searchQuery" name="searchQuery" placeholder="Type location" class="mb-2">
+        <button type="button" class="btn-search-location w-full mb-3" (click)="searchLocation()">
+          <i class="pi pi-search mr-2"></i> Search Location
+        </button>
+        <div id="event-map" class="map-container"></div>
+      </div>
+    </div>
+
+    <div class="form-column right-column card">
       <div class="form-group">
         <label>Event Date</label>
         <input type="date" [(ngModel)]="eventData.date" name="date">
@@ -31,25 +43,19 @@
       </div>
 
       <div class="form-group">
-        <label>Location</label>
-        <input type="text" [(ngModel)]="eventData.location" name="location" placeholder="Street address or venue name">
-      </div>
-
-      <div class="form-group">
         <label>Volunteers Needed</label>
         <input type="number" [(ngModel)]="eventData.volunteersNeeded" name="volunteersNeeded">
       </div>
 
-    </div>
+      <div class="form-actions mt-auto border-top-1 surface-border pt-4">
+        <button type="button" class="cancel-btn" (click)="cancelEvent()">
+          Cancel
+        </button>
 
-    <div class="form-actions">
-      <button type="button" class="cancel-btn" (click)="cancelEvent()">
-        Cancel
-      </button>
-
-      <button type="submit" class="submit-btn">
-        {{ eventId ? 'Update Event' : 'Create Event' }}
-      </button>
+        <button type="submit" class="submit-btn">
+          {{ eventId ? 'Update Event' : 'Create Event' }}
+        </button>
+      </div>
     </div>
 
   </form>

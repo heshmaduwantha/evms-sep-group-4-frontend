@@ -1,13 +1,61 @@
-<h2>Edit Volunteer</h2>
+<div class="edit-page-overlay">
+  <div class="edit-modal-card">
+    <div class="modal-header">
+      <h2 class="modal-title">Edit Volunteer</h2>
+      <button class="btn-close" routerLink="/volunteers">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
 
-<form [formGroup]="form" (ngSubmit)="update()">
+    <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="pt-4">
+      <div class="form-grid">
+        <div class="form-field full-width">
+          <label for="name">Name *</label>
+          <input id="name" type="text" pInputText formControlName="name" class="w-full" placeholder="Volunteer Name" />
+        </div>
 
-  <input formControlName="name">
-  <input formControlName="email">
-  <input formControlName="phone">
-  <input formControlName="skills">
-  <input formControlName="availability">
+        <div class="form-field">
+          <label for="email">Email *</label>
+          <input id="email" type="email" pInputText formControlName="email" class="w-full" />
+        </div>
 
-  <button type="submit">Update</button>
+        <div class="form-field">
+          <label for="phone">Phone</label>
+          <input id="phone" type="text" pInputText formControlName="phone" class="w-full" />
+        </div>
 
-</form>
+        <div class="form-field">
+          <label for="role">Role *</label>
+          <p-select id="role" [options]="roleOptions" formControlName="role" 
+                      placeholder="Select Role" class="w-full"></p-select>
+        </div>
+
+        <div class="form-field">
+          <label for="dept">Department *</label>
+          <p-select id="dept" [options]="deptOptions" formControlName="department" 
+                      placeholder="Select Department" class="w-full"></p-select>
+        </div>
+
+        <div class="form-field full-width">
+          <label for="skills">Skills</label>
+          <input id="skills" type="text" pInputText formControlName="skills" class="w-full" />
+        </div>
+
+        <div class="form-field full-width">
+          <label for="availability">Availability</label>
+          <input id="availability" type="text" pInputText formControlName="availability" class="w-full" />
+        </div>
+
+        <div class="form-field full-width checkbox-field" style="flex-direction: row; align-items: center; gap: 0.75rem;">
+          <p-checkbox formControlName="checkedIn" [binary]="true" inputId="checkedInEditPage"></p-checkbox>
+          <label for="checkedInEditPage" style="font-weight: 800; color: #475569; cursor: pointer; font-size: 0.85rem;">Mark as checked in</label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" pButton label="Cancel" class="btn-cancel" routerLink="/volunteers"></button>
+        <button type="submit" pButton label="Update Volunteer" class="btn-submit" [loading]="loading"></button>
+      </div>
+    </form>
+  </div>
+</div>

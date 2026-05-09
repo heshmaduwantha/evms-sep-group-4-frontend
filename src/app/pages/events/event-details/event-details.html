@@ -1,1 +1,113 @@
-<p>event-details works!</p>
+<div class="event-details-container">
+    <p-toast></p-toast>
+    
+    <ng-container *ngIf="event">
+
+    <div class="header-banner">
+        <div class="banner-content">
+            <div class="title-section">
+                <h1 class="premium-title">{{ event.title }}</h1>
+                <p-tag [value]="event.status | uppercase" [severity]="getStatusSeverity(event.status)" styleClass="status-tag"></p-tag>
+            </div>
+            <div class="actions" *ngIf="userRole === 'volunteer'">
+                <button pButton 
+                    [label]="hasApplied ? 'Application Submitted' : 'Apply Now'" 
+                    [icon]="hasApplied ? 'pi pi-check' : 'pi pi-send'" 
+                    [disabled]="hasApplied"
+                    [class]="hasApplied ? 'p-button-secondary' : 'apply-btn'"
+                    [routerLink]="hasApplied ? null : '/my-applications'"
+                    [queryParams]="hasApplied ? null : { eventId: event.id }"></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="details-grid">
+        <!-- Main Info Card -->
+        <div class="main-info">
+            <div class="info-tiles">
+                <div class="info-tile">
+                    <div class="icon-wrap date-icon"><i class="pi pi-calendar"></i></div>
+                    <div class="tile-content">
+                        <span class="label">Date</span>
+                        <span class="value">{{ event.date | date:'EEEE, MMMM d, y' }}</span>
+                    </div>
+                </div>
+                <div class="info-tile">
+                    <div class="icon-wrap time-icon"><i class="pi pi-clock"></i></div>
+                    <div class="tile-content">
+                        <span class="label">Time</span>
+                        <span class="value">{{ event.time }}</span>
+                    </div>
+                </div>
+                <div class="info-tile">
+                    <div class="icon-wrap loc-icon"><i class="pi pi-map-marker"></i></div>
+                    <div class="tile-content">
+                        <span class="label">Location</span>
+                        <span class="value">{{ event.location }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="description-card">
+                <h3>About this Event</h3>
+                <p>{{ event.description }}</p>
+            </div>
+
+            <div class="description-card mt-4 p-0 overflow-hidden">
+                <div id="event-details-map" style="height: 400px; width: 100%;"></div>
+            </div>
+        </div>
+
+        <!-- Sidebar / Stats Card -->
+        <div class="sidebar-stats">
+            <div class="stats-card">
+                <h3>Impact Summary</h3>
+                <div class="stat-row">
+                    <span class="stat-label">Volunteers Needed</span>
+                    <span class="stat-value">{{ event.volunteersNeeded }}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Currently Assigned</span>
+                    <span class="stat-value accent">{{ event.assignedVolunteers || 0 }}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Pending Review</span>
+                    <span class="stat-value">{{ event.pendingVolunteers || 0 }}</span>
+                </div>
+
+                <div class="progress-section">
+                    <div class="progress-labels">
+                        <span>Fulfillment</span>
+                        <span>{{ ((event.assignedVolunteers || 0) / event.volunteersNeeded * 100) | number:'1.0-0' }}%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" [style.width.%]="(event.assignedVolunteers || 0) / event.volunteersNeeded * 100"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-card mt-4" *ngIf="userRole !== 'volunteer'">
+                <h3>Management Actions</h3>
+                <p class="text-sm text-secondary mb-3">Update the current lifecycle state of this event.</p>
+                <div class="flex flex-column gap-2">
+                    <button pButton label="Set as Upcoming" icon="pi pi-calendar" 
+                        class="p-button-info w-full mb-2 premium-action-btn"
+                        (click)="updateStatus('upcoming')"
+                        [disabled]="event.status === 'upcoming'"></button>
+                    
+                    <button pButton label="Set as Ongoing" icon="pi pi-play" 
+                        class="p-button-success w-full mb-2 premium-action-btn"
+                        (click)="updateStatus('ongoing')"
+                        [disabled]="event.status === 'ongoing'"></button>
+                    
+                    <button pButton label="Cancel Event" icon="pi pi-times-circle" 
+                        class="p-button-danger w-full premium-action-btn"
+                        (click)="updateStatus('cancelled')"
+                        [disabled]="event.status === 'cancelled'"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </ng-container>
+</div>
+

@@ -7,8 +7,8 @@ import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
-import { DropdownModule } from 'primeng/dropdown';
-import { InputTextareaModule } from 'primeng/inputtextarea';
+import { SelectModule } from 'primeng/select';
+import { TextareaModule } from 'primeng/textarea';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -16,7 +16,8 @@ import { ApplicationService } from './application.service';
 import { EventService } from '../events/services/event.service';
 import { Application, ApplicationStatus, CreateApplicationDto, UpdateApplicationDto } from './application.models';
 import { Event } from '../events/event.models';
-import { catchError, of, retry } from 'rxjs';
+import { of } from 'rxjs';
+import { catchError, retry } from 'rxjs/operators';
 
 @Component({
     selector: 'app-my-applications',
@@ -30,8 +31,8 @@ import { catchError, of, retry } from 'rxjs';
         ConfirmDialogModule, 
         ToastModule, 
         DialogModule, 
-        DropdownModule, 
-        InputTextareaModule, 
+        SelectModule, 
+        TextareaModule, 
         InputTextModule,
         FormsModule
     ],
@@ -201,10 +202,10 @@ export class MyApplicationsComponent implements OnInit {
         }
     }
 
-    getStatusSeverity(status: ApplicationStatus): "success" | "secondary" | "info" | "warning" | "danger" | "contrast" | undefined {
+    getStatusSeverity(status: ApplicationStatus): "success" | "secondary" | "info" | "warn" | "danger" | "contrast" | undefined {
         switch (status) {
             case ApplicationStatus.APPROVED: return 'success';
-            case ApplicationStatus.PENDING: return 'warning';
+            case ApplicationStatus.PENDING: return 'warn';
             case ApplicationStatus.REJECTED: return 'danger';
             case ApplicationStatus.WAITLISTED: return 'info';
             default: return 'info';

@@ -110,6 +110,10 @@
     background-color: #fbfcfe;
 }
 
+.clickable-row {
+    cursor: pointer;
+}
+
 /* Event Info Column */
 .event-info {
     display: flex;

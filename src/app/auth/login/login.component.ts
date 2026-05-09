@@ -161,7 +161,7 @@ export class LoginComponent implements OnInit {
           const role = response.user?.role;
           let redirect = this.returnUrl !== '/' ? this.returnUrl : '/home';
           if (role === 'volunteer') {
-            redirect = '/applications';
+            redirect = '/volunteer/dashboard';
           }
           this.router.navigate([redirect]);
         },

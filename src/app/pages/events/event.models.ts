@@ -1,8 +1,10 @@
 export enum EventStatus {
     UPCOMING = 'upcoming',
     ACTIVE = 'active',
+    ONGOING = 'ongoing',
     COMPLETED = 'completed',
     CANCELLED = 'cancelled',
+    ON_HOLD = 'on hold',
 }
 
 export interface Event {
@@ -18,4 +20,11 @@ export interface Event {
     volunteers?: any[];
     createdAt?: Date;
     updatedAt?: Date;
+}
+
+export interface EventStats {
+    totalEvents: number;
+    upcomingEvents: number;
+    completedEvents: number;
+    totalVolunteers: number;
 }

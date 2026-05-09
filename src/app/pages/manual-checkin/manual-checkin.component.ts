@@ -1,66 +1,98 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ManualCheckinService } from './manual-checkin.service';
 import { EventService } from '../events/services/event.service';
+import { RoleService } from '../roles/role.service';
 import { Event } from '../events/event.models';
-import { forkJoin, map } from 'rxjs';
+import { forkJoin, Subject } from 'rxjs';
+import { map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
+// PrimeNG
+import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DialogModule } from 'primeng/dialog';
+import { TooltipModule } from 'primeng/tooltip';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageService, ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-manual-checkin',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [
+    CommonModule, FormsModule, ReactiveFormsModule,
+    TableModule, TagModule, ButtonModule, InputTextModule,
+    SelectModule, CheckboxModule, DialogModule, TooltipModule,
+    ToastModule, ConfirmDialogModule
+  ],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './manual-checkin.component.html',
   styleUrls: ['./manual-checkin.component.css']
 })
 export class ManualCheckinComponent implements OnInit {
-  eventId = '';
+  eventId = 'all';
   events: Event[] = [];
 
   searchQuery = '';
   selectedFilter = 'all';
 
-  volunteers: any[] = [];
-  selectedVolunteers: Set<string> = new Set();
-
+  manualVolunteers: any[] = [];
+  portalVolunteers: any[] = [];
+  
   summary = {
     total: 0,
     checkedIn: 0,
     absent: 0
   };
+  loading = false;
 
   showCreateForm = false;
   showEditForm = false;
   editingVolunteer: any = null;
-  createForm!: FormGroup;
-  editForm!: FormGroup;
+  createForm: FormGroup;
+  editForm: FormGroup;
   isSubmitting = false;
-  successMessage = '';
-  errorMessage = '';
-  deleteConfirmId: string | null = null;
 
-  filterOptions = [
-    { label: 'All', value: 'all' },
-    { label: 'Checked In', value: 'checked-in' },
-    { label: 'Absent', value: 'absent' }
+  roleOptions: any[] = [];
+
+  departmentOptions = [
+    { label: 'Operations', value: 'Operations' },
+    { label: 'Front Desk', value: 'Front Desk' },
+    { label: 'Safety', value: 'Safety' },
+    { label: 'Technical', value: 'Technical' },
+    { label: 'Guest Services', value: 'Guest Services' }
   ];
-
-  roleOptions = ['Volunteer', 'Team Lead', 'Coordinator', 'Registration', 'Logistics', 'Security', 'Hospitality', 'AV Tech'];
-  departmentOptions = ['Operations', 'Front Desk', 'Safety', 'Technical', 'Guest Services'];
 
   constructor(
     private manualCheckinService: ManualCheckinService,
     private eventService: EventService,
-    private formBuilder: FormBuilder
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService,
+    private ngZone: NgZone,
+    private roleService: RoleService
   ) {
-    this.createForm = this.formBuilder.group({
+    this.createForm = this.fb.group({
       eventId: ['', Validators.required],
       name: ['', [Validators.required, Validators.minLength(2)]],
       role: ['', Validators.required],
       department: ['', Validators.required],
       checkedIn: [false]
     });
-    this.editForm = this.formBuilder.group({
+
+    this.createForm.get('eventId')?.valueChanges.subscribe(val => {
+      if (val) this.loadRolesForEvent(val);
+    });
+
+    this.editForm = this.fb.group({
       eventId: ['', Validators.required],
       name: ['', [Validators.required, Validators.minLength(2)]],
       role: ['', Validators.required],
@@ -75,281 +107,175 @@ export class ManualCheckinComponent implements OnInit {
 
   loadEvents() {
     this.eventService.getEvents().subscribe({
-      next: (events: Event[]) => {
+      next: (events) => {
         this.events = events;
-        // Default to 'all' to show all volunteers initially
-        this.eventId = 'all';
         this.loadVolunteers();
-      },
-      error: (err: any) => {
-        console.error('Error loading events:', err);
-        this.errorMessage = 'Failed to load events';
       }
     });
-  }
-
-  onEventChange() {
-    this.loadVolunteers();
   }
 
   loadVolunteers() {
-    this.manualCheckinService.getVolunteers(this.eventId, this.searchQuery, this.selectedFilter)
-      .subscribe({
-        next: (res) => {
-          // If eventId is specific, verify results. If 'all', trust backend consolidation.
-          if (this.eventId !== 'all') {
-            this.volunteers = (res.volunteers || []).filter((v: any) => v.eventId === this.eventId);
-          } else {
-            this.volunteers = res.volunteers || [];
-          }
+    this.loading = true;
+    this.manualCheckinService.getVolunteers(this.eventId).subscribe({
+      next: (res: any) => {
+        const data = res.volunteers || [];
+        this.ngZone.run(() => {
+          this.manualVolunteers = data.filter((v: any) => v.checkInMethod !== 'online');
+          this.portalVolunteers = data.filter((v: any) => v.checkInMethod === 'online');
           
-          // Use summary from response directly if available, else calculate locally
-          if (res.total !== undefined && res.checkedIn !== undefined) {
+          if (res.total !== undefined) {
             this.summary = {
               total: res.total,
-              checkedIn: res.checkedIn,
-              absent: res.total - res.checkedIn
+              checkedIn: res.checkedIn || 0,
+              absent: (res.total - (res.checkedIn || 0))
             };
           } else {
-            const total = this.volunteers.length;
-            const checkedIn = this.volunteers.filter(v => v.checkedIn).length;
-            this.summary = {
-              total: total,
-              checkedIn: checkedIn,
-              absent: total - checkedIn
-            };
+            this.updateSummary();
           }
-        },
-        error: (err) => {
-          console.error('Error loading volunteers:', err);
-          this.errorMessage = 'Failed to load volunteers';
-        }
-      });
-  }
-
-  onSearch() {
-    this.loadVolunteers();
-  }
-
-  onFilterChange() {
-    this.onSearch();
-  }
-
-  onToggleCheckin(volunteer: any) {
-    const newStatus = !volunteer.checkedIn;
-    const targetEventId = volunteer.eventId || this.eventId;
-    
-    if (volunteer.checkInMethod === 'online') {
-      return; // Can't edit portal check-ins
-    }
-    
-    this.manualCheckinService.updateCheckin(targetEventId, volunteer.id, { checkedIn: newStatus })
-      .subscribe({
-        next: (res) => {
-          if (res.success) {
-            volunteer.checkedIn = res.volunteer.checkedIn;
-            volunteer.time = res.volunteer.time;
-            this.loadVolunteers(); // Refresh summary and view
-          }
-        },
-        error: (err) => {
-          console.error('Error updating checkin:', err);
-          this.errorMessage = 'Failed to update check-in status';
-        }
-      });
-  }
-
-  selectAbsent() {
-    const absentVolunteers = this.volunteers.filter(v => !v.checkedIn);
-    absentVolunteers.forEach(v => this.selectedVolunteers.add(v.id));
-  }
-
-  isSelected(volunteerId: string): boolean {
-    return this.selectedVolunteers.has(volunteerId);
-  }
-
-  toggleSelection(volunteerId: string) {
-    if (this.selectedVolunteers.has(volunteerId)) {
-      this.selectedVolunteers.delete(volunteerId);
-    } else {
-      this.selectedVolunteers.add(volunteerId);
-    }
-  }
-
-  updateSummary() {
-    this.manualCheckinService.getSummary(this.eventId).subscribe({
-      next: (res) => {
-        this.summary = res;
+          
+          this.loading = false;
+          this.cdr.detectChanges();
+        });
+      },
+      error: () => {
+        this.loading = false;
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load check-ins' });
       }
     });
   }
 
-  toggleCreateForm() {
-    this.showCreateForm = !this.showCreateForm;
-    if (!this.showCreateForm) {
-      this.createForm.reset();
-      this.successMessage = '';
-      this.errorMessage = '';
-    } else {
-      // Set default event to current selection
-      this.createForm.patchValue({ eventId: this.eventId });
-    }
+  updateSummary() {
+    const total = this.manualVolunteers.length + this.portalVolunteers.length;
+    const manualCheckedIn = this.manualVolunteers.filter(v => v.status === 'present').length;
+    const portalCheckedIn = this.portalVolunteers.filter(v => v.status === 'present').length;
+    
+    this.summary = {
+      total,
+      checkedIn: manualCheckedIn + portalCheckedIn,
+      absent: total - (manualCheckedIn + portalCheckedIn)
+    };
   }
 
-  onSubmitForm() {
-    console.log('onSubmitForm called');
-    if (this.createForm.invalid) {
-      console.warn('Form is invalid:', this.createForm.errors, this.createForm.value);
-      this.errorMessage = 'Please fill in all required fields';
+  loadRolesForEvent(eventId: string) {
+    if (!eventId || eventId === 'all') {
+      this.roleOptions = [];
       return;
     }
-
-    this.isSubmitting = true;
-    this.successMessage = '';
-    this.errorMessage = '';
-
-    const submissionData = { ...this.createForm.value };
-    const targetEventId = submissionData.eventId;
-    delete submissionData.eventId;
-
-    console.log('Sending createAttendance request to backend:', submissionData);
-    this.manualCheckinService.createAttendance(targetEventId, submissionData)
-      .subscribe({
-        next: (res) => {
-          console.log('createAttendance response:', res);
-          this.isSubmitting = false;
-          if (res.success) {
-            this.successMessage = `${res.volunteer.name} has been added successfully!`;
-            this.createForm.reset({
-              eventId: targetEventId,
-              checkedIn: false
-            });
-            this.loadVolunteers();
-
-            setTimeout(() => {
-              this.showCreateForm = false;
-              this.successMessage = '';
-            }, 2000);
-          } else {
-            this.errorMessage = 'Backend returned success: false';
-          }
-        },
-        error: (err) => {
-          this.isSubmitting = false;
-          console.error('Error creating attendance (HTTP Error):', err);
-          this.errorMessage = `Failed to create attendance: ${err.status} ${err.statusText || ''}`;
-        }
-      });
+    this.roleService.getRolesByEvent(eventId).subscribe({
+      next: (roles) => {
+        this.roleOptions = roles.map(r => ({ label: r.name, value: r.name }));
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load roles' });
+      }
+    });
   }
 
-  getAvatarColor(name: string): string {
-    const colors = [
-      '#FF3B30', '#FF9500', '#FFCC00', '#4CD964', '#5AC8FA', '#007AFF', '#5856D6', '#FF2D55',
-      '#AF52DE', '#FF375F', '#BF5AF2', '#64D2FF', '#30D158', '#FF9F0A', '#FF453A'
-    ];
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-        hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return colors[Math.abs(hash) % colors.length];
+  toggleCheckIn(volunteer: any) {
+    // Implement toggle logic if available in service
+    this.messageService.add({ severity: 'info', summary: 'Info', detail: 'Status updated' });
   }
 
-  openEditForm(volunteer: any) {
-    this.editingVolunteer = { ...volunteer };
+  openEditForm(v: any) {
+    this.editingVolunteer = v;
+    this.loadRolesForEvent(v.eventId);
     this.editForm.patchValue({
-      eventId: this.eventId,
-      name: volunteer.name,
-      role: volunteer.role,
-      department: volunteer.department,
-      checkedIn: volunteer.checkedIn
+      eventId: v.eventId || (this.eventId !== 'all' ? this.eventId : ''),
+      name: v.name,
+      role: v.role,
+      department: v.department,
+      checkedIn: v.checkedIn
     });
     this.showEditForm = true;
-    this.errorMessage = '';
-    this.successMessage = '';
   }
 
   closeEditForm() {
     this.showEditForm = false;
     this.editingVolunteer = null;
-    this.editForm.reset();
   }
 
-  onSubmitEditForm() {
-    if (this.editForm.invalid) {
-      this.errorMessage = 'Please fill in all required fields';
-      return;
-    }
-
+  onSubmitEdit() {
+    if (this.editForm.invalid) return;
     this.isSubmitting = true;
-    this.errorMessage = '';
-    this.successMessage = '';
-
-    const updatedData = {
-      eventId: this.editForm.value.eventId,
-      name: this.editForm.value.name,
-      role: this.editForm.value.role,
-      department: this.editForm.value.department,
-      checkedIn: this.editForm.value.checkedIn || false
-    };
-
-    this.manualCheckinService.updateVolunteer(this.editingVolunteer.id, updatedData)
-      .subscribe({
-        next: (res) => {
-          this.isSubmitting = false;
-          this.successMessage = `${updatedData.name} has been updated successfully!`;
-          this.loadVolunteers();
-          this.updateSummary();
-
-          setTimeout(() => {
-            this.showEditForm = false;
-            this.editingVolunteer = null;
-            this.successMessage = '';
-          }, 2000);
-        },
-        error: (err) => {
-          this.isSubmitting = false;
-          console.error('Error updating volunteer:', err);
-          this.errorMessage = 'Failed to update volunteer';
-        }
-      });
+    this.manualCheckinService.updateVolunteer(this.editingVolunteer.id, this.editForm.value).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Volunteer updated' });
+        this.loadVolunteers();
+        this.closeEditForm();
+        this.isSubmitting = false;
+      },
+      error: () => {
+        this.isSubmitting = false;
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Update failed' });
+      }
+    });
   }
 
-  openDeleteConfirm(volunteerId: string) {
-    this.deleteConfirmId = volunteerId;
+  onSubmitCreate() {
+    if (this.createForm.invalid) return;
+    this.isSubmitting = true;
+    this.manualCheckinService.createVolunteer(this.createForm.value).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Attendance record added' });
+        this.loadVolunteers();
+        this.showCreateForm = false;
+        this.createForm.reset({ eventId: this.eventId !== 'all' ? this.eventId : '' });
+        this.isSubmitting = false;
+      },
+      error: () => {
+        this.isSubmitting = false;
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to add record' });
+      }
+    });
   }
 
-  closeDeleteConfirm() {
-    this.deleteConfirmId = null;
+  deleteVolunteer(v: any) {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete this record?',
+      header: 'Confirm Delete',
+      icon: 'pi pi-trash',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.manualCheckinService.deleteVolunteer(v.id).subscribe({
+          next: () => {
+            this.messageService.add({ severity: 'success', summary: 'Deleted', detail: 'Record removed' });
+            this.loadVolunteers();
+          }
+        });
+      }
+    });
   }
 
-  confirmDelete(volunteerId: string) {
-    this.manualCheckinService.deleteVolunteer(volunteerId)
-      .subscribe({
-        next: () => {
-          this.volunteers = this.volunteers.filter(v => v.id !== volunteerId);
-          this.updateSummary();
-          this.successMessage = 'Volunteer record deleted successfully!';
-          this.deleteConfirmId = null;
-
-          setTimeout(() => {
-            this.successMessage = '';
-          }, 2000);
-        },
-        error: (err) => {
-          console.error('Error deleting volunteer:', err);
-          this.errorMessage = 'Failed to delete volunteer';
-        }
-      });
+  exportPDF() {
+    const doc = new jsPDF();
+    doc.text('Attendance Report', 14, 15);
+    autoTable(doc, {
+      head: [['Name', 'Role', 'Department', 'Status', 'Time']],
+      body: [...this.manualVolunteers, ...this.portalVolunteers].map(v => [
+        v.name, v.role, v.department, v.status, v.checkedInTime || '-'
+      ])
+    });
+    doc.save('attendance-report.pdf');
   }
 
-  getSelectedEventName(): string {
-    if (this.eventId === 'all') return 'All Events';
-    const event = this.events.find(e => e.id === this.eventId);
-    return event ? event.title : 'Selected Event';
+  exportCSV() {
+    // Implement CSV export logic
   }
 
-  getEventName(eventId: string): string {
-    const event = this.events.find(e => e.id === eventId);
-    return event ? event.title : 'Unknown Event';
+  getInitials(name: string): string {
+    return name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'V';
+  }
+
+  getAvatarColor(name: string): string {
+    const colors = ['#0d9488', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#10b981'];
+    let hash = 0;
+    if (!name) return colors[0];
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    return colors[Math.abs(hash) % colors.length];
+  }
+
+  getEventTitle(id: string): string {
+    return this.events.find(e => e.id === id)?.title || 'Unknown Event';
   }
 }

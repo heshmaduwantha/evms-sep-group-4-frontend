@@ -1,55 +1,49 @@
-<div class="detail-container" *ngIf="volunteer">
+<div class="volunteer-detail-page" *ngIf="volunteer">
+  <div class="detail-card shadow-soft">
+    <div class="card-header">
+      <button class="btn-back-link" routerLink="/volunteers">
+        <i class="pi pi-arrow-left"></i> Back to Volunteers
+      </button>
+      <h2 class="card-title">Volunteer Profile</h2>
+    </div>
 
-  <h2>Volunteer Details</h2>
+    <div class="profile-hero">
+      <div class="avatar-large" [style.background]="getAvatarColor(volunteer.name)">
+        {{ getInitials(volunteer.name) }}
+      </div>
+      <div class="hero-info">
+        <h1 class="vol-name">{{ volunteer.name }}</h1>
+        <div class="vol-status-badge" [class]="volunteer.status || 'active'">
+          {{ (volunteer.status || 'Active') | titlecase }}
+        </div>
+      </div>
+    </div>
 
-  <!-- Avatar -->
-  <div class="avatar">
-    {{ volunteer.name.charAt(0).toUpperCase() }}
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="info-label"><i class="pi pi-envelope"></i> Email Address</span>
+        <span class="info-value">{{ volunteer.email }}</span>
+      </div>
+      
+      <div class="info-item">
+        <span class="info-label"><i class="pi pi-phone"></i> Phone Number</span>
+        <span class="info-value">{{ volunteer.phone || 'Not provided' }}</span>
+      </div>
+      
+      <div class="info-item">
+        <span class="info-label"><i class="pi pi-briefcase"></i> Role / Skills</span>
+        <span class="info-value skills-tag">{{ volunteer.skills || 'General Volunteer' }}</span>
+      </div>
+      
+      <div class="info-item">
+        <span class="info-label"><i class="pi pi-clock"></i> Availability</span>
+        <span class="info-value">{{ volunteer.availability || 'Weekdays & Weekends' }}</span>
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <button pButton label="Edit Volunteer Details" icon="pi pi-pencil" 
+              class="p-button-primary" [routerLink]="['/volunteers/edit', volunteer.id]"></button>
+    </div>
   </div>
-
-  <!-- Info -->
-  <div class="detail-row">
-    <span class="label">Name</span>
-    <span class="value">{{ volunteer.name }}</span>
-  </div>
-
-  <div class="detail-row">
-    <span class="label">Email</span>
-    <span class="value">{{ volunteer.email }}</span>
-  </div>
-
-  <div class="detail-row">
-    <span class="label">Skills</span>
-    <span class="value">{{ volunteer.skills }}</span>
-  </div>
-
-  <div class="detail-row">
-    <span class="label">Availability</span>
-    <span class="value">{{ volunteer.availability }}</span>
-  </div>
-
-  <!-- Status -->
-  <div class="detail-row">
-    <span class="label">Status</span>
-    <span class="status-badge"
-          [ngClass]="volunteer.status === 'active' ? 'active' : 'inactive'">
-
-      {{ volunteer.status | titlecase }}
-
-    </span>
-  </div>
-
-  <!-- Actions -->
-  <div class="actions">
-    <button routerLink="/volunteers" class="btn-back">Back</button>
-
-    <button *ngIf="true"
-            [routerLink]="['/volunteers/edit', volunteer.id]"
-            class="btn-edit">
-
-      Edit
-
-    </button>
-  </div>
-
 </div>

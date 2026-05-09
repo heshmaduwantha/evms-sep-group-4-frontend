@@ -1,67 +1,16 @@
 <div class="reports-container">
 
-  <!-- Header -->
-  <div class="header-section">
-    <div>
-      <h1 class="page-title">Attendance Reports</h1>
-      <p class="page-subtitle">Analyze and export attendance data</p>
-    </div>
-    <div class="export-buttons">
-      <button class="btn-export pdf" (click)="exportPDF()">
-        <i class="pi pi-file-pdf"></i>
-        Export PDF
-        <i class="pi pi-download"></i>
-      </button>
-      <button class="btn-export csv" (click)="exportCSV()">
-        <i class="pi pi-file-excel"></i>
-        Export CSV
-        <i class="pi pi-download"></i>
-      </button>
-    </div>
-  </div>
-
-  <!-- Filters -->
-  <div class="filters-section">
-    <span class="filter-label">
-      <i class="pi pi-filter"></i>
-      Filters:
-    </span>
-    <select class="filter-select" [(ngModel)]="eventId" (change)="onEventChange()">
-      <option value="" disabled>Select Event</option>
-      <option *ngFor="let event of events" [value]="event.id">
-        {{ event.title }}
-      </option>
-    </select>
-
-    <select class="filter-select" [(ngModel)]="filters.status" (change)="onFilterChange()">
-      <option *ngFor="let opt of statusOptions" [value]="opt.value">
-        {{ opt.label }}
-      </option>
-    </select>
-
-    <select class="filter-select" [(ngModel)]="filters.department" (change)="onFilterChange()">
-      <option *ngFor="let opt of departmentOptions" [value]="opt.value">
-        {{ opt.label }}
-      </option>
-    </select>
-
-    <div class="date-picker">
-      <input type="date" [(ngModel)]="filters.date" (change)="onFilterChange()" class="date-input">
-    </div>
-  </div>
-
-  <div class="content-wrapper">
-    <!-- Main Content -->
-    <div class="main-content">
-      <!-- Attendance Records Table -->
-      <div class="records-section">
-        <div class="records-header">
-          <h2 class="section-title">Attendance Records</h2>
-          <span class="record-count">{{ totalRecords }} records</span>
+    <!-- Header Card -->
+    <div class="header-card">
+        <div>
+            <h1>Attendance Reports</h1>
+            <p class="page-subtitle">Analyze and export attendance data</p>
         </div>
-        <div class="export-actions flex gap-3">
-            <button pButton label="Export PDF" icon="pi pi-file-pdf" class="p-button-rounded p-button-outlined p-button-secondary" (click)="exportPDF()"></button>
-            <button pButton label="Export CSV" icon="pi pi-file-excel" class="p-button-rounded p-button-outlined p-button-secondary" (click)="exportCSV()"></button>
+        <div class="header-actions">
+            <div class="export-btns flex gap-2">
+                <button pButton icon="pi pi-file-pdf" label="Export PDF" class="p-button-danger p-button-sm" (click)="exportPDF()"></button>
+                <button pButton icon="pi pi-file-excel" label="Export CSV" class="p-button-success p-button-sm" (click)="exportCSV()"></button>
+            </div>
         </div>
     </div>
 
@@ -70,26 +19,26 @@
         <div class="flex flex-wrap gap-4 align-items-center">
             <div class="filter-group">
                 <label class="block text-xs font-bold text-500 mb-2 uppercase tracking-wider">Target Event</label>
-                <p-dropdown [options]="events" [(ngModel)]="eventId" optionLabel="title" optionValue="id" 
-                    placeholder="All Events" [showClear]="true" (onChange)="onEventChange()" styleClass="premium-dropdown"></p-dropdown>
+                <p-select [options]="events" [(ngModel)]="eventId" optionLabel="title" optionValue="id" 
+                    placeholder="All Events" [showClear]="true" (onChange)="onEventChange()" styleClass="premium-dropdown" appendTo="body"></p-select>
             </div>
 
             <div class="filter-group">
                 <label class="block text-xs font-bold text-500 mb-2 uppercase tracking-wider">Attendance Status</label>
-                <p-dropdown [options]="statusOptions" [(ngModel)]="filters.status" 
-                    (onChange)="onFilterChange()" styleClass="premium-dropdown"></p-dropdown>
+                <p-select [options]="statusOptions" [(ngModel)]="filters.status" 
+                    (onChange)="onFilterChange()" styleClass="premium-dropdown" appendTo="body"></p-select>
             </div>
 
             <div class="filter-group">
                 <label class="block text-xs font-bold text-500 mb-2 uppercase tracking-wider">Department</label>
-                <p-dropdown [options]="departmentOptions" [(ngModel)]="filters.department" 
-                    (onChange)="onFilterChange()" styleClass="premium-dropdown"></p-dropdown>
+                <p-select [options]="departmentOptions" [(ngModel)]="filters.department" 
+                    (onChange)="onFilterChange()" styleClass="premium-dropdown" appendTo="body"></p-select>
             </div>
 
             <div class="filter-group">
                 <label class="block text-xs font-bold text-500 mb-2 uppercase tracking-wider">Date Range</label>
-                <p-calendar [(ngModel)]="filters.date" (onSelect)="onFilterChange()" 
-                    placeholder="Select Date" [showIcon]="true" styleClass="premium-calendar" appendTo="body"></p-calendar>
+                <p-datepicker [(ngModel)]="filters.date" (onSelect)="onFilterChange()" 
+                    placeholder="Select Date" [showIcon]="true" styleClass="premium-calendar" appendTo="body"></p-datepicker>
             </div>
 
             <div class="filter-group align-self-end pb-1">

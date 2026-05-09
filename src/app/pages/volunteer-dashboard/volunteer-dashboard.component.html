@@ -1,0 +1,133 @@
+<div class="dashboard-container">
+    <div class="header-row">
+        <div class="welcome-msg">
+            @if (authService.currentUser | async; as user) {
+                <h1>Hello, {{ user.name || user.email.split('@')[0] }}! 👋</h1>
+                <p>Ready to make an impact today?</p>
+            }
+        </div>
+    </div>
+
+    <!-- Colorful Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card applications">
+            <div class="stat-header">
+                <span class="stat-label">My Applications</span>
+                <i class="pi pi-file-edit"></i>
+            </div>
+            <ng-container *ngIf="!loading; else skeletonVal">
+                <span class="stat-value">{{ stats[0].value }}</span>
+            </ng-container>
+            <ng-template #skeletonVal>
+                <p-skeleton width="3rem" height="2.5rem" styleClass="mt-2"></p-skeleton>
+            </ng-template>
+        </div>
+
+        <div class="stat-card events">
+            <div class="stat-header">
+                <span class="stat-label">Available Events</span>
+                <i class="pi pi-calendar"></i>
+            </div>
+            <ng-container *ngIf="!loading; else skeletonVal2">
+                <span class="stat-value">{{ stats[1].value }}</span>
+            </ng-container>
+            <ng-template #skeletonVal2>
+                <p-skeleton width="3rem" height="2.5rem" styleClass="mt-2"></p-skeleton>
+            </ng-template>
+        </div>
+
+        <div class="stat-card hours">
+            <div class="stat-header">
+                <span class="stat-label">Volunteer Hours</span>
+                <i class="pi pi-clock"></i>
+            </div>
+            <ng-container *ngIf="!loading; else skeletonVal3">
+                <span class="stat-value">{{ stats[2].value }}</span>
+            </ng-container>
+            <ng-template #skeletonVal3>
+                <p-skeleton width="3rem" height="2.5rem" styleClass="mt-2"></p-skeleton>
+            </ng-template>
+        </div>
+    </div>
+
+    <!-- Content Sections -->
+    <div class="content-sections">
+        <!-- Available Events -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2><i class="pi pi-calendar" style="color:#3b82f6; margin-right:0.5rem"></i>Available Events</h2>
+                <a routerLink="/events" class="view-all">Find more <i class="pi pi-chevron-right"></i></a>
+            </div>
+
+            <div class="events-list">
+                <ng-container *ngIf="!loading; else skeletonEvents">
+                    <div class="event-item" *ngFor="let event of upcomingEvents">
+                        <div class="event-info">
+                            <div class="event-icon">
+                                <i class="pi pi-calendar"></i>
+                            </div>
+                            <div>
+                                <span class="event-title">{{ event.title }}</span>
+                                <span class="event-date">{{ event.date | date:'MMM d, yyyy' }} • {{ event.location }}</span>
+                            </div>
+                        </div>
+                        <p-tag [value]="event.status" [severity]="getStatusSeverity(event.status)"></p-tag>
+                        <button pButton label="View Details" class="p-button-text p-button-sm" [routerLink]="['/events', event.id]"></button>
+                    </div>
+                    <div *ngIf="upcomingEvents.length === 0" class="empty-state">
+                        <i class="pi pi-calendar-times"></i>
+                        <p>No upcoming events right now.</p>
+                    </div>
+                </ng-container>
+                <ng-template #skeletonEvents>
+                    <div class="event-item" *ngFor="let i of [1,2,3]">
+                        <p-skeleton shape="circle" size="2.5rem" styleClass="mr-2"></p-skeleton>
+                        <div style="flex: 1">
+                            <p-skeleton width="60%" styleClass="mb-2"></p-skeleton>
+                            <p-skeleton width="40%"></p-skeleton>
+                        </div>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+
+        <!-- My Applications -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2><i class="pi pi-file-edit" style="color:#8b5cf6; margin-right:0.5rem"></i>My Applications</h2>
+                <a routerLink="/my-applications" class="view-all">View all <i class="pi pi-chevron-right"></i></a>
+            </div>
+
+            <div class="apps-list">
+                <ng-container *ngIf="!loading; else skeletonApps">
+                    <div class="app-item" *ngFor="let app of myApplications">
+                        <div class="app-info">
+                            <div class="event-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                                <i class="pi pi-file-edit"></i>
+                            </div>
+                            <div>
+                                <span class="event-title">{{ app.event?.title || 'General Application' }}</span>
+                                <span class="event-date">Applied on {{ app.appliedDate | date:'MMM d' }}</span>
+                            </div>
+                        </div>
+                        <p-tag [value]="app.status" [severity]="getStatusSeverity(app.status)"></p-tag>
+                    </div>
+                    <div *ngIf="myApplications.length === 0" class="empty-state">
+                        <i class="pi pi-inbox"></i>
+                        <p>No applications yet. Explore events!</p>
+                        <button pButton label="Browse Events" icon="pi pi-search" routerLink="/events" class="p-button-sm p-button-outlined" style="margin-top: 0.5rem"></button>
+                    </div>
+                </ng-container>
+                <ng-template #skeletonApps>
+                    <div class="app-item" *ngFor="let i of [1,2]">
+                        <div style="flex: 1">
+                            <p-skeleton width="70%" styleClass="mb-2"></p-skeleton>
+                            <p-skeleton width="30%"></p-skeleton>
+                        </div>
+                        <p-skeleton width="4rem" height="1.5rem"></p-skeleton>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</div>

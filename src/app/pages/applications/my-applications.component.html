@@ -153,28 +153,28 @@
                 <h3 class="m-0 text-primary">{{ selectedEvent.title }}</h3>
             </div>
 
-            <div class="grid">
-                <div class="col-12 md:col-6 field">
+            <div class="form-grid">
+                <div class="form-field">
                     <label for="location">Where are you from?</label>
                     <input pInputText id="location" [(ngModel)]="form.location" placeholder="City, Country" class="premium-input"/>
                 </div>
-                <div class="col-12 md:col-6 field">
+                <div class="form-field">
                     <label for="gender">Gender</label>
-                    <p-dropdown [options]="genderOptions" [(ngModel)]="form.gender" placeholder="Select Gender" styleClass="premium-dropdown"></p-dropdown>
+                    <p-select [options]="genderOptions" [(ngModel)]="form.gender" placeholder="Select Gender" styleClass="premium-dropdown" appendTo="body"></p-select>
                 </div>
             </div>
 
-            <div class="field mt-3">
+            <div class="form-field">
                 <label for="motivation">Why are you interested in this event?</label>
                 <textarea pInputTextarea id="motivation" rows="3" [(ngModel)]="form.motivation" placeholder="Share your motivation..." class="premium-input"></textarea>
             </div>
 
-            <div class="field mt-3">
+            <div class="form-field">
                 <label for="experienceDetails">Tell us more about your background</label>
                 <textarea pInputTextarea id="experienceDetails" rows="3" [(ngModel)]="form.experienceDetails" placeholder="Relevant achievements, roles, etc." class="premium-input"></textarea>
             </div>
 
-            <div class="field mt-3">
+            <div class="form-field">
                 <label for="skills">Key Skills & Experience</label>
                 <input pInputText id="skills" [(ngModel)]="form.skills" placeholder="Yoga, Teaching, Logistics, etc." class="premium-input"/>
             </div>

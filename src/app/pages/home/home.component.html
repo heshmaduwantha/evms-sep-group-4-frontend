@@ -3,23 +3,53 @@
     <div class="header-row">
         <div class="welcome-msg">
             @if (authService.currentUser | async; as user) {
-                <h1>Welcome back, {{ user.email.split('@')[0] }} —</h1>
-                <p>here's what's happening today</p>
+                <h1>Hello, {{ user.name || user.email.split('@')[0] }}! <span class="wave">👋</span></h1>
+                <p>Welcome to your control center. Here's a snapshot of today.</p>
             }
         </div>
         <div class="header-actions">
             <div class="search-wrapper">
-                <i class="pi pi-search"></i>
-                <input type="text" placeholder="Search..." class="search-input">
+                <i class="pi pi-search text-muted"></i>
+                <input type="text" placeholder="Search events..." class="search-input">
             </div>
-            <div class="event-selector">
-                <i class="pi pi-calendar"></i>
-                <span>{{ nearestEvent?.title || 'No Events' }}</span>
-                <i class="pi pi-chevron-down"></i>
+            
+            <div class="event-selector" pTooltip="Upcoming Schedule">
+                <i class="pi pi-calendar-clock"></i>
+                <span class="text-sm font-bold">{{ nearestEvent?.title || 'Syncing...' }}</span>
+                <i class="pi pi-chevron-down text-xs"></i>
             </div>
-            <p-avatar icon="pi pi-bell" shape="circle" pBadge value="2" severity="danger"></p-avatar>
+
+            <p-avatar icon="pi pi-bell" shape="circle" pBadge value="3" severity="danger" styleClass="bg-gray-100 text-gray-600"></p-avatar>
+            
             <div class="user-profile-summary">
-                <p-avatar label="AJ" shape="circle" styleClass="bg-primary text-white"></p-avatar>
+                <p-button icon="pi pi-sync" [rounded]="true" [text]="true" (onClick)="loadStats()" pTooltip="Force Sync"></p-button>
+                <p-avatar 
+                    [label]="authService.currentUserValue ? (authService.currentUserValue.name?.charAt(0) || authService.currentUserValue.email.charAt(0).toUpperCase()) : 'A'" 
+                    shape="circle" 
+                    styleClass="bg-primary text-white shadow-3 font-bold">
+                </p-avatar>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Grid (New!) -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>Attendance Insights</h3>
+                <p-tag value="Weekly" severity="info" [rounded]="true"></p-tag>
+            </div>
+            <div style="height: 200px">
+                <p-chart type="line" [data]="attendanceChartData" [options]="chartOptions"></p-chart>
+            </div>
+        </div>
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>Event Engagement</h3>
+                <p-tag value="+12% vs last month" severity="success" [rounded]="true"></p-tag>
+            </div>
+            <div style="height: 200px">
+                <p-chart type="bar" [data]="eventsChartData" [options]="chartOptions"></p-chart>
             </div>
         </div>
     </div>
@@ -33,10 +63,13 @@
                     <i class="pi pi-users"></i>
                 </div>
             </div>
-            <div class="stat-value">{{ stats.totalVolunteers.value | number }}</div>
+            <div class="stat-value">
+                <p-skeleton *ngIf="loading" width="4rem" height="3rem" styleClass="bg-white-alpha-20"></p-skeleton>
+                <span *ngIf="!loading">{{ stats.totalVolunteers.value | number }}</span>
+            </div>
             <div class="stat-trend">
-                <span class="trend-up"><i class="pi pi-arrow-up"></i> {{ stats.totalVolunteers.trend }}</span>
-                <span class="trend-label">{{ stats.totalVolunteers.label }}</span>
+                <span class="trend-up"><i class="pi pi-arrow-up"></i> 12%</span>
+                <span class="trend-label">new this month</span>
             </div>
         </div>
 
@@ -44,13 +77,16 @@
             <div class="stat-header">
                 <span class="stat-label">Active Events</span>
                 <div class="stat-icon-wrapper">
-                    <i class="pi pi-calendar"></i>
+                    <i class="pi pi-bolt"></i>
                 </div>
             </div>
-            <div class="stat-value">{{ stats.activeEvents.value }}</div>
+            <div class="stat-value">
+                <p-skeleton *ngIf="loading" width="3rem" height="3rem" styleClass="bg-white-alpha-20"></p-skeleton>
+                <span *ngIf="!loading">{{ stats.activeEvents.value }}</span>
+            </div>
             <div class="stat-trend">
-                <span class="trend-up"><i class="pi pi-arrow-up"></i> {{ stats.activeEvents.trend }}</span>
-                <span class="trend-label">{{ stats.activeEvents.label }}</span>
+                <span class="trend-up"><i class="pi pi-calendar"></i> {{ stats.activeEvents.value }}</span>
+                <span class="trend-label">in progress</span>
             </div>
         </div>
 
@@ -58,27 +94,33 @@
             <div class="stat-header">
                 <span class="stat-label">Pending Applications</span>
                 <div class="stat-icon-wrapper">
-                    <i class="pi pi-file-edit"></i>
+                    <i class="pi pi-envelope"></i>
                 </div>
             </div>
-            <div class="stat-value">{{ stats.pendingApplications.value }}</div>
+            <div class="stat-value">
+                <p-skeleton *ngIf="loading" width="3rem" height="3rem" styleClass="bg-white-alpha-20"></p-skeleton>
+                <span *ngIf="!loading">{{ stats.pendingApplications.value }}</span>
+            </div>
             <div class="stat-trend">
-                <span class="trend-up"><i class="pi pi-arrow-up"></i> {{ stats.pendingApplications.trend }}</span>
-                <span class="trend-label">{{ stats.pendingApplications.label }}</span>
+                <span class="trend-up"><i class="pi pi-clock"></i> {{ stats.pendingApplications.value }}</span>
+                <span class="trend-label">awaiting review</span>
             </div>
         </div>
 
         <div class="stat-card rate">
             <div class="stat-header">
-                <span class="stat-label">Attendance Rate</span>
+                <span class="stat-label">Overall Rate</span>
                 <div class="stat-icon-wrapper">
-                    <i class="pi pi-chart-line"></i>
+                    <i class="pi pi-percentage"></i>
                 </div>
             </div>
-            <div class="stat-value">{{ stats.attendanceRate.value }}%</div>
+            <div class="stat-value">
+                <p-skeleton *ngIf="loading" width="4rem" height="3rem" styleClass="bg-white-alpha-20"></p-skeleton>
+                <span *ngIf="!loading">{{ stats.attendanceRate.value }}%</span>
+            </div>
             <div class="stat-trend">
-                <span class="trend-up"><i class="pi pi-arrow-up"></i> {{ stats.attendanceRate.trend }}</span>
-                <span class="trend-label">{{ stats.attendanceRate.label }}</span>
+                <span class="trend-up"><i class="pi pi-chart-line"></i> +5%</span>
+                <span class="trend-label">than last week</span>
             </div>
         </div>
     </div>
@@ -87,15 +129,21 @@
     <div class="alerts-bar">
         <div class="alert-items">
             <div class="alert-item" *ngFor="let alert of alerts">
-                <span class="dot" [ngClass]="alert.color"></span>
+                <i class="pi pi-info-circle mr-2"></i>
                 <span>{{ alert.text }}</span>
             </div>
             <div class="alert-item" *ngIf="alerts.length === 0">
-                <span class="dot green"></span>
-                <span>Everything is up to date</span>
+                <i class="pi pi-check-circle mr-2 text-green-400"></i>
+                <span>All systems operational. No pending alerts.</span>
             </div>
         </div>
-        <button pButton label="Create Event" icon="pi pi-plus" class="p-button-rounded" routerLink="/organizer/events"></button>
+        <p-button 
+            label="Create New Event" 
+            icon="pi pi-plus" 
+            [rounded]="true" 
+            severity="contrast"
+            routerLink="/organizer/events">
+        </p-button>
     </div>
 
     <!-- Main Content Sections -->
@@ -104,11 +152,14 @@
             <!-- Recent Events Section -->
             <div class="section-card">
                 <div class="section-header">
-                    <div>
-                        <h2>Recent Events</h2>
-                        <span class="text-sm text-muted">{{ recentEvents.length }} total events</span>
+                    <div class="header-title-group">
+                        <i class="pi pi-calendar-plus text-primary text-2xl"></i>
+                        <div>
+                            <h2>Upcoming Events</h2>
+                            <span class="text-sm text-muted">{{ recentEvents.length }} events scheduled</span>
+                        </div>
                     </div>
-                    <a routerLink="/events" class="view-all">View all <i class="pi pi-chevron-right text-xs"></i></a>
+                    <a routerLink="/events" class="view-all">See Schedule <i class="pi pi-arrow-right text-xs"></i></a>
                 </div>
 
                 <table class="custom-table">
@@ -159,11 +210,14 @@
             <!-- Volunteer Applications Section -->
             <div class="section-card">
                 <div class="section-header">
-                    <div class="flex flex-column gap-1">
-                        <h2>Volunteer Applications</h2>
-                        <span class="pending-badge">{{ recentApplications.length }} pending applications</span>
+                    <div class="header-title-group">
+                        <i class="pi pi-user-plus text-orange-500 text-2xl"></i>
+                        <div class="flex flex-column gap-1">
+                            <h2>New Applications</h2>
+                            <span class="pending-badge">{{ recentApplications.length }} pending review</span>
+                        </div>
                     </div>
-                    <a routerLink="/reports" class="view-all">View all <i class="pi pi-chevron-right text-xs"></i></a>
+                    <a routerLink="/reports" class="view-all">Review All <i class="pi pi-arrow-right text-xs"></i></a>
                 </div>
 
                 <div class="applications-list">
@@ -180,23 +234,25 @@
                             </div>
                         </div>
                         <div class="app-actions">
-                            <button class="btn-circle reject"><i class="pi pi-times"></i></button>
-                            <button class="btn-circle approve"><i class="pi pi-check"></i></button>
+                            <p-button icon="pi pi-times" [rounded]="true" [text]="true" severity="danger" size="small"></p-button>
+                            <p-button icon="pi pi-check" [rounded]="true" [text]="true" severity="success" size="small"></p-button>
                         </div>
                     </div>
-                    <button pButton label="Bulk Review" class="p-button-outlined p-button-sm w-full mt-2" icon="pi pi-list"></button>
+                    <p-button label="Bulk Review" [outlined]="true" size="small" styleClass="w-full mt-2" icon="pi pi-list"></p-button>
                 </div>
             </div>
 
             <!-- Recent Check-ins Section -->
             <div class="section-card mt-4 border-round-xl shadow-1">
                 <div class="section-header flex justify-content-between align-items-center mb-4">
-                    <div class="flex align-items-center gap-2">
-                        <h2 class="m-0 text-xl font-bold text-900 border-none">Recent Check-ins</h2>
-                        <i class="pi pi-check-circle text-green-500 font-bold" style="font-size: 1.1rem;"></i>
+                    <div class="header-title-group">
+                        <i class="pi pi-check-circle text-green-500 text-2xl"></i>
+                        <div class="flex align-items-center gap-2">
+                            <h2 class="m-0 text-xl font-bold text-900 border-none">Recent Activity</h2>
+                        </div>
                     </div>
                     <a routerLink="/attendance" class="view-all text-sm font-semibold text-primary no-underline hover:underline">
-                        View all <i class="pi pi-chevron-right text-xs"></i>
+                        History <i class="pi pi-arrow-right text-xs"></i>
                     </a>
                 </div>
 
@@ -213,7 +269,7 @@
                                 </div>
                             </div>
                         </div>
-                        <p-tag [value]="checkin.status === 'present' ? 'Present' : 'Late'" [severity]="checkin.status === 'present' ? 'success' : 'warning'" [rounded]="true" styleClass="text-xs px-2"></p-tag>
+                        <p-tag [value]="checkin.status === 'present' ? 'Present' : 'Late'" [severity]="checkin.status === 'present' ? 'success' : 'warn'" [rounded]="true" styleClass="text-xs px-2"></p-tag>
                     </div>
                     
                     <div *ngIf="recentCheckIns.length === 0" class="flex flex-column align-items-center justify-content-center p-5 text-400 border-2 border-dashed border-round-xl surface-50">

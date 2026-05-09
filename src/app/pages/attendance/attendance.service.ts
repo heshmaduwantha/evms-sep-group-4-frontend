@@ -1,14 +1,25 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AttendanceService {
-  private apiUrl = 'http://localhost:3100/attendance';
+  private apiUrl = `${environment.apiUrl}/attendance`;
+  
+  private attendanceStatsSubject = new BehaviorSubject<any>(null);
+  public attendanceStats$ = this.attendanceStatsSubject.asObservable();
 
   constructor(private http: HttpClient) { }
+
+  refreshAttendanceOverview(eventId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/overview/${eventId}`).pipe(
+      tap(stats => this.attendanceStatsSubject.next(stats))
+    );
+  }
 
   getAttendanceOverview(eventId: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/overview/${eventId}`);
@@ -23,7 +34,9 @@ export class AttendanceService {
   }
 
   checkIn(eventId: string, data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/check-in/${eventId}`, data);
+    return this.http.post(`${this.apiUrl}/check-in/${eventId}`, data).pipe(
+      tap(() => this.refreshAttendanceOverview(eventId).subscribe())
+    );
   }
 
   getVolunteerCount(): Observable<number> {
@@ -42,3 +55,4 @@ export class AttendanceService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }
+

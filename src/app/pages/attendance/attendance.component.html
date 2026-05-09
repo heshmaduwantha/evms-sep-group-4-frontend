@@ -8,51 +8,71 @@
   </div>
 
   <!-- Header Section -->
-  <div class="header-section">
-    <div class="title-wrap">
-      <h1 class="page-title">Attendance Overview</h1>
-      <p class="page-subtitle">Real-time participation metrics and volunteer management.</p>
+  <div class="header-card">
+    <div>
+      <h1>Attendance Overview</h1>
+      <p class="page-subtitle">Real-time volunteer tracking and analytics</p>
     </div>
     <div class="header-actions">
-      <button class="btn-refresh" (click)="refreshData()">
-        <i class="pi pi-refresh"></i>
-        Sync Data
-      </button>
-      <button class="btn-primary" (click)="toggleQRScanner()">
-        <i class="pi pi-qrcode"></i>
-        {{ showQRScanner ? 'Hide Scanner' : 'QR Check-in' }}
+      <!-- Event Selector -->
+      <p-select [options]="events" [(ngModel)]="eventId" optionLabel="title" optionValue="id"
+        placeholder="Select Event" (onChange)="onEventChange()" [showClear]="true" class="event-selector">
+        <ng-template pTemplate="header">
+          <div class="p-2 border-bottom-1 surface-border" (click)="eventId = 'all'; onEventChange()">
+            <span class="font-bold cursor-pointer">All Events</span>
+          </div>
+        </ng-template>
+      </p-select>
+
+      <button pButton label="Refresh" icon="pi pi-refresh" 
+        class="p-button-primary btn-refresh" (click)="refreshData()" [loading]="loading">
       </button>
     </div>
   </div>
 
   <!-- Stats Grid -->
   <div class="stats-grid">
-    <div class="stat-card total">
-      <div class="stat-icon"><i class="pi pi-users"></i></div>
+    <div class="stat-card">
       <div class="stat-content">
-        <span class="stat-label">Total Volunteers</span>
-        <span class="stat-value">{{ attendanceData.totalVolunteers }}</span>
+        <span class="stat-label uppercase text-xs font-bold text-gray-500">TOTAL VOLUNTEERS</span>
+        <span class="stat-value text-2xl font-black">{{ attendanceData.totalVolunteers }}</span>
+        <span class="stat-sub text-xs text-gray-400">Registered for today</span>
       </div>
     </div>
-    <div class="stat-card present">
-      <div class="stat-icon"><i class="pi pi-check-circle"></i></div>
+    <div class="stat-card">
       <div class="stat-content">
-        <span class="stat-label">Checked In</span>
-        <span class="stat-value">{{ attendanceData.checkedIn }}</span>
+        <span class="stat-label uppercase text-xs font-bold text-gray-500">CHECKED IN</span>
+        <span class="stat-value text-2xl font-black">{{ attendanceData.checkedIn }}</span>
+        <span class="stat-sub text-xs text-teal-500">{{ attendanceData.attendanceRate }}% attendance rate</span>
       </div>
     </div>
-    <div class="stat-card late">
-      <div class="stat-icon"><i class="pi pi-clock"></i></div>
+    <div class="stat-card">
       <div class="stat-content">
-        <span class="stat-label">Late Arrivals</span>
-        <span class="stat-value">{{ attendanceData.lateArrivals }}</span>
+        <span class="stat-label uppercase text-xs font-bold text-gray-500">LATE ARRIVALS</span>
+        <span class="stat-value text-2xl font-black">{{ attendanceData.lateArrivals }}</span>
+        <span class="stat-sub text-xs text-orange-500">After 9:00 AM cutoff</span>
       </div>
     </div>
-    <div class="stat-card absent">
-      <div class="stat-icon"><i class="pi pi-times-circle"></i></div>
+    <div class="stat-card">
       <div class="stat-content">
-        <span class="stat-label">Absent</span>
-        <span class="stat-value">{{ attendanceData.absent }}</span>
+        <span class="stat-label uppercase text-xs font-bold text-gray-500">ABSENT</span>
+        <span class="stat-value text-2xl font-black">{{ attendanceData.absent }}</span>
+        <span class="stat-sub text-xs text-red-500">Not yet checked</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Volunteers By Event Chips -->
+  <div class="events-chips-section" *ngIf="attendanceData.eventStats?.length > 0">
+    <h3 class="section-title text-sm font-bold uppercase text-gray-700 mb-3">VOLUNTEERS BY EVENT</h3>
+    <div class="chips-scroll">
+      <div class="event-chip" *ngFor="let ev of attendanceData.eventStats" 
+           [class.active]="eventId === ev.id" (click)="eventId = ev.id; onEventChange()">
+        <div class="chip-icon"><i class="pi pi-calendar"></i></div>
+        <div class="chip-info">
+          <span class="chip-title font-bold text-sm">{{ ev.title }}</span>
+          <span class="chip-count text-xs text-teal-600">{{ ev.count }} Volunteers</span>
+        </div>
       </div>
     </div>
   </div>
@@ -61,10 +81,10 @@
     <!-- Main Content: Volunteer Roster -->
     <div class="main-section">
       <div class="card-header">
-        <h3 class="card-title">Volunteer Roster</h3>
+        <h3 class="card-title font-bold text-lg">Volunteer Roster</h3>
         <div class="search-wrap">
-          <i class="pi pi-search"></i>
-          <input type="text" placeholder="Search by name or role...">
+          <i class="pi pi-filter"></i>
+          <span>Filter</span>
         </div>
       </div>
       
@@ -72,43 +92,41 @@
         <table class="roster-table">
           <thead>
             <tr>
-              <th>Volunteer</th>
+              <th>Name</th>
               <th>Role</th>
+              <th>Assigned Event</th>
               <th>Status</th>
-              <th>Check-in Time</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngIf="!loading && volunteerRoster.length === 0">
-              <td colspan="5" style="text-align: center; padding: 2rem; color: #94a3b8;">
-                <i class="pi pi-inbox" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem;"></i>
-                No volunteers found.
-              </td>
+              <td colspan="5" class="text-center py-8 text-gray-400">No volunteers found.</td>
             </tr>
             <tr *ngFor="let volunteer of volunteerRoster">
               <td>
-                <div class="volunteer-info">
-                  <div class="volunteer-avatar">{{ volunteer.name ? volunteer.name.charAt(0) : '?' }}</div>
-                  <div class="volunteer-details">
-                    <span class="volunteer-name">{{ volunteer.name || 'Unknown' }}</span>
-                    <span class="volunteer-id">ID: {{ volunteer.id ? volunteer.id.substring(0, 8) : '--' }}</span>
+                <div class="volunteer-row">
+                  <div class="v-avatar" [style.background]="getAvatarColor(volunteer.name)">
+                    {{ getInitials(volunteer.name) }}
                   </div>
+                  <span class="v-name font-medium">{{ volunteer.name }}</span>
                 </div>
               </td>
-              <td><span class="role-badge">{{ volunteer.role }}</span></td>
+              <td class="text-gray-600">{{ volunteer.role }}</td>
               <td>
-                <span class="status-badge" [ngClass]="getStatusClass(volunteer.status)">
-                  {{ getStatusLabel(volunteer.status) }}
+                <span class="event-badge" [class.all]="!volunteer.eventId">
+                  {{ getEventTitle(volunteer.eventId) }}
                 </span>
               </td>
               <td>
-                <span class="time-text">{{ volunteer.checkedInTime || '--:--' }}</span>
+                <span class="status-pill" [class]="volunteer.status">
+                  {{ volunteer.status === 'present' ? 'Present' : 'Absent' }}
+                </span>
               </td>
               <td>
-                <div class="action-buttons">
-                  <button class="btn-icon" pTooltip="Edit Record"><i class="pi pi-pencil"></i></button>
-                  <button class="btn-icon" pTooltip="View History"><i class="pi pi-history"></i></button>
+                <div class="action-cell">
+                  <span class="time-stamp" *ngIf="volunteer.status !== 'absent'">{{ volunteer.checkedInTime }}</span>
+                  <button *ngIf="volunteer.status === 'absent'" class="btn-checkin" (click)="checkIn(volunteer)">Check In</button>
                 </div>
               </td>
             </tr>
@@ -117,41 +135,26 @@
       </div>
     </div>
 
-    <!-- Sidebar: Live Updates & Tools -->
+    <!-- Sidebar: Recent Check-ins -->
     <div class="sidebar-section">
-      <!-- QR Scanner Placeholder -->
-      <div class="qr-card" *ngIf="showQRScanner">
-        <h3 class="card-title">QR Scanner</h3>
-        <div class="scanner-placeholder">
-          <div class="scanner-overlay">
-            <div class="qr-corner top-left"></div>
-            <div class="qr-corner top-right"></div>
-            <div class="qr-corner bottom-left"></div>
-            <div class="qr-corner bottom-right"></div>
-            <p class="camera-status">Camera inactive</p>
-          </div>
-        </div>
-
-        <button class="btn-full-scanner" (click)="openFullScanner()">
-          Open Full Scanner
-        </button>
-      </div>
-
-      <!-- Recent Check-ins -->
       <div class="recent-card">
-        <h3 class="card-title">Recent Check-ins</h3>
+        <h3 class="card-title font-bold mb-4">Recent Check-ins</h3>
         
         <div class="recent-list">
-          <div *ngIf="!loading && recentCheckIns.length === 0" style="text-align: center; padding: 1rem; color: #94a3b8;">
-            No recent check-ins.
-          </div>
           <div *ngFor="let checkIn of recentCheckIns" class="recent-item">
-            <div class="recent-avatar">{{ checkIn.name ? checkIn.name.charAt(0) : '?' }}</div>
-            <div class="recent-info">
-              <div class="recent-name">{{ checkIn.name || 'Unknown' }}</div>
-              <div class="recent-time">{{ checkIn.time }}</div>
+            <div class="recent-avatar-circle" [style.background]="getAvatarColor(checkIn.name)">
+              {{ getInitials(checkIn.name) }}
             </div>
-            <span class="status-badge present">{{ getStatusLabel(checkIn.status) }}</span>
+            <div class="recent-body">
+              <div class="recent-name font-bold">{{ checkIn.name }}</div>
+              <div class="recent-meta text-xs text-gray-400">
+                {{ checkIn.time }} &middot; {{ checkIn.method }}
+              </div>
+            </div>
+            <div class="recent-actions">
+              <i class="pi pi-pencil text-teal-400 cursor-pointer"></i>
+              <i class="pi pi-trash text-red-300 cursor-pointer"></i>
+            </div>
           </div>
         </div>
       </div>

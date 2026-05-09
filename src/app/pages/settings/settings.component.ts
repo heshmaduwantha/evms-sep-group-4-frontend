@@ -78,7 +78,7 @@ export class SettingsComponent implements OnInit {
   }
 
  
-  getSeverity(role: string): "info" | "success" | "warning" | "danger" | "secondary" | "contrast" {
+  getSeverity(role: string): "info" | "success" | "warn" | "danger" | "secondary" | "contrast" {
     switch (role) {
       case 'admin': return 'danger';
       case 'organizer': return 'info';

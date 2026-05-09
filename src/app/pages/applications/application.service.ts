@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { Application, CreateApplicationDto, UpdateApplicationDto, UpdateApplicationStatusDto, ApplicationStats, ApplicationStatus } from './application.models';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ApplicationService {
-    private apiUrl = 'http://localhost:3100/applications';
+    private apiUrl = `${environment.apiUrl}/applications`;
 
     constructor(private http: HttpClient) { }
 

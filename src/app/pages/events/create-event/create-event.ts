@@ -1,9 +1,26 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../services/event.service';
 import { AuthService } from '../../../auth/auth.service';
+import * as L from 'leaflet';
+
+// Fix for default leaflet marker icon not loading
+const iconRetinaUrl = 'assets/marker-icon-2x.png';
+const iconUrl = 'assets/marker-icon.png';
+const shadowUrl = 'assets/marker-shadow.png';
+const iconDefault = L.icon({
+  iconRetinaUrl,
+  iconUrl,
+  shadowUrl,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  tooltipAnchor: [16, -28],
+  shadowSize: [41, 41]
+});
+L.Marker.prototype.options.icon = iconDefault;
 
 @Component({
   selector: 'app-create-event',
@@ -13,7 +30,7 @@ import { AuthService } from '../../../auth/auth.service';
   styleUrls: ['./create-event.css']
 })
 
-export class CreateEventComponent implements OnInit {
+export class CreateEventComponent implements OnInit, AfterViewInit {
   constructor(
     private route: ActivatedRoute,
     public authService: AuthService,
@@ -23,6 +40,9 @@ export class CreateEventComponent implements OnInit {
   ) { }
 
   eventId: string | null = null;
+  map: L.Map | undefined;
+  marker: L.Marker | undefined;
+  searchQuery: string = '';
 
   eventData = {
     title: '',
@@ -51,14 +71,76 @@ export class CreateEventComponent implements OnInit {
           this.eventData.date = event.date;
           this.eventData.time = event.time;
           this.eventData.location = event.location;
+          this.searchQuery = event.location;
           this.eventData.volunteersNeeded = event.volunteersNeeded;
           this.cdr.detectChanges();
+          
+          if (this.searchQuery) {
+             setTimeout(() => this.searchLocation(), 500);
+          }
         });
 
     }
 
   }
 
+  ngAfterViewInit() {
+    this.initMap();
+  }
+
+  private initMap() {
+    this.map = L.map('event-map').setView([6.9271, 79.8612], 13); // Default to Colombo
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(this.map);
+
+    this.map.on('click', (e: L.LeafletMouseEvent) => {
+      this.setMarker(e.latlng.lat, e.latlng.lng);
+      this.reverseGeocode(e.latlng.lat, e.latlng.lng);
+    });
+  }
+
+  private setMarker(lat: number, lng: number) {
+    if (!this.map) return;
+    if (this.marker) {
+      this.marker.setLatLng([lat, lng]);
+    } else {
+      this.marker = L.marker([lat, lng]).addTo(this.map);
+    }
+    this.map.setView([lat, lng], 15);
+  }
+
+  private reverseGeocode(lat: number, lng: number) {
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.display_name) {
+          this.eventData.location = data.display_name;
+          this.searchQuery = data.display_name;
+        }
+      })
+      .catch(err => console.error('Geocoding error:', err));
+  }
+
+  searchLocation() {
+    if (!this.searchQuery) return;
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(this.searchQuery)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          const result = data[0];
+          const lat = parseFloat(result.lat);
+          const lon = parseFloat(result.lon);
+          this.setMarker(lat, lon);
+          this.eventData.location = result.display_name;
+          this.searchQuery = result.display_name;
+        } else {
+          alert('Location not found. Please try a different search term.');
+        }
+      })
+      .catch(err => console.error('Search error:', err));
+  }
   submitEvent() {
     console.log("Event ID:", this.eventId);
 

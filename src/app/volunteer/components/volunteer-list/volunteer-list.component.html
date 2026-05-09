@@ -1,77 +1,83 @@
-<div class="page-container">
+<p-toast></p-toast>
+<p-confirmDialog styleClass="solid-dialog"></p-confirmDialog>
 
-  <h2>Volunteer Management</h2>
-
-  <!-- Search -->
-  <mat-form-field appearance="outline" class="search-field">
-    <mat-label>Search</mat-label>
-    <input matInput (keyup)="applyFilter($event)">
-  </mat-form-field>
-
-  <!-- Table Card -->
-  <div class="table-card">
-
-    <table mat-table [dataSource]="dataSource" class="custom-table">
-
-      <!-- Name -->
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let v">{{v.name}}</td>
-      </ng-container>
-
-      <!-- Email -->
-      <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef>Email</th>
-        <td mat-cell *matCellDef="let v">{{v.email}}</td>
-      </ng-container>
-
-      <!-- Skills -->
-      <ng-container matColumnDef="skills">
-        <th mat-header-cell *matHeaderCellDef>Skills</th>
-        <td mat-cell *matCellDef="let v">{{v.skills}}</td>
-      </ng-container>
-
-      <!-- Status -->
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
-        <td mat-cell *matCellDef="let v">
-          <mat-chip [color]="v.status === 'active' ? 'primary' : 'warn'" selected>
-            {{v.status}}
-          </mat-chip>
-        </td>
-      </ng-container>
-
-      <!-- Actions -->
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let v">
-
-          <button mat-icon-button [routerLink]="['/volunteers', v.id]">
-            <mat-icon>visibility</mat-icon>
-          </button>
-
-          <button mat-icon-button [routerLink]="['/volunteers/edit', v.id]">
-            <mat-icon>edit</mat-icon>
-          </button>
-
-          <button 
-            mat-icon-button 
-            color="warn"
-            *ngIf="auth.isAdmin() || auth.isOrganizer()"
-            (click)="deactivate(v.id!)">
-            <mat-icon>block</mat-icon>
-          </button>
-
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-    </table>
-
+<div class="volunteer-management-page">
+  <div class="header-card">
+    <div class="title-area">
+      <h1>Volunteer Management</h1>
+      <p class="page-subtitle">Oversee and coordinate your volunteer network</p>
+    </div>
+    <div class="header-actions">
+      <button pButton label="Add Volunteer" icon="pi pi-plus" class="p-button-primary" routerLink="/volunteers/register"></button>
+    </div>
   </div>
 
-  <mat-paginator [pageSize]="5"></mat-paginator>
+  <div class="table-card shadow-soft">
+    <div class="table-header">
+      <span class="p-input-icon-left search-wrap">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" [(ngModel)]="searchValue" (input)="dt.filterGlobal(searchValue, 'contains')" placeholder="Search volunteers..." />
+      </span>
+      <div class="filter-chips">
+        <button class="filter-chip active">All Volunteers</button>
+        <button class="filter-chip">By Skills</button>
+        <button class="filter-chip">By Participation</button>
+      </div>
+    </div>
 
+    <p-table #dt [value]="volunteers" [loading]="loading" [paginator]="true" [rows]="10"
+             [globalFilterFields]="['name', 'email', 'phone', 'skills']"
+             responsiveLayout="scroll" styleClass="p-datatable-striped p-datatable-sm custom-table">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 25%">Name</th>
+          <th style="width: 20%">Email</th>
+          <th style="width: 15%">Phone</th>
+          <th style="width: 10%">Status</th>
+          <th style="width: 15%">Skills</th>
+          <th style="width: 15%">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-v>
+        <tr>
+          <td>
+            <div class="name-cell">
+              <div class="vol-avatar" [style.background]="getAvatarColor(v.name)">
+                {{ getInitials(v.name) }}
+              </div>
+              <div class="vol-name-info">
+                <span class="font-bold text-gray-800">{{v.name}}</span>
+                <span class="text-xs text-gray-500">Volunteer</span>
+              </div>
+            </div>
+          </td>
+          <td><span class="text-gray-600">{{v.email}}</span></td>
+          <td><span class="text-gray-600">{{v.phone || 'N/A'}}</span></td>
+          <td>
+            <p-tag [value]="v.status || 'Active'" [severity]="getStatusSeverity(v.status || 'Active')"></p-tag>
+          </td>
+          <td>
+            <span class="skills-text">{{v.skills || 'General'}}</span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-info" 
+                      [routerLink]="['/volunteers/edit', v.id]" pTooltip="Edit"></button>
+              <button *ngIf="v.status !== 'inactive'" pButton icon="pi pi-ban" 
+                      class="p-button-rounded p-button-text p-button-danger" 
+                      (click)="deactivate(v.id)" pTooltip="Deactivate"></button>
+              <button *ngIf="v.status === 'inactive'" pButton icon="pi pi-check-circle" 
+                      class="p-button-rounded p-button-text p-button-success" 
+                      (click)="activate(v.id)" pTooltip="Activate"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="text-center p-4">No volunteers found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
 </div>

@@ -1,14 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReportsService } from './reports.service';
 import { EventService } from '../events/services/event.service';
 import { Event } from '../events/event.models';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-import { DropdownModule } from 'primeng/dropdown';
-import { CalendarModule } from 'primeng/calendar';
+import { SelectModule } from 'primeng/select';
+import { DatePickerModule } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { TableModule } from 'primeng/table';
@@ -16,7 +16,7 @@ import { TableModule } from 'primeng/table';
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule, FormsModule, DropdownModule, CalendarModule, ButtonModule, TooltipModule, TableModule],
+  imports: [CommonModule, FormsModule, SelectModule, DatePickerModule, ButtonModule, TooltipModule, TableModule],
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.css']
 })
@@ -61,7 +61,8 @@ export class ReportsComponent implements OnInit {
 
   constructor(
     private reportsService: ReportsService,
-    private eventService: EventService
+    private eventService: EventService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
@@ -75,8 +76,12 @@ export class ReportsComponent implements OnInit {
         // Default to 'all' instead of the first event
         this.eventId = 'all';
         this.loadReports();
+        this.cdr.detectChanges();
       },
-      error: (err: any) => console.error('Error loading events:', err)
+      error: (err: any) => {
+        console.error('Error loading events:', err);
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -92,13 +97,23 @@ export class ReportsComponent implements OnInit {
         next: (res) => {
           this.attendanceRecords = res.records;
           this.totalRecords = res.totalRecords;
+          this.cdr.detectChanges();
         },
-        error: (err) => console.error('Error loading attendance records:', err)
+        error: (err) => {
+          console.error('Error loading attendance records:', err);
+          this.cdr.detectChanges();
+        }
       });
 
     this.reportsService.getSummary(targetEventId, this.filters.date).subscribe({
-      next: (res) => this.summary = res,
-      error: (err) => console.error('Error loading summary:', err)
+      next: (res) => {
+        this.summary = res;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading summary:', err);
+        this.cdr.detectChanges();
+      }
     });
 
     this.reportsService.getByDepartment(targetEventId, this.filters.date).subscribe({
@@ -120,61 +135,67 @@ export class ReportsComponent implements OnInit {
 
   exportPDF() {
     console.log('PDF export triggered');
-    const title = this.getEventName(this.eventId);
-    const friendlyTitle = this.eventId === 'all' ? 'All Events' : title;
+    const targetEventId = this.eventId === 'all' ? '' : this.eventId;
+    const title = this.getEventName(targetEventId);
+    const friendlyTitle = targetEventId === '' ? 'All Events' : title;
     
-    this.reportsService.exportPDF(this.eventId, friendlyTitle).subscribe({
+    this.reportsService.exportPDF(targetEventId, friendlyTitle).subscribe({
       next: (res) => {
         if (res.success) {
-          const doc = new jsPDF();
-          const reportData = res.data;
+          try {
+            const doc = new jsPDF();
+            const reportData = res.data;
 
-          doc.setFontSize(20);
-          doc.setTextColor(40);
-          doc.text(reportData.reportName, 14, 22);
+            doc.setFontSize(20);
+            doc.setTextColor(40);
+            doc.text(reportData.reportName, 14, 22);
 
-          doc.setFontSize(11);
-          doc.setTextColor(100);
-          doc.text(`Generated at: ${new Date(reportData.generatedAt).toLocaleString()}`, 14, 30);
+            doc.setFontSize(11);
+            doc.setTextColor(100);
+            doc.text(`Generated at: ${new Date(reportData.generatedAt).toLocaleString()}`, 14, 30);
 
-          doc.setFontSize(14);
-          doc.setTextColor(40);
-          doc.text('Attendance Summary', 14, 45);
+            doc.setFontSize(14);
+            doc.setTextColor(40);
+            doc.text('Attendance Summary', 14, 45);
 
-          const summary = reportData.summary;
-          const summaryRows = [
-            ['Total Volunteers', summary.total.toString()],
-            ['Present', summary.present.toString()],
-            ['Late Arrivals', summary.late.toString()],
-            ['Absent', summary.absent.toString()],
-            ['Manual Check-ins', summary.manualCheckedIn.toString()],
-            ['Attendance Rate', `${summary.attendanceRate}%`]
-          ];
+            const summary = reportData.summary;
+            const summaryRows = [
+              ['Total Volunteers', summary.total.toString()],
+              ['Present', summary.present.toString()],
+              ['Late Arrivals', summary.late.toString()],
+              ['Absent', summary.absent.toString()],
+              ['Manual Check-ins', summary.manualCheckedIn.toString()],
+              ['Attendance Rate', `${summary.attendanceRate}%`]
+            ];
 
-          autoTable(doc, {
-            startY: 50,
-            head: [['Metric', 'Value']],
-            body: summaryRows,
-            theme: 'grid',
-            headStyles: { fillColor: [0, 209, 178] }
-          });
+            autoTable(doc, {
+              startY: 50,
+              head: [['Metric', 'Value']],
+              body: summaryRows,
+              theme: 'grid',
+              headStyles: { fillColor: [0, 209, 178] }
+            });
 
-          doc.setFontSize(14);
-          doc.text('Detailed Attendance Record', 14, (doc as any).lastAutoTable.finalY + 15);
+            doc.setFontSize(14);
+            doc.text('Detailed Attendance Record', 14, (doc as any).lastAutoTable.finalY + 15);
 
-          const recordRows = reportData.records.map((r: any) => [
-            r.name, r.role, r.dept, r.status, r.time || '-', r.method.toUpperCase()
-          ]);
+            const recordRows = reportData.records.map((r: any) => [
+              r.name, r.role, r.dept, r.status, r.time || '-', r.method ? r.method.toUpperCase() : 'UNKNOWN'
+            ]);
 
-          autoTable(doc, {
-            startY: (doc as any).lastAutoTable.finalY + 20,
-            head: [['Name', 'Role', 'Department', 'Status', 'Time', 'Method']],
-            body: recordRows,
-            theme: 'striped',
-            headStyles: { fillColor: [52, 73, 94] }
-          });
+            autoTable(doc, {
+              startY: (doc as any).lastAutoTable.finalY + 20,
+              head: [['Name', 'Role', 'Department', 'Status', 'Time', 'Method']],
+              body: recordRows,
+              theme: 'striped',
+              headStyles: { fillColor: [52, 73, 94] }
+            });
 
-          doc.save(`attendance-report-${this.eventId}.pdf`);
+            doc.save(`attendance-report-${targetEventId || 'all'}.pdf`);
+          } catch (e) {
+            console.error('jsPDF Error:', e);
+            alert('Failed to generate PDF. Check console for details.');
+          }
         }
       },
       error: (err) => console.error('Error exporting PDF:', err)
@@ -183,21 +204,24 @@ export class ReportsComponent implements OnInit {
 
   exportCSV() {
     console.log('CSV export triggered');
-    const title = this.getEventName(this.eventId);
-    const friendlyTitle = this.eventId === 'all' ? 'All Events' : title;
+    const targetEventId = this.eventId === 'all' ? '' : this.eventId;
+    const title = this.getEventName(targetEventId);
+    const friendlyTitle = targetEventId === '' ? 'All Events' : title;
 
-    this.reportsService.exportCSV(this.eventId, friendlyTitle).subscribe({
+    this.reportsService.exportCSV(targetEventId, friendlyTitle).subscribe({
       next: (res) => {
         if (res.success && res.content) {
-          const blob = new Blob([res.content], { type: 'text/csv' });
+          const blob = new Blob([res.content], { type: 'text/csv;charset=utf-8;' });
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = res.fileName || `attendance-report-${this.eventId}.csv`;
+          a.download = res.fileName || `attendance-report-${targetEventId || 'all'}.csv`;
           document.body.appendChild(a);
           a.click();
           window.URL.revokeObjectURL(url);
           document.body.removeChild(a);
+        } else {
+            console.error('CSV export failed, empty content');
         }
       },
       error: (err) => console.error('Error exporting CSV:', err)

@@ -1,81 +1,194 @@
-/* PAGE LAYOUT */
-.page-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 20px;
+.volunteer-management-page {
+    background-color: #f8fafc;
+    min-height: 100vh;
+    padding: 2.5rem;
+    font-family: 'Inter', sans-serif;
 }
 
-
-
-/* TITLE */
-h2 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: white;
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
 }
 
-/* SEARCH */
-.search-field {
-  width: 300px;
-  margin-bottom: 20px;
-  color: #ebebeb;
+.page-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
 }
 
-/* TABLE CARD */
+.page-subtitle {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin-top: 0.25rem;
+}
+
 .table-card {
-  width: 100%;
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 20px;
-  overflow-x: auto;
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f1f5f9;
 }
 
-/* 🔥 FORCE TABLE FULL WIDTH */
-.custom-table {
-  width: 100% !important;
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
-/* FIX MATERIAL TABLE */
-::ng-deep table {
-  width: 100% !important;
+.search-wrap {
+    width: 320px;
 }
 
-/* HEADER STYLE */
-::ng-deep .mat-header-cell {
-  font-weight: bold;
+.search-wrap input {
+    border-radius: 12px !important;
+    background-color: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    padding-left: 2.75rem !important;
 }
 
-/* ACTION BUTTON SPACING */
-button[mat-icon-button] {
-  margin-right: 6px;
+.search-wrap i {
+    left: 1rem !important;
+    color: #94a3b8;
 }
 
-/* INPUT TEXT COLOR */
-::ng-deep .mat-mdc-input-element {
-  color: #ffffff !important;
+.filter-chips {
+    display: flex;
+    gap: 0.75rem;
 }
 
-/* LABEL COLOR */
-::ng-deep .mdc-floating-label {
-  color: #ffffff !important;
+.filter-chip {
+    background: #f1f5f9;
+    border: none;
+    color: #64748b;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-/* PLACEHOLDER COLOR */
-::ng-deep input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+.filter-chip:hover {
+    background: #e2e8f0;
+    color: #0f172a;
 }
 
-/* OUTLINE BORDER COLOR */
-::ng-deep .mdc-notched-outline__leading,
-::ng-deep .mdc-notched-outline__notch,
-::ng-deep .mdc-notched-outline__trailing {
-  border-color: rgba(255, 255, 255, 0.5) !important;
+.filter-chip.active {
+    background: #f0fdf9;
+    color: #00b89c;
+    border: 1px solid rgba(0, 184, 156, 0.2);
 }
 
-/* FOCUS BORDER (when clicked) */
-::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
-::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
-::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
-  border-color: #00d1b2 !important;   /* match your theme */
+/* Table Customization */
+::ng-deep .custom-table .p-datatable-thead > tr > th {
+    background-color: #f8fafc !important;
+    color: #64748b !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    padding: 1rem !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+::ng-deep .custom-table .p-datatable-tbody > tr {
+    transition: background-color 0.2s;
+}
+
+::ng-deep .custom-table .p-datatable-tbody > tr:hover {
+    background-color: #fcfdfe !important;
+}
+
+::ng-deep .custom-table .p-datatable-tbody > tr > td {
+    padding: 1rem !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    font-size: 0.9rem !important;
+}
+
+.name-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.vol-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    color: white;
+    font-weight: 700;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vol-name-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.skills-text {
+    background: #f1f5f9;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: #475569;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.25rem;
+}
+
+/* Pagination */
+::ng-deep .p-paginator {
+    background-color: transparent !important;
+    border: none !important;
+    padding-top: 1.5rem !important;
+}
+
+::ng-deep .p-paginator-page, ::ng-deep .p-paginator-next, ::ng-deep .p-paginator-last, ::ng-deep .p-paginator-first, ::ng-deep .p-paginator-prev {
+    border-radius: 8px !important;
+    min-width: 2.25rem !important;
+    height: 2.25rem !important;
+}
+
+::ng-deep .p-paginator-page.p-highlight {
+    background: #f0fdf9 !important;
+    color: #00b89c !important;
+    font-weight: 700 !important;
+}
+
+@media (max-width: 1024px) {
+    .volunteer-management-page { padding: 1.5rem; }
+    .header-section { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .table-header { flex-direction: column; align-items: flex-start; }
+    .search-wrap { width: 100%; }
+}
+
+/* Dialog Fix - Force Solid Background */
+::ng-deep .solid-dialog .p-dialog-content,
+::ng-deep .solid-dialog .p-dialog-header {
+    background: #ffffff !important;
+    opacity: 1 !important;
+}
+
+::ng-deep .solid-dialog {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+    border-radius: 24px !important;
+    overflow: hidden;
+    border: none !important;
+}
+
+::ng-deep .p-dialog-mask {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    backdrop-filter: blur(4px);
 }

@@ -1,17 +1,21 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core'; // Re-compiled
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Event, EventStats } from './event.models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class EventService {
-    private apiUrl = 'http://localhost:3100/events';
+    private apiUrl = `${environment.apiUrl}/events`;
 
     constructor(private http: HttpClient) { }
     getEvents(): Observable<Event[]> {
-        return this.http.get<Event[]>(this.apiUrl);
+        return this.http.get<any>(this.apiUrl).pipe(
+            map(response => response.data || response)
+        );
     }
 
     getEventById(id: string): Observable<Event> {

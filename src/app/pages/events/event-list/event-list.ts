@@ -53,6 +53,10 @@ export class EventListComponent implements OnInit {
     this.router.navigate(['/organizer/create-event', id]);
   }
 
+  viewEvent(id: string) {
+    this.router.navigate(['/events', id]);
+  }
+
   deleteEvent(id: string) {
 
     if (!confirm('Are you sure you want to delete this event?')) {
@@ -80,7 +84,6 @@ export class EventListComponent implements OnInit {
 
 
   filterStatus(status: string) {
-
     this.selectedStatus = status;
 
     if (status === 'all') {
@@ -88,35 +91,17 @@ export class EventListComponent implements OnInit {
       return;
     }
 
-    const today = this.today;
-
     this.events = this.allEvents.filter(event => {
-
-      if (!event.date) return false;
-
-      // CANCELLED stays priority
-      if (event.status === 'cancelled') {
-        return status === 'cancelled';
-      }
-
-      const eventDate = new Date(event.date).toISOString().split('T')[0];
-
-      if (status === 'upcoming') {
-        return eventDate > today;
-      }
-
+      const currentStatus = event.status?.toLowerCase();
+      
+      // Map 'active' to 'ongoing' if needed, or just match direct
       if (status === 'ongoing') {
-        return eventDate === today;
+        return currentStatus === 'ongoing' || currentStatus === 'active';
       }
-
-      if (status === 'completed') {
-        return eventDate < today;
-      }
-
-      return false;
-
+      
+      return currentStatus === status;
     });
-
+    this.cdr.detectChanges();
   }
 
 }

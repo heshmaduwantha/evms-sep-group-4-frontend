@@ -4,14 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
-import { InputTextareaModule } from 'primeng/inputtextarea';
+import { TextareaModule } from 'primeng/textarea';
 import { Application, ApplicationStatus } from './application.models';
 import { ApplicationService } from './application.service';
 
 @Component({
     selector: 'app-application-review-modal',
     standalone: true,
-    imports: [CommonModule, FormsModule, DialogModule, ButtonModule, TagModule, InputTextareaModule],
+    imports: [CommonModule, FormsModule, DialogModule, ButtonModule, TagModule, TextareaModule],
     templateUrl: './application-review-modal.component.html',
     styleUrls: ['./application-review-modal.component.css']
 })

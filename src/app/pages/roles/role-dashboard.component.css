@@ -1,161 +1,194 @@
-.page-header {
-  margin-bottom: 1.5rem;
+.role-dashboard-container {
+  padding: 2rem;
+  background: #f8fafc;
+  min-height: 100vh;
 }
 
-.header-content {
+.header-section {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.page-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin: 0 0 0.25rem 0;
-}
-
-.page-subtitle {
-  color: #718096;
-  margin: 0;
-  font-size: 0.9rem;
-}
-
-.btn-new-event {
-  background-color: #0d9488 !important;
-  border-color: #0d9488 !important;
-  font-weight: 600;
-}
-
-/* Stats */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
+  align-items: center;
   margin-bottom: 2rem;
 }
 
-.stat-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-  border: 1px solid #e2e8f0;
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
 }
 
-.stat-icon {
-  width: 48px;
-  height: 48px;
+.page-subtitle {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Stats Cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
   border-radius: 12px;
-  background: #f0fdfa;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04);
+  border: 1px solid #f1f5f9;
+  border-left: 4px solid #e2e8f0;
+  transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+}
+
+.stat-card:nth-child(1) { border-left-color: #6366f1; }
+.stat-card:nth-child(1) .stat-icon { background: #eef2ff; color: #6366f1; }
+
+.stat-card:nth-child(2) { border-left-color: #10b981; }
+.stat-card:nth-child(2) .stat-icon { background: #ecfdf5; color: #10b981; }
+
+.stat-card:nth-child(3) { border-left-color: #f59e0b; }
+.stat-card:nth-child(3) .stat-icon { background: #fffbeb; color: #f59e0b; }
+
+.stat-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  font-size: 1.5rem;
+  transition: transform 0.3s;
 }
 
-.stat-icon i {
-  font-size: 1.3rem;
-  color: #0d9488;
+.stat-card:hover .stat-icon {
+  transform: scale(1.1);
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
 }
 
 .stat-label {
-  display: block;
-  font-size: 0.78rem;
-  color: #718096;
-  margin-bottom: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.025em;
 }
 
 .stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1a202c;
-  line-height: 1;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
 }
 
-/* Events section */
+/* Events Section */
+.events-section {
+  margin-top: 1rem;
+}
+
 .section-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #1a202c;
-  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 1.5rem;
 }
 
 .event-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 1.5rem;
 }
 
 .event-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1.25rem 1.5rem;
+  background: white;
   border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
   cursor: pointer;
-  transition: box-shadow 0.2s, border-color 0.2s;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  transition: all 0.2s;
+  position: relative;
 }
 
 .event-card:hover {
-  border-color: #0d9488;
-  box-shadow: 0 4px 16px rgba(13,148,136,0.12);
+  border-color: #00d1b2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .event-card-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
 }
 
 .event-title {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: #1a202c;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
   margin: 0;
+}
+
+.pi-chevron-right {
+  color: #94a3b8;
+  font-size: 0.9rem;
 }
 
 .event-meta {
   display: flex;
-  gap: 1.25rem;
   flex-wrap: wrap;
-  font-size: 0.82rem;
-  color: #718096;
-  margin-bottom: 1rem;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .event-meta span {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: #64748b;
 }
 
-/* Coverage */
-.coverage-section { }
+.event-meta i {
+  color: #94a3b8;
+}
+
+/* Coverage Progress */
+.coverage-section {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
 
 .coverage-header {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
-  margin-bottom: 0.4rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .coverage-label {
-  color: #718096;
-  letter-spacing: 0.06em;
-  font-weight: 600;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
 }
 
 .coverage-value {
-  color: #4a5568;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .coverage-bar {
@@ -167,24 +200,25 @@
 
 .coverage-fill {
   height: 100%;
-  border-radius: 3px;
-  transition: width 0.4s ease;
+  transition: width 0.6s ease;
 }
 
 .coverage-fill.full { background: #10b981; }
-.coverage-fill.good { background: #f59e0b; }
-.coverage-fill.low  { background: #f59e0b; }
+.coverage-fill.good { background: #3b82f6; }
+.coverage-fill.low { background: #f59e0b; }
 .coverage-fill.critical { background: #ef4444; }
 
-/* Empty / loading */
-.empty-state, .loading-state {
+/* Empty State */
+.empty-state {
   text-align: center;
-  padding: 3rem;
-  color: #718096;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
 }
 
-.empty-state i, .loading-state i {
-  font-size: 2.5rem;
-  margin-bottom: 0.75rem;
-  display: block;
+.empty-icon-box {
+  font-size: 3rem;
+  color: #cbd5e1;
+  margin-bottom: 1rem;
 }

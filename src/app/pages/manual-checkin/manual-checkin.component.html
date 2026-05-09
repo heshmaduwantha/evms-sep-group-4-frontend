@@ -1,294 +1,180 @@
-<div class="manual-checkin-container">
+<p-toast></p-toast>
+<p-confirmDialog styleClass="solid-dialog"></p-confirmDialog>
 
+<div class="checkin-page">
   <!-- Header -->
-  <div class="header-section">
-    <div>
-      <h1 class="page-title">Manual Check-in</h1>
-      <p class="page-subtitle">Search and manually mark volunteer attendance</p>
+  <div class="header-card">
+    <div class="title-area">
+      <h1>All Check-ins</h1>
+      <p class="page-subtitle">Consolidated view of manual and portal volunteer attendance</p>
     </div>
     <div class="header-actions">
-      <div class="summary-badge">
-        <span class="checked-in">{{ summary.checkedIn }} / {{ summary.total }} checked in</span>
+      <div class="export-group">
+        <button pButton icon="pi pi-file-pdf" label="PDF" class="p-button-outlined p-button-secondary" (click)="exportPDF()"></button>
+        <button pButton icon="pi pi-file-excel" label="CSV" class="p-button-outlined p-button-secondary ml-2" (click)="exportCSV()"></button>
       </div>
-      <button class="btn-add-attendance" (click)="toggleCreateForm()">
-        <i class="pi pi-plus"></i>
-        Add Attendance
-      </button>
-    </div>
-  </div>
-
-  <!-- Create Form Section -->
-  <div class="create-form-section" *ngIf="showCreateForm">
-    <div class="form-card">
-      <div class="form-header">
-        <h3>Add New Volunteer Record</h3>
-        <button class="btn-close" (click)="toggleCreateForm()">
-          <i class="pi pi-times"></i>
-        </button>
+      <div class="summary-chip ml-4">
+        <span class="count">{{summary.checkedIn}} / {{summary.total}}</span> checked in
       </div>
-
-      <form [formGroup]="createForm" (ngSubmit)="onSubmitForm()" class="attendance-form">
-        <div class="form-group">
-          <label for="event">Event *</label>
-          <select id="event" formControlName="eventId" class="form-select">
-            <option value="" disabled>Select Event</option>
-            <option *ngFor="let event of events" [value]="event.id">
-              {{ event.title }}
-            </option>
-          </select>
-          <span class="error-message" *ngIf="createForm.get('eventId')?.invalid && createForm.get('eventId')?.touched">
-            Event is required
-          </span>
-        </div>
-
-        <div class="form-group">
-          <label for="name">Volunteer Name *</label>
-          <input id="name" type="text" formControlName="name" placeholder="Enter full name" class="form-input">
-          <span class="error-message" *ngIf="createForm.get('name')?.invalid && createForm.get('name')?.touched">
-            Name is required (minimum 2 characters)
-          </span>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="role">Role *</label>
-            <select id="role" formControlName="role" class="form-select">
-              <option value="">Select Role</option>
-              <option *ngFor="let role of roleOptions" [value]="role">
-                {{ role }}
-              </option>
-            </select>
-            <span class="error-message" *ngIf="createForm.get('role')?.invalid && createForm.get('role')?.touched">
-              Role is required
-            </span>
-          </div>
-
-          <div class="form-group">
-            <label for="department">Department *</label>
-            <select id="department" formControlName="department" class="form-select">
-              <option value="">Select Department</option>
-              <option *ngFor="let dept of departmentOptions" [value]="dept">
-                {{ dept }}
-              </option>
-            </select>
-            <span class="error-message"
-              *ngIf="createForm.get('department')?.invalid && createForm.get('department')?.touched">
-              Department is required
-            </span>
-          </div>
-        </div>
-
-        <div class="form-group checkbox-group">
-          <label>
-            <input type="checkbox" formControlName="checkedIn" class="form-checkbox">
-            <span>Mark as checked in</span>
-          </label>
-        </div>
-
-        <div class="form-actions">
-          <button type="button" class="btn-cancel" (click)="toggleCreateForm()">
-            Cancel
-          </button>
-          <button type="submit" class="btn-submit" [disabled]="isSubmitting || createForm.invalid">
-            <span *ngIf="!isSubmitting">Add Volunteer</span>
-            <span *ngIf="isSubmitting">Adding...</span>
-          </button>
-        </div>
-
-        <div class="message-section">
-          <div class="success-message" *ngIf="successMessage">
-            <i class="pi pi-check-circle"></i>
-            {{ successMessage }}
-          </div>
-          <div class="error-message-box" *ngIf="errorMessage">
-            <i class="pi pi-exclamation-circle"></i>
-            {{ errorMessage }}
-          </div>
-        </div>
-      </form>
+      <button pButton label="Add Attendance" icon="pi pi-plus" class="p-button-primary ml-4" (click)="showCreateForm = true"></button>
     </div>
   </div>
 
-  <!-- Search and Filters -->
-  <div class="search-section">
-    <input type="text" class="search-input" placeholder="Search by name or role..." [(ngModel)]="searchQuery"
-      (keyup)="onSearch()">
-
-    <select class="filter-select" [(ngModel)]="eventId" (change)="onEventChange()">
-      <option value="all">All Events</option>
-      <option *ngFor="let event of events" [value]="event.id">
-        {{ event.title }}
-      </option>
-    </select>
-
-    <select class="filter-select" [(ngModel)]="selectedFilter" (change)="onFilterChange()">
-      <option *ngFor="let opt of filterOptions" [value]="opt.value">
-        {{ opt.label }}
-      </option>
-    </select>
-
-    <button class="btn-select-absent" (click)="selectAbsent()">
-      <i class="pi pi-filter"></i>
-      Select Absent
-    </button>
+  <!-- Filters -->
+  <div class="filter-section card shadow-soft mb-4">
+    <div class="flex align-items-center gap-3">
+      <span class="p-input-icon-left search-wrap">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" [(ngModel)]="searchQuery" placeholder="Search by name or role..." class="w-full" />
+      </span>
+      <p-select [options]="events" [(ngModel)]="eventId" optionLabel="title" optionValue="id" 
+                placeholder="All Events" (onChange)="loadVolunteers()" class="event-dropdown"></p-select>
+    </div>
   </div>
 
-  <!-- Volunteers Table -->
-  <div class="table-section">
-    <div class="table-header-info p-3 border-bottom-1 border-gray-200">
-      <h3 class="m-0 text-lg font-bold">Volunteers for {{ getSelectedEventName() }}</h3>
+  <!-- Manual Check-ins -->
+  <div class="table-section card shadow-soft mb-5">
+    <div class="section-header">
+      <h3 class="section-title">Manual Check-ins</h3>
     </div>
-    <table class="volunteers-table">
-      <thead>
+    <p-table [value]="manualVolunteers" [loading]="loading" responsiveLayout="scroll" styleClass="p-datatable-striped p-datatable-sm custom-table">
+      <ng-template pTemplate="header">
         <tr>
-          <th class="checkbox-col">
-            <input type="checkbox" class="row-checkbox">
-          </th>
           <th>Name</th>
-          <th *ngIf="eventId === 'all'">Event</th>
+          <th>Event</th>
           <th>Role</th>
           <th>Department</th>
-          <th>Check-in Time</th>
+          <th>Check-In Time</th>
           <th>Status</th>
-          <th class="actions-col">Actions</th>
+          <th>Actions</th>
         </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let volunteer of volunteers" [class.checked-in]="volunteer.checkedIn">
-          <td class="checkbox-col">
-            <input type="checkbox" class="row-checkbox" [checked]="isSelected(volunteer.id)"
-              (change)="toggleSelection(volunteer.id)">
-          </td>
-          <td class="name-cell" (click)="volunteer.checkInMethod !== 'online' && openEditForm(volunteer)" [style.cursor]="volunteer.checkInMethod === 'online' ? 'default' : 'pointer'">
-            <div class="avatar" [style.backgroundColor]="getAvatarColor(volunteer.name)">
-              {{ volunteer.name.charAt(0) }}
+      </ng-template>
+      <ng-template pTemplate="body" let-v>
+        <tr>
+          <td>
+            <div class="name-cell">
+              <div class="vol-avatar" [style.background]="getAvatarColor(v.name)">{{getInitials(v.name)}}</div>
+              <span class="font-bold text-gray-800">{{v.name}}</span>
             </div>
-            <span>{{ volunteer.name }}</span>
-            <span *ngIf="volunteer.checkInMethod === 'online'" class="online-badge ml-2">Online</span>
           </td>
-          <td *ngIf="eventId === 'all'">
-            <span class="event-tag">{{ getEventName(volunteer.eventId) }}</span>
+          <td><span class="text-sm text-gray-600">{{getEventTitle(v.eventId)}}</span></td>
+          <td><span class="role-tag">{{v.role}}</span></td>
+          <td>{{v.department}}</td>
+          <td><span class="text-teal-600 font-bold">{{v.checkedInTime || '-'}}</span></td>
+          <td>
+            <p-tag [value]="v.checkedIn ? 'Checked In' : 'Absent'" 
+                   [severity]="v.checkedIn ? 'success' : 'danger'"></p-tag>
           </td>
-          <td>{{ volunteer.role }}</td>
-          <td>{{ volunteer.department }}</td>
-          <td class="time-cell">
-            {{ volunteer.time || '-' }}
-          </td>
-          <td class="status-cell">
-            <label class="toggle-switch" [class.disabled]="volunteer.checkInMethod === 'online'">
-              <input type="checkbox" [checked]="volunteer.checkedIn" (change)="onToggleCheckin(volunteer)" [disabled]="volunteer.checkInMethod === 'online'">
-              <span class="slider"></span>
-            </label>
-          </td>
-          <td class="actions-cell">
-            <button *ngIf="volunteer.checkInMethod !== 'online'" class="btn-action edit" (click)="openEditForm(volunteer)" title="Edit">
-              <i class="pi pi-pencil"></i>
-            </button>
-            <button *ngIf="volunteer.checkInMethod !== 'online'" class="btn-action delete" (click)="openDeleteConfirm(volunteer.id)" title="Delete">
-              <i class="pi pi-trash"></i>
-            </button>
-            <span *ngIf="volunteer.checkInMethod === 'online'" class="text-xs text-500">Portal Entry</span>
+          <td>
+            <div class="action-buttons">
+              <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-info" (click)="openEditForm(v)" pTooltip="Edit"></button>
+              <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="deleteVolunteer(v)" pTooltip="Delete"></button>
+            </div>
           </td>
         </tr>
-      </tbody>
-    </table>
+      </ng-template>
+    </p-table>
   </div>
 
-  <!-- Edit Form Modal -->
-  <div class="modal-overlay" *ngIf="showEditForm" (click)="closeEditForm()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>Edit Volunteer</h3>
-        <button class="btn-close" (click)="closeEditForm()">
-          <i class="pi pi-times"></i>
-        </button>
-      </div>
-
-      <form [formGroup]="editForm" (ngSubmit)="onSubmitEditForm()" class="modal-form">
-        <div class="form-group">
-          <label for="edit-name">Name *</label>
-          <input id="edit-name" type="text" formControlName="name" placeholder="Enter full name" class="form-input">
-          <span class="error-message" *ngIf="editForm.get('name')?.invalid && editForm.get('name')?.touched">
-            Name is required (minimum 2 characters)
-          </span>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="edit-role">Role *</label>
-            <select id="edit-role" formControlName="role" class="form-select">
-              <option value="">Select Role</option>
-              <option *ngFor="let role of roleOptions" [value]="role">
-                {{ role }}
-              </option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="edit-department">Department *</label>
-            <select id="edit-department" formControlName="department" class="form-select">
-              <option value="">Select Department</option>
-              <option *ngFor="let dept of departmentOptions" [value]="dept">
-                {{ dept }}
-              </option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group checkbox-group">
-          <label>
-            <input type="checkbox" formControlName="checkedIn" class="form-checkbox">
-            <span>Mark as checked in</span>
-          </label>
-        </div>
-
-        <div class="message-section">
-          <div class="success-message" *ngIf="successMessage">
-            <i class="pi pi-check-circle"></i>
-            {{ successMessage }}
-          </div>
-          <div class="error-message-box" *ngIf="errorMessage">
-            <i class="pi pi-exclamation-circle"></i>
-            {{ errorMessage }}
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="button" class="btn-cancel" (click)="closeEditForm()">
-            Cancel
-          </button>
-          <button type="submit" class="btn-submit" [disabled]="isSubmitting || editForm.invalid">
-            <span *ngIf="!isSubmitting">Update Volunteer</span>
-            <span *ngIf="isSubmitting">Updating...</span>
-          </button>
-        </div>
-      </form>
+  <!-- Online/Portal Check-ins -->
+  <div class="table-section card shadow-soft">
+    <div class="section-header">
+      <h3 class="section-title">Online/Portal Check-ins</h3>
     </div>
+    <p-table [value]="portalVolunteers" [loading]="loading" responsiveLayout="scroll" styleClass="p-datatable-striped p-datatable-sm custom-table">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Name</th>
+          <th>Event</th>
+          <th>Role</th>
+          <th>Check-In Time</th>
+          <th>Status</th>
+          <th>Note</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-v>
+        <tr>
+          <td>
+            <div class="name-cell">
+              <div class="vol-avatar" [style.background]="getAvatarColor(v.name)">{{getInitials(v.name)}}</div>
+              <span class="font-bold text-gray-800">{{v.name}}</span>
+            </div>
+          </td>
+          <td><span class="text-sm text-teal-600 font-medium">{{getEventTitle(v.eventId)}}</span></td>
+          <td><span class="role-tag portal">{{v.role}}</span></td>
+          <td><span class="text-teal-600 font-bold">{{v.checkedInTime || '-'}}</span></td>
+          <td><p-tag value="Confirmed" severity="success"></p-tag></td>
+          <td><span class="text-xs text-gray-400">System Managed</span></td>
+        </tr>
+      </ng-template>
+    </p-table>
   </div>
 
-  <!-- Delete Confirmation Modal -->
-  <div class="modal-overlay" *ngIf="deleteConfirmId !== null" (click)="closeDeleteConfirm()">
-    <div class="modal-content modal-small" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>Confirm Delete</h3>
-        <button class="btn-close" (click)="closeDeleteConfirm()">
-          <i class="pi pi-times"></i>
-        </button>
+  <!-- Edit Modal -->
+  <p-dialog header="Edit Volunteer" [(visible)]="showEditForm" [modal]="true" [style]="{width: '500px'}" 
+            [draggable]="false" [resizable]="false" styleClass="solid-dialog">
+    <form [formGroup]="editForm" (ngSubmit)="onSubmitEdit()" class="white-form pt-4">
+      <div class="form-grid">
+        <div class="form-field full-width">
+          <label>Event *</label>
+          <p-select [options]="events" formControlName="eventId" optionLabel="title" optionValue="id" 
+                    placeholder="Select Event" class="w-full"></p-select>
+        </div>
+        <div class="form-field full-width">
+          <label>Volunteer Name *</label>
+          <input pInputText formControlName="name" class="w-full" />
+        </div>
+        <div class="form-field">
+          <label>Role *</label>
+          <p-select [options]="roleOptions" formControlName="role" class="w-full"></p-select>
+        </div>
+        <div class="form-field">
+          <label>Department *</label>
+          <p-select [options]="departmentOptions" formControlName="department" class="w-full"></p-select>
+        </div>
+        <div class="form-field full-width mt-3" style="flex-direction: row; align-items: center; gap: 0.75rem;">
+          <p-checkbox formControlName="checkedIn" [binary]="true" inputId="checkedInBox"></p-checkbox>
+          <label for="checkedInBox" style="font-weight: 700; color: #475569; cursor: pointer; margin-left: 0.75rem;">Mark as checked in</label>
+        </div>
       </div>
+      <div class="modal-footer mt-5 flex justify-content-end gap-2">
+        <button type="button" pButton label="Cancel" class="btn-cancel" (click)="closeEditForm()"></button>
+        <button type="submit" pButton label="Update Volunteer" class="btn-submit" [loading]="isSubmitting"></button>
+      </div>
+    </form>
+  </p-dialog>
 
-      <div class="modal-body">
-        <p>Are you sure you want to delete this volunteer record? This action cannot be undone.</p>
+  <!-- Create Modal -->
+  <p-dialog header="Add Attendance" [(visible)]="showCreateForm" [modal]="true" [style]="{width: '500px'}" 
+            [draggable]="false" [resizable]="false" styleClass="solid-dialog">
+    <form [formGroup]="createForm" (ngSubmit)="onSubmitCreate()" class="white-form pt-4">
+      <div class="form-grid">
+        <div class="form-field full-width">
+          <label>Event *</label>
+          <p-select [options]="events" formControlName="eventId" optionLabel="title" optionValue="id" 
+                    placeholder="Select Event" class="w-full"></p-select>
+        </div>
+        <div class="form-field full-width">
+          <label>Volunteer Name *</label>
+          <input pInputText formControlName="name" class="w-full" placeholder="Full Name" />
+        </div>
+        <div class="form-field">
+          <label>Role *</label>
+          <p-select [options]="roleOptions" formControlName="role" class="w-full" placeholder="Select Role"></p-select>
+        </div>
+        <div class="form-field">
+          <label>Department *</label>
+          <p-select [options]="departmentOptions" formControlName="department" class="w-full" placeholder="Select Department"></p-select>
+        </div>
+        <div class="form-field full-width mt-3" style="flex-direction: row; align-items: center; gap: 0.75rem;">
+          <p-checkbox formControlName="checkedIn" [binary]="true" inputId="checkedInBoxCreate"></p-checkbox>
+          <label for="checkedInBoxCreate" style="font-weight: 700; color: #475569; cursor: pointer; margin-left: 0.75rem;">Mark as checked in</label>
+        </div>
       </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn-cancel" (click)="closeDeleteConfirm()">
-          Cancel
-        </button>
-        <button type="button" class="btn-danger" (click)="confirmDelete(deleteConfirmId!)">
-          <i class="pi pi-trash"></i>
-          Delete Record
-        </button>
+      <div class="modal-footer mt-5 flex justify-content-end gap-2">
+        <button type="button" pButton label="Cancel" class="btn-cancel" (click)="showCreateForm = false"></button>
+        <button type="submit" pButton label="Add Record" class="btn-submit" [loading]="isSubmitting" [disabled]="createForm.invalid"></button>
       </div>
-    </div>
-  </div>
+    </form>
+  </p-dialog>
 </div>

@@ -1,7 +1,6 @@
-@import "primeng/resources/themes/lara-light-blue/theme.css";
-@import "primeng/resources/primeng.min.css";
 @import "primeicons/primeicons.css";
 @import "primeflex/primeflex.css";
+@import "leaflet/dist/leaflet.css";
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
@@ -12,21 +11,31 @@ html {
 :root {
     --primary-color: #00d1b2;
     --primary-hover: #00b99f;
-    --bg-light: #f8fafc;
+    --bg-dark: #0f172a;
+    --bg-dark-soft: #1e293b;
     --bg-white: #ffffff;
-    --text-main: #334155;
-    --text-muted: #64748b;
+    --bg-light: #f8fafc;
     --border-color: #e2e8f0;
+    --accent-blue: #3b82f6;
+    --accent-purple: #8b5cf6;
+    --accent-green: #10b981;
+    --accent-orange: #f59e0b;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-main: #1e293b;
+    --text-white: #f8fafc;
+    --text-muted: #94a3b8;
+    --text-default: #1e293b;
+}
 
-    /* Dark sidebar colors */
-    --sb-bg: #141724;
-    --sb-text: #94a3b8;
-    --sb-active-bg: rgba(0, 209, 178, 0.1);
+*:not(i):not(.pi):not([class*='pi-']) {
+    font-family: 'Poppins', sans-serif !important;
 }
 
 body {
     margin: 0;
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 16px; /* Increased base font size */
     background-color: var(--bg-light);
     color: var(--text-main);
     -webkit-font-smoothing: antialiased;
@@ -82,3 +91,39 @@ body {
 }
 
 html, body { height: 100%; }
+
+/* Global Header Card Styles (based on reports module) */
+.header-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 2.5rem;
+    border-radius: 24px;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04);
+    margin-bottom: 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.header-card h1 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.page-subtitle {
+    color: #64748b;
+    margin: 0.5rem 0 0 0;
+    font-size: 1rem;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}

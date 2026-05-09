@@ -1,13 +1,46 @@
-<h2>Register Volunteer</h2>
+<div class="form-page-container">
+  <div class="form-container">
+    <h2>Register Volunteer</h2>
 
-<form [formGroup]="form" (ngSubmit)="submit()">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label>Full Name</label>
+          <input formControlName="name" placeholder="Enter volunteer's full name">
+        </div>
 
-  <input formControlName="name" placeholder="Name">
-  <input formControlName="email" placeholder="Email">
-  <input formControlName="phone" placeholder="Phone">
-  <input formControlName="skills" placeholder="Skills">
-  <input formControlName="availability" placeholder="Availability">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input formControlName="email" placeholder="email@example.com">
+        </div>
 
-  <button type="submit">Register</button>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input formControlName="phone" placeholder="+1 (555) 000-0000">
+        </div>
 
-</form>
+        <div class="form-group">
+          <label>Assigned Role</label>
+          <input formControlName="role" placeholder="e.g. Lead, Support">
+        </div>
+
+        <div class="form-group">
+          <label>Department</label>
+          <input formControlName="department" placeholder="e.g. Operations, Logistics">
+        </div>
+
+        <div class="form-group full-width">
+          <label>Key Skills</label>
+          <input formControlName="skills" placeholder="e.g. First Aid, Event Management, Tech Support">
+        </div>
+
+        <div class="form-group full-width">
+          <label>Availability</label>
+          <input formControlName="availability" placeholder="e.g. Weekends only, Full time during event">
+        </div>
+
+        <button type="submit" [disabled]="form.invalid">Register Volunteer</button>
+      </div>
+    </form>
+  </div>
+</div>

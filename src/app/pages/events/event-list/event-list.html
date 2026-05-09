@@ -1,9 +1,9 @@
 <div class="event-list-container">
   <!-- Header Section -->
-  <div class="header-section">
+  <div class="header-card">
     <div class="title-group">
-      <h1 class="page-title">Event List</h1>
-      <p class="subtitle">Manage and monitor all emergency response events.</p>
+      <h1>Event List</h1>
+      <p class="page-subtitle">Manage and monitor all emergency response events.</p>
     </div>
     
     <div class="header-actions">
@@ -41,7 +41,7 @@
           <td colspan="6" class="empty-message">No events available</td>
         </tr>
         
-        <tr *ngFor="let event of events">
+        <tr *ngFor="let event of events" (click)="viewEvent(event.id)" class="clickable-row">
           <td>
             <div class="event-info">
               <span class="event-primary-name">{{ event.title }}</span>

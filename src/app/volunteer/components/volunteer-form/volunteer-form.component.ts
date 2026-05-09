@@ -24,18 +24,25 @@ export class VolunteerFormComponent {
   ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
-      email: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
       phone: [''],
       skills: [''],
       availability: [''],
+      role: ['Volunteer', Validators.required],
+      department: ['Operations', Validators.required],
       status: ['active']
     });
   }
 
   submit() {
     if (this.form.valid) {
-      this.volunteerService.create(this.form.value).subscribe(() => {
-        this.router.navigate(['/volunteers']);
+      this.volunteerService.create(this.form.value).subscribe({
+        next: () => {
+          this.router.navigate(['/volunteers']);
+        },
+        error: (err) => {
+          console.error('Registration failed:', err);
+        }
       });
     }
   }

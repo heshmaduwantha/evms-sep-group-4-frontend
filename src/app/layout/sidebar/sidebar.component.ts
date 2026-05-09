@@ -6,6 +6,7 @@ import { UserRole } from '../../auth/auth.models';
 import { AttendanceService } from '../../pages/attendance/attendance.service';
 import { ApplicationService } from '../../pages/applications/application.service';
 import { EventService } from '../../pages/events/services/event.service';
+import { ApplicationStatus } from '../../pages/applications/application.models';
 
 @Component({
   selector: 'app-sidebar',
@@ -19,7 +20,7 @@ import { EventService } from '../../pages/events/services/event.service';
     .sidebar {
       width: 250px;
       height: 100vh;
-      background: #0b0e14;
+      background: #0b1116;
       border-right: 1px solid rgba(255,255,255,0.05);
       display: flex;
       flex-direction: column;
@@ -28,15 +29,21 @@ import { EventService } from '../../pages/events/services/event.service';
       top: 0;
       z-index: 100;
       overflow-y: auto;
+      box-shadow: 10px 0 30px rgba(0,0,0,0.2);
     }
     .brand {
-      padding: 2.5rem 1.5rem;
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: var(--primary-color);
+      padding: 3rem 2rem;
+      font-size: 1.75rem;
+      font-weight: 900;
+      color: #ffffff;
       display: flex;
       align-items: center;
       gap: 12px;
+      letter-spacing: -0.05em;
+    }
+    .brand i {
+      color: var(--primary-color);
+      filter: drop-shadow(0 0 8px rgba(0, 209, 178, 0.4));
     }
     .menu {
       flex: 1;
@@ -61,12 +68,15 @@ import { EventService } from '../../pages/events/services/event.service';
       font-size: 0.95rem;
     }
     .menu-item:hover {
-      background: rgba(255,255,255,0.03);
+      background: rgba(255,255,255,0.05);
       color: white;
+      transform: translateX(5px);
     }
     .menu-item.active {
-      background: rgba(0, 209, 178, 0.15);
+      background: linear-gradient(90deg, rgba(0, 209, 178, 0.2) 0%, transparent 100%);
       color: var(--primary-color);
+      border-left: 4px solid var(--primary-color);
+      padding-left: calc(1.25rem - 4px);
     }
     .menu-item.expandable {
       display: flex;
@@ -158,12 +168,12 @@ import { EventService } from '../../pages/events/services/event.service';
 export class SidebarComponent implements OnInit {
   navItems: any[] = [
     { label: 'Dashboard', icon: 'pi pi-th-large', link: '/home', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
-    { label: 'Dashboard', icon: 'pi pi-th-large', link: '/events', roles: [UserRole.VOLUNTEER] },
+    { label: 'Dashboard', icon: 'pi pi-th-large', link: '/volunteer/dashboard', roles: [UserRole.VOLUNTEER] },
     { label: 'Events Hub', icon: 'pi pi-calendar', link: '/events', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
     { label: 'Event Manager(organizer)', icon: 'pi pi-list', link: '/organizer/events', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
     { label: 'Applications', icon: 'pi pi-file', link: '/applications', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
     { label: 'My Applications', icon: 'pi pi-file', link: '/my-applications', roles: [UserRole.VOLUNTEER] },
-    { label: 'Roles', icon: 'pi pi-users', link: '/roles', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
+    { label: 'Roles', icon: 'pi pi-tags', link: '/roles', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
     {
       label: 'Volunteers',
       icon: 'pi pi-users',
@@ -186,7 +196,7 @@ export class SidebarComponent implements OnInit {
       badge: 0,
       children: [
         { label: 'Attendance Overview', icon: 'pi pi-chart-line', link: '/attendance', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
-        { label: 'Manual Check-in', icon: 'pi pi-user-plus', link: '/manual-checkin', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
+        { label: 'All Check-ins', icon: 'pi pi-user-plus', link: '/manual-checkin', roles: [UserRole.ORGANIZER, UserRole.ADMIN] },
         { label: 'Attendance Reports', icon: 'pi pi-chart-bar', link: '/reports', roles: [UserRole.ORGANIZER, UserRole.ADMIN ] }
       ]
     },
@@ -221,7 +231,9 @@ export class SidebarComponent implements OnInit {
         const appsItem = this.navItems.find(item => item.label === 'Applications');
         if (appsItem) {
           this.applicationService.getApplications().subscribe((apps: any[]) => {
-            appsItem.badge = apps.length;
+            // Count pending applications specifically for the badge
+            const pendingCount = apps.filter(app => app.status === 'PENDING' || app.status === ApplicationStatus.PENDING).length;
+            appsItem.badge = pendingCount;
           });
         }
 
