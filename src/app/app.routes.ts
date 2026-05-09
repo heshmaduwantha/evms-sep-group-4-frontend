@@ -19,8 +19,14 @@ import { VolunteerFormComponent } from './volunteer/components/volunteer-form/vo
 import { VolunteerDetailComponent } from './volunteer/components/volunteer-detail/volunteer-detail.component';
 import { VolunteerEditComponent } from './volunteer/components/volunteer-edit/volunteer-edit.component';
 import { VolunteerDashboardComponent } from './pages/volunteer-dashboard/volunteer-dashboard.component';
+import { LandingPageComponent } from './pages/landing/landing-page.component';
 
 export const routes: Routes = [
+    {
+        path: '',
+        component: LandingPageComponent,
+        pathMatch: 'full'
+    },
     {
         path: '',
         component: MainLayoutComponent,
@@ -50,13 +56,11 @@ export const routes: Routes = [
                 path: 'roles',
                 loadChildren: () => import('./pages/roles/roles.routes').then(m => m.ROLES_ROUTES),
             },
-
-            { path: '', redirectTo: 'home', pathMatch: 'full' }
         ]
     },
     {
         path: 'auth',
         loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
     },
-    { path: '**', redirectTo: 'home' }
+    { path: '**', redirectTo: '' }
 ];

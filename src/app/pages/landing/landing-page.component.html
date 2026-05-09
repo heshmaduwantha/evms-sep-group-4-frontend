@@ -1,0 +1,319 @@
+<div class="landing-body">
+  <!-- Top Bar -->
+  <div class="topbar">
+    🎉 New: <span>Multi-Site Management</span> now available — manage unlimited locations from one dashboard.
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="inner">
+      <div class="logo">
+        <div class="logo-icon"><i class="pi pi-building"></i></div>
+        <span>EVM<span>S</span></span>
+      </div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#integrations">Integrations</a>
+        <a href="#compliance">Compliance</a>
+        <a href="#">Enterprise</a>
+      </div>
+      <div class="nav-actions">
+        <a routerLink="/auth/login" class="btn btn-outline btn-sm">Sign In</a>
+        <a routerLink="/auth/login" class="btn btn-primary btn-sm"><i class="pi pi-play-circle"></i> Start Free Trial</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <!-- Left -->
+        <div class="hero-left">
+          <div class="hero-eyebrow fade-up">
+            <div class="dot"></div>
+            Enterprise Visitor Management
+          </div>
+          <h1 class="hero-title fade-up delay-1">
+            Manage Every<br><span class="accent">Visitor,</span>
+          </h1>
+          <p class="hero-sub fade-up delay-2">
+            EVMS gives enterprises real-time complete visibility and control over facility access — from pre-registration to real-time monitoring and compliance reporting.
+          </p>
+          <div class="hero-actions fade-up delay-3">
+            <a routerLink="/auth/login" class="btn btn-primary btn-lg"><i class="pi pi-play-circle"></i> Start Free Trial</a>
+            <a href="#" class="btn btn-outline btn-lg"><i class="pi pi-video"></i> Watch Demo</a>
+          </div>
+          <div class="hero-stats fade-up delay-4">
+            <div class="hero-stat">
+              <div class="value">50K+</div>
+              <div class="label">Active visitors daily</div>
+            </div>
+            <div class="hero-stat">
+              <div class="value">99.8%</div>
+              <div class="label">Uptime SLA guaranteed</div>
+            </div>
+            <div class="hero-stat">
+              <div class="value">200+</div>
+              <div class="label">Enterprise clients</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Dashboard Preview -->
+        <div class="dashboard-preview fade-up delay-2">
+          <div class="preview-topbar">
+            <div class="preview-dot" style="background:#ef4444"></div>
+            <div class="preview-dot" style="background:#facc15"></div>
+            <div class="preview-dot" style="background:#22c55e"></div>
+            <span class="preview-topbar-label">Visitor Management Dashboard</span>
+          </div>
+          <div class="preview-body">
+            <div class="preview-kpi-row">
+              <div class="preview-kpi">
+                <div class="kpi-label">Visitors Today</div>
+                <div class="kpi-value">247</div>
+                <div class="kpi-delta delta-up"><i class="pi pi-arrow-up" style="font-size:9px"></i> 12% vs yesterday</div>
+              </div>
+              <div class="preview-kpi">
+                <div class="kpi-label">Check-in Rate</div>
+                <div class="kpi-value" style="font-size:18px">98%</div>
+                <div class="kpi-delta delta-up"><i class="pi pi-check-circle" style="font-size:9px"></i> On target</div>
+              </div>
+              <div class="preview-kpi">
+                <div class="kpi-label">Alerts</div>
+                <div class="kpi-value" style="color:#f97316">3</div>
+                <div class="kpi-delta" style="color:#f97316; font-size:10px"><i class="pi pi-exclamation-triangle" style="font-size:9px"></i> Action needed</div>
+              </div>
+            </div>
+            <div class="preview-row">
+              <div class="preview-card">
+                <div class="preview-card-title">Active Visitors</div>
+                <div class="visitor-row">
+                  <div><div class="visitor-name">Sarah Chen</div><div class="visitor-host">Host: J. Miller</div></div>
+                  <span class="status-chip status-in">IN</span>
+                </div>
+                <div class="visitor-row">
+                  <div><div class="visitor-name">Thomas Wright</div><div class="visitor-host">Host: A. Park</div></div>
+                  <span class="status-chip status-in">IN</span>
+                </div>
+                <div class="visitor-row">
+                  <div><div class="visitor-name">Priya Sharma</div><div class="visitor-host">Host: R. Davis</div></div>
+                  <span class="status-chip status-out">OUT</span>
+                </div>
+                <div class="visitor-row">
+                  <div><div class="visitor-name">James Patel</div><div class="visitor-host">Host: L. Kim</div></div>
+                  <span class="status-chip status-pending">PENDING</span>
+                </div>
+              </div>
+              <div class="preview-card">
+                <div class="preview-card-title">Visitor Traffic</div>
+                <div class="chart-container">
+                  <canvas id="miniChart"></canvas>
+                </div>
+                <div style="margin-top:10px">
+                  <span class="badge" style="font-size:10px; padding:3px 8px"><i class="pi pi-shield"></i> SOC 2 Certified</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section features-section" id="features">
+    <div class="container">
+      <div class="text-center">
+        <div class="section-eyebrow">Platform Features</div>
+        <h2 class="section-title">Everything you need to<br><span class="accent">secure your facilities</span></h2>
+        <p class="section-sub">EVMS brings together visitor registration, access control, compliance, and analytics into one unified platform built for enterprise scale.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="pi pi-qrcode"></i></div>
+          <div class="feature-title">Smart Check-In</div>
+          <div class="feature-desc">Contactless check-in with QR code scanning, ID verification, and automatic host notifications. Visitors are signed in under 30 seconds.</div>
+          <span class="feature-tag">Explore <i class="pi pi-arrow-right"></i></span>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="pi pi-calendar-plus"></i></div>
+          <div class="feature-title">Pre-Registration</div>
+          <div class="feature-desc">Allow visitors to register before arrival using custom branded forms. Collect NDAs, ID documents, and health declarations automatically.</div>
+          <span class="feature-tag">Explore <i class="pi pi-arrow-right"></i></span>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="pi pi-bell"></i></div>
+          <div class="feature-title">Instant Alerts</div>
+          <div class="feature-desc">Real-time notifications via email, SMS, or Slack when visitors arrive, leave, or when security thresholds are exceeded. Never miss an alert.</div>
+          <span class="feature-tag">Explore <i class="pi pi-arrow-right"></i></span>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="pi pi-chart-bar"></i></div>
+          <div class="feature-title">Analytics & Reports</div>
+          <div class="feature-desc">Comprehensive dashboards with live visitor data, peak-hour insights, traffic patterns, and exportable compliance reports for any period.</div>
+          <span class="feature-tag">Explore <i class="pi pi-arrow-right"></i></span>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="pi pi-lock"></i></div>
+          <div class="feature-title">Compliance & Security</div>
+          <div class="feature-desc">SOC 2 Type II certified. Role-based access, audit trails, watchlist screening, and automated data-retention rules keep you compliant.</div>
+          <span class="feature-tag">Explore <i class="pi pi-arrow-right"></i></span>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="pi pi-globe"></i></div>
+          <div class="feature-title">Multi-Site Management</div>
+          <div class="feature-desc">Manage visitor flows across all your locations from a single control panel. Centralized reporting, settings sync, and consistent branding everywhere.</div>
+          <span class="feature-tag">Explore <i class="pi pi-arrow-right"></i></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="section integrations-section" id="pricing">
+    <div class="container">
+      <div class="integrations-grid">
+        <div>
+          <div class="section-eyebrow">Simple Pricing</div>
+          <div class="int-title">Flexible plans for<br>every organisation</div>
+          <p class="int-sub">Start free and scale as you grow. No hidden fees. Cancel any time.</p>
+          <ul class="int-list">
+            <li><i class="pi pi-check-circle"></i> 14-day free trial on all paid plans</li>
+            <li><i class="pi pi-check-circle"></i> No credit card required to start</li>
+            <li><i class="pi pi-check-circle"></i> Annual billing saves up to 20%</li>
+          </ul>
+        </div>
+        <div class="pricing-table">
+          <div class="pt-header">
+            <span>Plan</span>
+            <span style="min-width:80px; text-align:right">Price / mo</span>
+            <span style="min-width:60px; text-align:right"></span>
+          </div>
+          <div class="pt-row">
+            <div class="pt-plan">Starter<small>Up to 100 visitors/mo</small></div>
+            <div class="pt-price">Free</div>
+            <span class="pt-badge free">Free</span>
+          </div>
+          <div class="pt-row" style="background:var(--teal-50); border-left:3px solid var(--teal-500)">
+            <div class="pt-plan">Tier 1 — 500<small>Up to 500 visitors/mo</small></div>
+            <div class="pt-price" style="color:var(--teal-700)">LKR 8,900 <span style="font-size:11px;font-weight:400;color:var(--slate-500)">/mo</span></div>
+            <span class="pt-badge popular">Popular</span>
+          </div>
+          <div class="pt-row">
+            <div class="pt-plan">Conference Suite B<small>Up to 2,000 visitors/mo</small></div>
+            <div class="pt-price">LKR 29,900 <span style="font-size:11px;font-weight:400;color:var(--slate-500)">/mo</span></div>
+            <span class="pt-badge" style="background:#f3e8ff;color:#6b21a8">Pro</span>
+          </div>
+          <div class="pt-row">
+            <div class="pt-plan">Enterprise Plan<small>Unlimited visitors & sites</small></div>
+            <div class="pt-price">Custom</div>
+            <span class="pt-badge ent">ENT</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPLIANCE -->
+  <section class="section compliance-section" id="compliance">
+    <div class="container">
+      <div class="compliance-grid">
+        <div class="compliance-visual">
+          <div class="cv-title">Compliance Export · Q1 2026</div>
+          <div class="cv-score">97.4<span>%</span></div>
+          <div class="cv-label">Compliance score vs. industry benchmark of 82%</div>
+
+          <div class="cv-bar-wrap">
+            <div class="cv-bar-label"><span>GDPR Compliance</span><span>99%</span></div>
+            <div class="cv-bar"><div class="cv-bar-fill" style="width:99%"></div></div>
+          </div>
+          <div class="cv-bar-wrap">
+            <div class="cv-bar-label"><span>Audit Trail Completeness</span><span>97%</span></div>
+            <div class="cv-bar"><div class="cv-bar-fill" style="width:97%"></div></div>
+          </div>
+          <div class="cv-bar-wrap">
+            <div class="cv-bar-label"><span>NDA Completion Rate</span><span>94%</span></div>
+            <div class="cv-bar"><div class="cv-bar-fill yellow" style="width:94%"></div></div>
+          </div>
+          <div class="cv-bar-wrap">
+            <div class="cv-bar-label"><span>Watchlist Screenings</span><span>100%</span></div>
+            <div class="cv-bar"><div class="cv-bar-fill" style="width:100%"></div></div>
+          </div>
+          <div class="cv-bar-wrap">
+            <div class="cv-bar-label"><span>Visitor Incidents Unresolved</span><span style="color:#ef4444">2%</span></div>
+            <div class="cv-bar"><div class="cv-bar-fill red" style="width:2%"></div></div>
+          </div>
+          <div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap">
+            <span class="badge"><i class="pi pi-shield"></i> SOC 2 Type II</span>
+            <span class="badge"><i class="pi pi-globe"></i> GDPR Ready</span>
+            <span class="badge"><i class="pi pi-lock"></i> ISO 27001</span>
+          </div>
+        </div>
+        <div class="compliance-content">
+          <div class="section-eyebrow">Compliance & Audit</div>
+          <h2 class="section-title">Audit-ready<br><span class="accent">at all times</span></h2>
+          <p style="font-size:14px; color:var(--slate-500); line-height:1.7; margin-bottom:16px">Stay ahead of regulatory requirements with automated compliance tracking, report generation, and continuous audit trail monitoring.</p>
+          <ul class="comp-list">
+            <li><i class="pi pi-check-circle"></i> GDPR, HIPAA, SOC 2, and ISO 27001 compliance built in</li>
+            <li><i class="pi pi-check-circle"></i> Automated compliance reports for any period</li>
+            <li><i class="pi pi-check-circle"></i> Watchlist screening on every check-in</li>
+            <li><i class="pi pi-check-circle"></i> Electronic NDA collection and storage</li>
+            <li><i class="pi pi-check-circle"></i> Visitor data retention policy enforcement</li>
+          </ul>
+          <a href="#" class="btn btn-primary" style="margin-top:8px"><i class="pi pi-download"></i> Download Compliance Guide</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section cta-section">
+    <div class="container">
+      <div class="cta-inner">
+        <div class="cta-title">Ready to modernise your<br><span class="accent">visitor experience?</span></div>
+        <p class="cta-sub">Join 200+ enterprise organisations that trust EVMS to secure their facilities, delight their visitors, and stay audit-ready at all times.</p>
+        <div class="cta-actions">
+          <a routerLink="/auth/login" class="btn btn-primary btn-lg"><i class="pi pi-play-circle"></i> Start Free Trial</a>
+          <a href="#" class="btn btn-ghost btn-lg"><i class="pi pi-calendar"></i> Schedule a Demo</a>
+        </div>
+        <div class="cta-trust">
+          <div class="trust-item"><i class="pi pi-shield"></i> SOC 2 Certified</div>
+          <div class="trust-item"><i class="pi pi-lock"></i> GDPR Ready</div>
+          <div class="trust-item"><i class="pi pi-credit-card"></i> No credit card required</div>
+          <div class="trust-item"><i class="pi pi-times-circle"></i> Cancel anytime</div>
+        </div>
+        <div class="cta-logos">
+          <p>Trusted by teams at</p>
+          <div class="logo-row">
+            <span class="logo-pill">Accenture</span>
+            <span class="logo-pill">Deloitte</span>
+            <span class="logo-pill">Siemens</span>
+            <span class="logo-pill">Fujitsu</span>
+            <span class="logo-pill">EY</span>
+          </div>
+          <div style="margin-top:20px">
+            <div class="stars">★★★★★</div>
+            <div style="font-size:12px; color:rgba(255,255,255,.4); margin-top:6px">Rated 4.9/5 across 500+ reviews on G2 &amp; Capterra</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-copy">© 2026 EVMS Inc. All rights reserved.</div>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Security</a>
+        <a href="#">Status</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </footer>
+</div>

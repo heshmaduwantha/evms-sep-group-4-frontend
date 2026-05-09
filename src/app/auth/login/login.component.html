@@ -1,51 +1,52 @@
 <div class="auth-page-container">
     <div class="login-wrapper">
-    <div class="login-container">
-        <p-card styleClass="login-card">
-            <div class="text-center mb-4">
-                <h1 class="auth-title">Welcome Back</h1>
-                <p class="auth-subtitle">Event Volunteer Management System</p>
-            </div>
-
-            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-column">
-                <div class="input-field-group">
-                    <label for="email" class="input-label">Email Address</label>
-                    <span class="p-input-icon-left w-full">
-                        <i class="pi pi-envelope"></i>
-                        <input pInputText id="email" formControlName="email" type="email" 
-                               placeholder="name@example.com" class="w-full" />
-                    </span>
-                    <small class="p-error block mt-1" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-                        Please enter a valid email address.
-                    </small>
+        <div class="login-container">
+            <p-card styleClass="login-card">
+                <div class="text-center mb-4">
+                    <h1 class="auth-title">Welcome Back</h1>
+                    <p class="auth-subtitle">Event Volunteer Management System</p>
                 </div>
 
-                <div class="input-field-group">
-                    <label for="password" class="input-label">Password</label>
-                    <span class="p-input-icon-left w-full">
-                        <i class="pi pi-lock"></i>
-                        <input pInputText id="password" formControlName="password" type="password" 
-                               placeholder="••••••••" class="w-full" />
-                    </span>
-                    <small class="p-error block mt-1" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-                        Password is required.
-                    </small>
-                </div>
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-column">
+                    <div class="input-field-group">
+                        <label for="email" class="input-label">Email Address</label>
+                        <span class="p-input-icon-left w-full">
+                            <i class="pi pi-envelope"></i>
+                            <input pInputText id="email" formControlName="email" type="email" 
+                                   placeholder="name@example.com" class="w-full" />
+                        </span>
+                        <small class="p-error block mt-1" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+                            Please enter a valid email address.
+                        </small>
+                    </div>
 
-                <div class="mt-4">
-                    <p-button label="Sign In" type="submit" [loading]="loading" [disabled]="loginForm.invalid"
-                        styleClass="w-full"></p-button>
-                </div>
+                    <div class="input-field-group">
+                        <label for="password" class="input-label">Password</label>
+                        <span class="p-input-icon-left w-full">
+                            <i class="pi pi-lock"></i>
+                            <input pInputText id="password" formControlName="password" type="password" 
+                                   placeholder="••••••••" class="w-full" />
+                        </span>
+                        <small class="p-error block mt-1" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+                            Password is required.
+                        </small>
+                    </div>
 
-                <p-message *ngIf="error" severity="error" [text]="error" styleClass="mt-3"></p-message>
+                    <div class="mt-4">
+                        <p-button label="Sign In" type="submit" [loading]="loading" [disabled]="loginForm.invalid"
+                            styleClass="w-full"></p-button>
+                    </div>
 
-                <div class="auth-footer">
-                    <span>Don't have an account yet? </span>
-                    <a routerLink="/auth/register" class="auth-link">Create Account</a>
-                </div>
-            </form>
-        </p-card>
-    </div>
+                    <p-messages *ngIf="error" [value]="[{severity:'error', summary:'Error', detail:error}]"
+                        [closable]="false" styleClass="mt-3"></p-messages>
+
+                    <div class="auth-footer">
+                        <span>Don't have an account yet? </span>
+                        <a routerLink="/auth/register" class="auth-link">Create Account</a>
+                    </div>
+                </form>
+            </p-card>
+        </div>
     </div>
     <app-footer></app-footer>
 </div>
